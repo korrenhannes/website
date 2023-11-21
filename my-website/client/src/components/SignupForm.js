@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api'; // Make sure this path is correct
 
 function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
@@ -13,13 +13,12 @@ function SignupForm({ onSignupSuccess }) {
       return;
     }
     try {
-      const response = await axios.post('/api/auth/signup', { email, password });
+      const response = await api.post('/auth/signup', { email, password });
       onSignupSuccess(response.data);
     } catch (error) {
       console.error("Signup failed:", error);
     }
   };
-
   return (
     <div className="signup-form">
       <h2>Signup</h2>

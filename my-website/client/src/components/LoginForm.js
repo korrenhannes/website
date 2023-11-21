@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api'; // Adjust the path to the api.js file
 
 function LoginForm({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
@@ -8,7 +8,7 @@ function LoginForm({ onLoginSuccess }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post('/api/auth/login', { email, password });
+      const response = await api.post('/auth/login', { email, password });
       onLoginSuccess(response.data);
     } catch (error) {
       console.error("Login failed:", error);
