@@ -1,5 +1,5 @@
 const express = require('express');
-const User = require('.C:/Users/SharonH/Documents/GitHub/website/my-website/server/models/User');
+const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
@@ -22,8 +22,7 @@ router.post('/login', async (req, res) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).send('Invalid credentials');
     }
-    // Replace 'your_jwt_secret' with your actual JWT secret
-    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret');
+    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret'); // Ensure your JWT secret is secured
     res.send({ token });
   } catch (error) {
     res.status(400).send(error);

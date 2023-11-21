@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const authRoutes = require('.C:/Users/SharonH/Documents/GitHub/website/my-website/server/routes/auth');
+const authRoutes = require('C:/Users/SharonH/Documents/GitHub/website/my-website/server/routes/auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
