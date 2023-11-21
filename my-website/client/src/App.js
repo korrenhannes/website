@@ -1,6 +1,6 @@
 import React from 'react';
-import LoginForm from '.C:/Users/SharonH/Documents/GitHub/website/my-website/client/src/components/LoginForm';
-import SignupForm from '.C:/Users/SharonH/Documents/GitHub/website/my-website/client/src/components/SignupForm';
+import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
 
 function App() {
   const handleLoginSuccess = (data) => {
