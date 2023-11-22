@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../api'; // Adjust the path to the api.js file
 
 function LoginForm({ onLoginSuccess }) {
@@ -31,10 +32,10 @@ function LoginForm({ onLoginSuccess }) {
             </div>
             <button type="submit" className="btn btn-primary">Login</button>
             <div className="mt-3">
-              <a href="/forgot-password">Forgot password?</a>
+              <Link to="/forgot-password">Forgot password?</Link>
             </div>
             <div className="mt-3">
-              Don’t have an account? <a href="/signup">Signup</a>
+              Don’t have an account? <Link to="/signup">Signup</Link>
             </div>
           </form>
         </div>

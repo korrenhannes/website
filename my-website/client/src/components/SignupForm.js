@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import api from '../api'; // Make sure this path is correct
+import { Link } from 'react-router-dom';
+import api from '../api'; // Ensure this path is correct
 
 function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
@@ -38,11 +39,9 @@ function SignupForm({ onSignupSuccess }) {
               <label className="form-label">Confirm your password:</label>
               <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
             </div>
-            <div className="d-grid gap-2">
-              <button type="submit" className="btn btn-primary">Signup</button>
-            </div>
-            <div className="mt-3 text-center">
-              Already have an account? <a href="/login">Login</a>
+            <button type="submit" className="btn btn-primary">Signup</button>
+            <div className="mt-3">
+              Already have an account? <Link to="/login">Login</Link>
             </div>
           </form>
         </div>
