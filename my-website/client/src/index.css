@@ -1,33 +1,36 @@
-/* Simple Reset */
+/* Simple Reset - This remains the same as Bootstrap also uses box-sizing: border-box */
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-  
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-      sans-serif;
-  }
-  
-  /* Layout for the forms */
-  .App {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f7f7f7;
-  }
-  
-  .login-form,
-  .signup-form {
-    margin: 1rem;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Add more styles as per your design */
-  
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* You can keep the font settings */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  background-color: #f7f7f7; /* This background color can be kept or adjusted */
+}
+
+/* Adjusting the .App class to work well with Bootstrap */
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Changed from height to min-height for better responsiveness */
+  background-color: #f7f7f7;
+}
+
+/* Since Bootstrap already has card styles, you can remove some of these custom styles */
+.login-form,
+.signup-form {
+  margin: 1rem;
+  padding: 2rem;
+  /* The following styles can be removed as Bootstrap's card class provides similar styling */
+  /* background: #fff;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+}
+
+/* If you have additional custom styles specific to your design, you can add them here */

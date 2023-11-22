@@ -16,31 +16,29 @@ function LoginForm({ onLoginSuccess }) {
   };
 
   return (
-    <div className="login-form">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Enter your email:
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </label>
+    <div className="container mt-5">
+      <h2 className="text-center">Login</h2>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <form onSubmit={handleSubmit} className="card p-4">
+            <div className="mb-3">
+              <label className="form-label">Enter your email:</label>
+              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Enter your password:</label>
+              <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn btn-primary">Login</button>
+            <div className="mt-3">
+              <a href="/forgot-password">Forgot password?</a>
+            </div>
+            <div className="mt-3">
+              Don’t have an account? <a href="/signup">Signup</a>
+            </div>
+          </form>
         </div>
-        <div>
-          <label>
-            Enter your password:
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <button type="submit">Login</button>
-        </div>
-        <div>
-          <a href="/forgot-password">Forgot password?</a>
-        </div>
-        <div>
-          Don’t have an account? <a href="/signup">Signup</a>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }

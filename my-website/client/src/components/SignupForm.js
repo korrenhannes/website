@@ -19,35 +19,34 @@ function SignupForm({ onSignupSuccess }) {
       console.error("Signup failed:", error);
     }
   };
+
   return (
-    <div className="signup-form">
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>
-            Enter your email:
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </label>
+    <div className="container mt-5">
+      <h2 className="text-center">Signup</h2>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <form onSubmit={handleSubmit} className="card p-4">
+            <div className="mb-3">
+              <label className="form-label">Enter your email:</label>
+              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Create a password:</label>
+              <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Confirm your password:</label>
+              <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+            </div>
+            <div className="d-grid gap-2">
+              <button type="submit" className="btn btn-primary">Signup</button>
+            </div>
+            <div className="mt-3 text-center">
+              Already have an account? <a href="/login">Login</a>
+            </div>
+          </form>
         </div>
-        <div>
-          <label>
-            Create a password:
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <label>
-            Confirm your password:
-            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-          </label>
-        </div>
-        <div>
-          <button type="submit">Signup</button>
-        </div>
-        <div>
-          Already have an account? <a href="/login">Login</a>
-        </div>
-      </form>
+      </div>
     </div>
   );
 }
