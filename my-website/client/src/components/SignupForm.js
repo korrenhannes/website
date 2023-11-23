@@ -1,23 +1,34 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api'; // Ensure this path is correct
 
-function SignupForm({ onSignupSuccess }) {
+function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(''); // Reset error message
+
     if (password !== confirmPassword) {
-      console.error("Passwords do not match");
+      setError("Passwords do not match.");
       return;
     }
+
     try {
-      const response = await api.post('/auth/signup', { email, password });
-      onSignupSuccess(response.data);
+      await api.post('/auth/signup', { email, password });
+      // Navigate to login or another page upon successful signup
+      navigate('/login');
     } catch (error) {
-      console.error("Signup failed:", error);
+      // Handling error response for better user feedback
+      if (error.response && error.response.data) {
+        setError("Signup failed: " + error.response.data);
+      } else {
+        setError("Signup failed. Please try again.");
+      }
     }
   };
 
@@ -27,6 +38,7 @@ function SignupForm({ onSignupSuccess }) {
       <div className="row justify-content-center">
         <div className="col-md-6">
           <form onSubmit={handleSubmit} className="card p-4">
+            {error && <div className="alert alert-danger">{error}</div>}
             <div className="mb-3">
               <label className="form-label">Enter your email:</label>
               <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />

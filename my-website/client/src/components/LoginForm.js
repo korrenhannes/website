@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api'; // Adjust the path to the api.js file
 
-function LoginForm({ onLoginSuccess }) {
+function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await api.post('/auth/login', { email, password });
-      onLoginSuccess(response.data);
+      await api.post('/auth/login', { email, password });
+      // Assuming the login is successful, navigate to the CloudAPIPage
+      navigate('/cloud-api');
     } catch (error) {
       console.error("Login failed:", error);
     }
