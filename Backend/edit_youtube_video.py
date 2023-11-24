@@ -13,13 +13,18 @@ import os
 import openai
 import pickle
 
-from edit_youtube_video_utils import cut_faces
+from edit_youtube_video_utils import cut_faces, is_substring
 
-FIRST_INPUT = "I'm going to send you a text.\nI need you to summarize that text using only direct quotes from it.\nDo it with no fillers or additional words, just direct quotes. If something doesn't make sense feel free to omit it.\nWhen the quotes are combined, I expect the result to be:\n- Simple\n- Interesting\n- To keep the original meaning\nKeep it short (no more than 100 words).\n Don't use ellipsis under any circumstance!"
+# FIRST_INPUT = "I'm going to send you a text.\nI need you to summarize that text using only direct quotes from it.\nDo it with no fillers or additional words, just **DIRECT QUOTES**. If something doesn't make sense feel free to omit it.\nWhen the quotes are combined, I expect the result to be:\n- Simple\n- Interesting\n- To keep the original meaning\nKeep it short (no more than 100 words). Format the summary as a list of quotes from the original text, each one starting with a '-'.\nDon't use ellipsis under any circumstance!"
+# FIRST_RES = "Of course! Please provide the text you'd like me to summarize using direct quotes, and I'll follow your instructions."
+
 FIRST_RES = "Of course! Please provide the text you'd like me to summarize using direct quotes, and I'll follow your instructions."
+FIRST_INPUT = "\n send me a full long list that numbers all the words in the original text I sent you"
+SECOND_INPUT = "Create a COHERENT summary of the MAIN IDEA OF THE TEXT using only **comprehensive** and long quotes from the text. WRITE the INDEX RANGE of each quotation on the LIST!"
 
-BASIC_PROMPT = "delete the less relavent parts of the next text. Don't rewrite ANYTHING just delete parts. remain with 100 words\n"
+# BASIC_PROMPT = "delete the less relavent parts of the next text. Don't rewrite ANYTHING just delete parts. remain with 100 words\n"
 openai_api_key = "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"
+# openai_api_key_2 = "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"
 extra_time = 0.5
 
 
@@ -87,11 +92,20 @@ class EditedVideos:
         return df, text_part
 
     def call_chat_gpt(self, ind):
+        # conversation = [
+        #     {"role": "system", "content": "You are a helpful assistant."},
+        #     {"role": "user", "content": FIRST_INPUT},
+        #     {"role": "assistant", "content": FIRST_RES},
+        #     {"role": "user", "content": self.text_parts[ind]},
+
+        # ]
+        print("\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows()))
+        # Make API request with the conversation so far
         conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": FIRST_INPUT},
-            {"role": "assistant", "content": FIRST_RES},
-            {"role": "user", "content": self.text_parts[ind]},
+            {"role": "user", "content": self.text_parts[ind] + FIRST_INPUT},
+            {"role": "assistant", "content": "\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows())},
+            {"role": "user", "content": SECOND_INPUT}
 
         ]
 
@@ -104,6 +118,7 @@ class EditedVideos:
 
         # Extract and display the assistant's reply
         assistant_reply = response.choices[0].message.content
+        print(assistant_reply)
         # Output
         return assistant_reply
 
@@ -126,7 +141,7 @@ class EditedVideos:
         for i in range(len(new_lst)):
             print(f"Sentence: {new_lst[i]}")
 
-        inds = [x.lower() in text_part.lower() for x in new_lst]
+        inds = [is_substring(x, text_part) for x in new_lst] # Extremely unefficient but checking proof of concept
         short_list = np.array(new_lst)[inds]
 
         curr_loc = -1

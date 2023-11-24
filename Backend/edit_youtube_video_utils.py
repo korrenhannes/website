@@ -9,6 +9,7 @@ import numpy as np
 
 from tqdm import tqdm
 import imutils
+import string
 
 
 # def download_file(url):
@@ -217,4 +218,14 @@ def cut_faces(neg_vid, show_pics = False):
   # return new_vids, cuts_times[0]
   final_neg_vid = concatenate_videoclips(new_vids)
   return final_neg_vid, cuts_times[0]
+
+
+def is_substring(text1, text2):
+  # Remove punctuation and convert to lowercase
+  text1_cleaned = text1.translate(str.maketrans("", "", string.punctuation)).lower()
+  text2_cleaned = text2.translate(str.maketrans("", "", string.punctuation)).lower()
+
+  # Check if one text is a substring of the other
+  answer = text1_cleaned in text2_cleaned or text2_cleaned in text1_cleaned
+  return answer
 
