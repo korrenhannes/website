@@ -20,8 +20,8 @@ function SignupForm() {
 
     try {
       await api.post('/auth/signup', { email, password });
-      // Navigate to login or another page upon successful signup
-      navigate('/login');
+      // Navigate to the offers page upon successful signup
+      navigate('/offers');
     } catch (error) {
       // Handling error response for better user feedback
       if (error.response && error.response.data) {

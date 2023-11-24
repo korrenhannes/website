@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import CloudAPIPage from './components/CloudAPIPage'; // Import the new component
+import OffersPage from './components/OffersPage';
+import PaymentPage from './components/PaymentPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -27,6 +29,8 @@ function App() {
           } />
           <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
           <Route path="/cloud-api" element={<CloudAPIPage />} />
+          <Route path="/offers" element={<OffersPage />} />
+          <Route path="/payment" element={<PaymentPage />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>
