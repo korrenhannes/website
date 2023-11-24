@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import axios from 'axios'; // Ensure axios is imported
 
 function PaymentPage() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [plan, setPlan] = useState('');
+  const [userEmail, setUserEmail] = useState(''); // Add state to store user email
 
   useEffect(() => {
-    if (location.state && location.state.plan) {
+    // Assuming user's email and selected plan are passed in location.state
+    if (location.state) {
       setPlan(location.state.plan);
+      setUserEmail(location.state.userEmail);
     }
   }, [location.state]);
 
@@ -19,7 +24,7 @@ function PaymentPage() {
           description: plan,
           amount: {
             // Replace with your plan's price
-            value: "10.00", 
+            value: plan === 'premium' ? "20.00" : "10.00", // Example pricing
           },
         },
       ],
@@ -27,9 +32,20 @@ function PaymentPage() {
   };
 
   const onApprove = (data, actions) => {
-    return actions.order.capture().then((details) => {
+    return actions.order.capture().then(async (details) => {
       console.log("Payment Successful", details);
-      // Handle post-payment actions such as updating database or redirecting to a success page
+      // After successful payment, update the user's payment plan in the database
+      try {
+        const response = await axios.post('/api/auth/update-plan', { 
+          email: userEmail, 
+          paymentPlan: plan 
+        });
+        console.log('Payment plan updated successfully:', response.data);
+        // Redirect to a success page or perform other actions as needed
+        navigate('/success'); // Example redirect
+      } catch (error) {
+        console.error('Failed to update payment plan:', error);
+      }
     });
   };
 

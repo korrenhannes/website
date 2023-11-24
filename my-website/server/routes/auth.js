@@ -14,7 +14,7 @@ router.post('/signup', async (req, res) => {
       return res.status(400).send('Email already in use');
     }
 
-    const user = new User({ email, password });
+    const user = new User({ email, password, paymentPlan: 'free' });
     await user.save();
 
     // Log the signup action
@@ -44,6 +44,26 @@ router.post('/login', async (req, res) => {
     res.send({ token });
   } catch (error) {
     console.error("Login error:", error);
+    res.status(400).send(error.message);
+  }
+});
+
+// New route to update the user's payment plan
+router.post('/update-plan', async (req, res) => {
+  try {
+    const { email, paymentPlan } = req.body; // assuming email and paymentPlan are sent
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.paymentPlan = paymentPlan;
+    await user.save();
+
+    res.send('Payment plan updated successfully');
+  } catch (error) {
+    console.error("Update plan error:", error);
     res.status(400).send(error.message);
   }
 });

@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
+  },
+  paymentPlan: {
+    type: String,
+    default: 'free', // Options are 'free', 'regular', or 'premium'
   }
 });
 

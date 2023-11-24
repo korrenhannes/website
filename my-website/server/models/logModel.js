@@ -10,6 +10,10 @@ const logSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  paymentPlan: {
+    type: String,
+    required: false // This field is not required as not all logs might have a payment plan associated with them
+  },
   timestamp: {
     type: Date,
     default: Date.now
