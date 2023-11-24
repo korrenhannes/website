@@ -50,4 +50,17 @@
   box-shadow: 0 0 0 0.2rem rgba(56, 151, 240, 0.5);
 }
 
+/* Video Container Styles */
+.App .video-container {
+  max-width: 640px; /* Adjust based on your layout */
+  margin: auto;
+  position: relative; /* For swipe position */
+  overflow: hidden; /* To keep everything contained */
+}
+
+.App video {
+  width: 100%;
+  display: block; /* Prevents extra space below video */
+}
+
 /* Responsive Design remains the same */
