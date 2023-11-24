@@ -1,36 +1,72 @@
-/* Simple Reset - This remains the same as Bootstrap also uses box-sizing: border-box */
+/* Simple Reset - Remains the same */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* You can keep the font settings */
+/* Font settings */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  background-color: #f7f7f7; /* This background color can be kept or adjusted */
+  background-color: #f7f7f7;
 }
 
-/* Adjusting the .App class to work well with Bootstrap */
+/* App class adjustments */
 .App {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Changed from height to min-height for better responsiveness */
+  min-height: 100vh;
   background-color: #f7f7f7;
 }
 
-/* Since Bootstrap already has card styles, you can remove some of these custom styles */
-.login-form,
-.signup-form {
+/* Bootstrap card customizations */
+.card {
   margin: 1rem;
   padding: 2rem;
-  /* The following styles can be removed as Bootstrap's card class provides similar styling */
-  /* background: #fff;
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
 }
 
-/* If you have additional custom styles specific to your design, you can add them here */
+/* Instagram-style Offers Page Styles */
+.offers-card {
+  max-width: 540px;
+  border: none;
+}
+
+.offers-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 0; /* Adjust as needed */
+}
+
+.offers-card .card-title {
+  font-size: 1.5rem; /* Larger title font */
+  font-weight: bold; /* Bold title */
+}
+
+.offers-card .card-text {
+  color: #333; /* Darker text for readability */
+}
+
+.offers-card .btn-primary {
+  background-color: #3897f0; /* Instagram blue */
+  border-color: #3897f0; /* Consistent border color */
+  color: white;
+}
+
+.offers-card .btn-primary:hover {
+  background-color: #2878b5; /* Darker shade on hover */
+}
+
+/* Responsive Design for Offers Cards */
+@media (max-width: 768px) {
+  .offers-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .offers-card img {
+    width: 100%;
+  }
+}
