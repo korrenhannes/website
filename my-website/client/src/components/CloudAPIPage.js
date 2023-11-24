@@ -1,12 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useSwipeable } from 'react-swipeable';
+import VideoControls from './VideoControls';
+import UserInfo from './UserInfo';
+import '../styles/FullScreen.css';
 
 function CloudAPIPage() {
   const [apiData, setApiData] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
 
   const handleButtonClick = async () => {
     setIsLoading(true);
@@ -14,8 +20,8 @@ function CloudAPIPage() {
 
     try {
       const response = await axios.get('https://your-rest-api.com/data');
-      setApiData(response.data.videos); // Assuming the API sends an object with a 'videos' array
-      setCurrentVideoIndex(0); // Reset to the first video
+      setApiData(response.data.videos);
+      setCurrentVideoIndex(0);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -31,21 +37,18 @@ function CloudAPIPage() {
   });
 
   return (
-    <div>
-      <h1>Cloud API Interaction</h1>
+    <div className="full-screen-container">
       <button onClick={handleButtonClick} disabled={isLoading}>
-        {isLoading ? 'Loading...' : 'Connect to Cloud API'}
+        {isLoading ? 'Loading...' : 'Load Videos'}
       </button>
       {error && <p>Error: {error}</p>}
-
       {apiData.length > 0 && (
         <div {...handlers} className="video-container">
-          {/* Displaying the current video */}
-          {/* Adjust the video element as needed based on your API data structure */}
-          <video key={apiData[currentVideoIndex].id} controls>
+          <video key={apiData[currentVideoIndex].id} autoPlay loop controls>
             <source src={apiData[currentVideoIndex].url} type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
+          <UserInfo user={apiData[currentVideoIndex].user} description={apiData[currentVideoIndex].description} />
+          <VideoControls />
         </div>
       )}
     </div>
