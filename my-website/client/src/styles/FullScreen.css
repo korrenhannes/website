@@ -32,7 +32,17 @@
   z-index: 2; /* Above the overlay */
   text-align: center;
   color: white;
-  max-width: 600px; /* Limit the width of the content */
+
+  /* Full width and height to fill the parent container */
+  width: 100%;
+  height: 100%;
+
+  /* Use flexbox to center the content */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
   padding: 20px;
   box-sizing: border-box;
 }
