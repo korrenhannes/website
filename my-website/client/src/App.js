@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
-import CloudAPIPage from './components/CloudAPIPage'; // Import the new component
+import CloudAPIPage from './components/CloudAPIPage';
 import OffersPage from './components/OffersPage';
 import PaymentPage from './components/PaymentPage';
 import FreeUserPage from './components/FreeUserPage';
 import RegularUserPage from './components/RegularUserPage';
 import PremiumUserPage from './components/PremiumUserPage';
+import HowItWorks from './components/HowItWorks'; // Import the HowItWorks component
+
 
 
 function App() {
@@ -33,6 +35,7 @@ function App() {
           } />
           <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
           <Route path="/cloud-api" element={<CloudAPIPage />} />
+          <Route path="/how-it-works" element={<HowItWorks />} /> {/* New route for How It Works */}
           <Route path="/offers" element={<OffersPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/free-user" element={<FreeUserPage />} />
