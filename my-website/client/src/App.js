@@ -9,6 +9,7 @@ import FreeUserPage from './components/FreeUserPage';
 import RegularUserPage from './components/RegularUserPage';
 import PremiumUserPage from './components/PremiumUserPage';
 import HowItWorks from './components/HowItWorks'; // Import the HowItWorks component
+import convince from './components/convince'; // Import the HowItWorks component
 
 
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
           <Route path="/cloud-api" element={<CloudAPIPage />} />
           <Route path="/how-it-works" element={<HowItWorks />} /> {/* New route for How It Works */}
+          <Route path="/convince" element={<convince />} /> {/* New route for How It Works */}
           <Route path="/offers" element={<OffersPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/free-user" element={<FreeUserPage />} />

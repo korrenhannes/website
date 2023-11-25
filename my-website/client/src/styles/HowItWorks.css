@@ -31,8 +31,8 @@
 }
 
 .foreground-content h1 {
-    font-size: 4vw; /* Dynamically scales with the viewport width */
-    max-font-size: 2.5em; /* Set a maximum size */
+    font-size: 5vw; /* Dynamically scales with the viewport width */
+    max-font-size: 3em; /* Set a maximum size */
     white-space: nowrap; /* Prevents text wrap */
     overflow: hidden; /* Hides any overflow */
     text-overflow: ellipsis; /* Ellipsis for overflow text */
@@ -65,11 +65,14 @@
         width: 95%; /* More horizontal space on smaller screens */
     }
 
-    .foreground-content h1,
-    .section h2, .section p {
-        font-size: calc(100% - 2px); /* Reduce font size if needed */
+    .foreground-content h1 {
+        font-size: calc(100% - 2px); /* Adjust as needed */
     }
-
+    
+    .section h2, .section p {
+        font-size: calc(100% - 2px); /* Adjust as needed */
+    }
+    
     .section {
         padding: 10px;
     }

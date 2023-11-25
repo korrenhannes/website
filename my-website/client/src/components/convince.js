@@ -1,12 +1,37 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
+import '../styles/HowItWorks.css'; // Assuming you have a separate CSS file for this component
 
-function CloudAPIPage() {
+// Component for the "Dream Bigger" section
+const DreamBiggerSection = () => (
+    <div className="section dream-bigger">
+      <h2>Dream Bigger</h2>
+      <p>You're not just an influencer; you're a storyteller. Our software helps you tell your story more effectively, condensing long videos into impactful, engaging summaries.</p>
+    </div>
+  );
+  
+  
+  // Component for "Ride the Wave of Efficiency"
+  const EfficiencyWaveSection = () => (
+    <div className="section efficiency-wave">
+      <h2>Ride the Wave of Efficiency</h2>
+      <p>Save hours of editing, produce more content faster, and adapt your videos to the ever-evolving landscape of social media with ease.</p>
+    </div>
+  );
+  
+  // Component for "Join the Revolution"
+  const JoinRevolutionSection = () => (
+    <div className="section join-revolution">
+      <h2>Join the Revolution</h2>
+      <p>Be the trendsetter, innovate your content, inspire your audience, and build your legacy with powerful and unforgettable content.</p>
+    </div>
+  );
+  
+function HowItWorks() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
@@ -71,10 +96,6 @@ function CloudAPIPage() {
     fetchVideos();
     fetchUserPaymentPlan();
 
-    const handleDoubleClick = () => {
-      fetchVideos();
-    };
-
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
@@ -87,40 +108,31 @@ function CloudAPIPage() {
       const touchEndY = e.touches[0].clientY;
       if (touchStartRef.current > touchEndY + 50) {
         navigate('/how-it-works');
+      } else if (touchStartRef.current < touchEndY - 50) {
+        // Swiping up will navigate to the 'cloud-api' directory
+        navigate('/cloud-api');
       }
     };
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) { // Adjust threshold based on your preference
         navigate('/how-it-works');
+      } else if (e.deltaY < -100) {
+        // Swiping up will navigate to the 'cloud-api' directory
+        navigate('/cloud-api');
       }
     };
 
-    window.addEventListener('dblclick', handleDoubleClick);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
     };
   }, []);
-
-  const handleRedirection = () => {
-    switch(userPaymentPlan) {
-      case 'regular':
-        navigate('/regular-user');
-        break;
-      case 'premium':
-        navigate('/premium-user');
-        break;
-      default:
-        navigate('/free-user');
-    }
-  };
 
   return (
     <div className="full-screen-container">
@@ -128,7 +140,10 @@ function CloudAPIPage() {
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
         <h1>Transform Your Content, Transform Your Influence</h1>
-        <button onClick={handleRedirection}>Go to Your Plan Page</button>
+        <DreamBiggerSection />
+        <EfficiencyWaveSection />
+        <JoinRevolutionSection />
+        {/* Additional sections as needed */}
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
@@ -136,4 +151,4 @@ function CloudAPIPage() {
   );
 }
 
-export default CloudAPIPage;
+export default HowItWorks;
