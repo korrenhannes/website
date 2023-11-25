@@ -1,38 +1,41 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import { useSwipeable } from 'react-swipeable';
+import { useNavigate } from 'react-router-dom';
 import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
 function CloudAPIPage() {
-  const [apiData, setApiData] = useState([]);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userPaymentPlan, setUserPaymentPlan] = useState('free'); // Default to 'free'
+  const [userPaymentPlan, setUserPaymentPlan] = useState('free');
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
 
   const PEXELS_API_KEY = 'your_pexels_api_key'; // Replace with your Pexels API key
-  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular'; // Pexels popular videos endpoint
+  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
   const fetchVideos = async () => {
     setIsLoading(true);
     setError(null);
     try {
+      const randomPage = Math.floor(Math.random() * 10) + 1;
       const response = await axios.get(PEXELS_API_URL, {
         headers: {
           Authorization: PEXELS_API_KEY
         },
         params: {
-          per_page: 1 // Fetching only one video for background
+          per_page: 3, // Fetch 3 videos instead of 2
+          page: randomPage
         }
       });
-      const backgroundVideo = response.data.videos[0].video_files[0].link;
-      backgroundVideoRef.current.src = backgroundVideo; // Set the source of the background video
+
+      setVideos(response.data.videos.map(video => video.video_files[0].link));
+      setCurrentVideoIndex(0); // Reset to the first video
+      backgroundVideoRef.current.src = response.data.videos[0].video_files[0].link;
     } catch (err) {
       setError('Error fetching videos from Pexels: ' + err.message);
     } finally {
@@ -42,10 +45,7 @@ function CloudAPIPage() {
 
   const fetchUserPaymentPlan = async () => {
     try {
-      // Assuming the token is stored in localStorage after login
       const token = localStorage.getItem('token');
-
-      // Add a check for token existence
       if (!token) {
         console.log('No token found, defaulting to free plan');
         setUserPaymentPlan('free');
@@ -66,21 +66,30 @@ function CloudAPIPage() {
       }
     } catch (error) {
       console.error('Error fetching user payment plan:', error.message);
-      setUserPaymentPlan('free'); // Default to free in case of an error
+      setUserPaymentPlan('free');
     }
   };
+
 
   useEffect(() => {
     fetchVideos();
     fetchUserPaymentPlan();
-  }, []);
 
-  const handlers = useSwipeable({
-    onSwipedLeft: () => setCurrentVideoIndex(index => Math.min(index + 1, apiData.length - 1)),
-    onSwipedRight: () => setCurrentVideoIndex(index => Math.max(index - 1, 0)),
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
-  });
+    // Double click event listener for fetching new video
+    const handleDoubleClick = () => {
+      const nextVideoIndex = (currentVideoIndex + 1) % videos.length;
+      setCurrentVideoIndex(nextVideoIndex);
+      if (videos[nextVideoIndex]) {
+        backgroundVideoRef.current.src = videos[nextVideoIndex];
+      }
+    };
+
+    window.addEventListener('dblclick', handleDoubleClick);
+
+    return () => {
+      window.removeEventListener('dblclick', handleDoubleClick);
+    };
+  }, [currentVideoIndex, videos]);
 
   const handleRedirection = () => {
     // Redirect based on payment plan
@@ -101,16 +110,10 @@ function CloudAPIPage() {
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        <h1>Swipe Right®</h1>
-        <button onClick={handleRedirection}>Go to Your Plan Page</button>
+        {/* Removed <h1> and <button> elements */}
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
-      {apiData.length > 0 && (
-        <div {...handlers} className="video-container">
-          
-        </div>
-      )}
     </div>
   );
 }
