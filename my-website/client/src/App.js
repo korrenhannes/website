@@ -5,6 +5,10 @@ import SignupForm from './components/SignupForm';
 import CloudAPIPage from './components/CloudAPIPage'; // Import the new component
 import OffersPage from './components/OffersPage';
 import PaymentPage from './components/PaymentPage';
+import FreeUserPage from './components/FreeUserPage';
+import RegularUserPage from './components/RegularUserPage';
+import PremiumUserPage from './components/PremiumUserPage';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,6 +35,9 @@ function App() {
           <Route path="/cloud-api" element={<CloudAPIPage />} />
           <Route path="/offers" element={<OffersPage />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/free-user" element={<FreeUserPage />} />
+          <Route path="/regular-user" element={<RegularUserPage />} />
+          <Route path="/premium-user" element={<PremiumUserPage />} />
           {/* Add more routes as needed */}
         </Routes>
       </div>
