@@ -6,8 +6,9 @@
     align-items: center;
     justify-content: flex-start; /* Start content below the NavBar */
     text-align: center;
-    padding-top: 60px; /* Add padding to avoid NavBar overlap, adjust as needed */
-    min-height: 100vh; /* Full viewport height */
+    padding-top: 60px; /* Add padding to avoid NavBar overlap */
+    padding-bottom: 30px; /* Add padding at the bottom */
+    min-height: calc(100vh - 90px); /* Full viewport height minus padding */
 }
 
 #background-video {
@@ -26,17 +27,17 @@
     width: 90%; /* Use more horizontal space */
     max-width: 1200px; /* Maximum width for very large screens */
     margin: 0 auto; /* Center content */
+    padding-bottom: 30px; /* Ensure space at bottom */
 }
 
 .foreground-content h1 {
     font-size: 4vw; /* Dynamically scales with the viewport width */
-    max-font-size: 2.5em; /* Set a maximum size to prevent it from becoming too large */
-    white-space: nowrap; /* Ensures the text doesn't wrap to the next line */
+    max-font-size: 2.5em; /* Set a maximum size */
+    white-space: nowrap; /* Prevents text wrap */
     overflow: hidden; /* Hides any overflow */
-    text-overflow: ellipsis; /* Adds an ellipsis if the text is too long for the container */
+    text-overflow: ellipsis; /* Ellipsis for overflow text */
     margin-bottom: 15px;
 }
-
 
 .section {
     text-align: left; /* Align text to the left for readability */
@@ -61,26 +62,23 @@
 /* Responsive design adjustments */
 @media (max-width: 768px) {
     .foreground-content {
-        width: 95%; /* Use even more horizontal space on smaller screens */
+        width: 95%; /* More horizontal space on smaller screens */
     }
 
-    .foreground-content h1 {
-        font-size: calc(100% - 1px); /* Dynamically reduce font size for h1 if needed */
-    }
-
+    .foreground-content h1,
     .section h2, .section p {
-        font-size: calc(100% - 1px); /* Dynamically reduce font size for h2 and p if needed */
+        font-size: calc(100% - 2px); /* Reduce font size if needed */
     }
-    
+
     .section {
         padding: 10px;
     }
 }
 
-/* Additional media queries for very small screens */
+/* Very small screens adjustments */
 @media (max-width: 480px) {
     .foreground-content h1 {
-        font-size: 1.8em; /* Adjust font size for very small screens */
+        font-size: 1.8em; /* Adjust font size */
     }
 
     .section h2 {
