@@ -6,12 +6,13 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
-function PremiumUserPage() {
+function HowItWorks() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
+  const touchStartRef = useRef(null);
 
   const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu'; // Replace with your Pexels API key
   const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
@@ -20,15 +21,14 @@ function PremiumUserPage() {
     setIsLoading(true);
     setError(null);
     try {
-      // Add a random factor to the API call, such as random page number
-      const randomPage = Math.floor(Math.random() * 10) + 1; // Random page number between 1 and 10
+      const randomPage = Math.floor(Math.random() * 10) + 1;
       const response = await axios.get(PEXELS_API_URL, {
         headers: {
           Authorization: PEXELS_API_KEY
         },
         params: {
           per_page: 2,
-          page: randomPage // Use the random page number
+          page: randomPage
         }
       });
       const backgroundVideo = response.data.videos[0].video_files[0].link;
@@ -67,43 +67,54 @@ function PremiumUserPage() {
     }
   };
 
-
   useEffect(() => {
     fetchVideos();
     fetchUserPaymentPlan();
 
-    // Double click event listener for fetching new video
-    const handleDoubleClick = () => {
-      fetchVideos();
+    const handleTouchStart = (e) => {
+      touchStartRef.current = e.touches[0].clientY;
     };
 
-    window.addEventListener('dblclick', handleDoubleClick);
+    const handleTouchMove = (e) => {
+      if (!touchStartRef.current) {
+        return;
+      }
+
+      const touchEndY = e.touches[0].clientY;
+      if (touchStartRef.current > touchEndY + 50) {
+        navigate('/how-it-works');
+      } else if (touchStartRef.current < touchEndY - 50) {
+        // Swiping up will navigate to the 'cloud-api' directory
+        navigate('/cloud-api');
+      }
+    };
+
+    const handleWheel = (e) => {
+      if (e.deltaY > 100) { // Adjust threshold based on your preference
+        navigate('/how-it-works');
+      } else if (e.deltaY < -100) {
+        // Swiping up will navigate to the 'cloud-api' directory
+        navigate('/cloud-api');
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('wheel', handleWheel);
     };
   }, []);
-
-  const handleRedirection = () => {
-    // Redirect based on payment plan
-    switch(userPaymentPlan) {
-      case 'regular':
-        navigate('/regular-user');
-        break;
-      case 'premium':
-        navigate('/premium-user');
-        break;
-      default:
-        navigate('/free-user'); // Default or non-registered users
-    }
-  };
 
   return (
     <div className="full-screen-container">
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        {/* Removed <h1> and <button> elements */}
+        <h1>Swipe Right®</h1>
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
@@ -111,4 +122,4 @@ function PremiumUserPage() {
   );
 }
 
-export default PremiumUserPage;
+export default HowItWorks;
