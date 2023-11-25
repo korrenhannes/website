@@ -6,7 +6,7 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
-function CloudAPIPage() {
+function FreeUserPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
@@ -118,4 +118,4 @@ function CloudAPIPage() {
   );
 }
 
-export default CloudAPIPage;
+export default FreeUserPage;
