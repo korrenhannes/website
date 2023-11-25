@@ -1,11 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
+import '../styles/HowItWorks.css'; // Assuming you have a separate CSS file for this component
 
+// Component for the "Dream Bigger" section
+const DreamBiggerSection = () => (
+    <div className="section dream-bigger">
+      <h2>Dream Bigger</h2>
+      <p>You're not just an influencer; you're a storyteller. Our software helps you tell your story more effectively, condensing long videos into impactful, engaging summaries.</p>
+    </div>
+  );
+  
+  
+  // Component for "Ride the Wave of Efficiency"
+  const EfficiencyWaveSection = () => (
+    <div className="section efficiency-wave">
+      <h2>Ride the Wave of Efficiency</h2>
+      <p>Save hours of editing, produce more content faster, and adapt your videos to the ever-evolving landscape of social media with ease.</p>
+    </div>
+  );
+  
+  // Component for "Join the Revolution"
+  const JoinRevolutionSection = () => (
+    <div className="section join-revolution">
+      <h2>Join the Revolution</h2>
+      <p>Be the trendsetter, innovate your content, inspire your audience, and build your legacy with powerful and unforgettable content.</p>
+    </div>
+  );
+  
 function HowItWorks() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -114,7 +139,11 @@ function HowItWorks() {
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        <h1>Swipe Right®</h1>
+        <h1>Transform Your Content, Transform Your Influence</h1>
+        <DreamBiggerSection />
+        <EfficiencyWaveSection />
+        <JoinRevolutionSection />
+        {/* Additional sections as needed */}
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
