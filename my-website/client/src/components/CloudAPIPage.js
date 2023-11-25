@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
 import { useSwipeable } from 'react-swipeable';
-import VideoControls from './VideoControls';
 import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
@@ -109,15 +108,7 @@ function CloudAPIPage() {
       {error && <p>Error: {error}</p>}
       {apiData.length > 0 && (
         <div {...handlers} className="video-container">
-          {apiData.map((video, index) => (
-            <div key={video.id} className={index === currentVideoIndex ? 'video-card active' : 'video-card'}>
-              <video autoPlay loop controls preload={index === currentVideoIndex + 1 ? "auto" : "none"}>
-                <source src={video.url} type="video/mp4" />
-              </video>
-              <UserInfo user={video.user} description={video.description} />
-              <VideoControls />
-            </div>
-          ))}
+          
         </div>
       )}
     </div>
