@@ -46,7 +46,7 @@
   padding: 0.5em 1.5em;
   font-size: 1.5em;
   color: white;
-  background-color: #FF5864;
+  background-color: #3897f0; /* Default button color */
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -54,7 +54,7 @@
 }
 
 .foreground-content button:hover {
-  background-color: #E0483E; /* Slightly darker shade on hover */
+  background-color: #2878b5; /* Darker shade on hover */
 }
 
 /* Styles for swipeable video cards */

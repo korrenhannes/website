@@ -36,7 +36,7 @@
   
   .nav-actions .nav-signup {
     padding: 0.5em 1em;
-    background-color: #FF5864;
+    background-color: #3897f0; /* Default button color */
     color: white;
     border: none;
     border-radius: 20px;
@@ -44,7 +44,7 @@
   }
   
   .nav-actions .nav-signup:hover {
-    background-color: #E0483E;
+    background-color: #2878b5; /* Darker shade on hover */
   }
   @media (max-width: 768px) {
     .nav-links a:not(:first-child):not(:last-child) {
