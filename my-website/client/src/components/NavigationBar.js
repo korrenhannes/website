@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
 
 const NavigationBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate(); // Create navigate function
 
   useEffect(() => {
     // Check for token in local storage to determine login status
@@ -16,10 +17,17 @@ const NavigationBar = () => {
     // Redirect to login page or perform other actions as needed
   };
 
+  const navigateToCloudAPI = () => {
+    navigate('/cloud-api'); // Function to navigate to CloudAPIPage
+  };
+
   return (
     <nav className="navigation-bar">
       <div className="nav-logo">
-        {/* Logo and potentially a mobile menu toggle could go here */}
+        <button onClick={navigateToCloudAPI} className="logo-button">
+          {/* Insert your logo image or text here */}
+          <img src="/path-to-your-logo.png" alt="Logo" />
+        </button>
       </div>
       <div className="nav-links">
         <a href="/products">Products</a>

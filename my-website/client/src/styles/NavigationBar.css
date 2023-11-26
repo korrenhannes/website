@@ -49,6 +49,17 @@
   .nav-actions .nav-signup:hover {
     background-color: #2878b5; /* Darker shade on hover */
   }
+
+  .logo-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .logo-button img {
+    height: 40px; /* Adjust to your logo size */
+  }
+  
   @media (max-width: 768px) {
     .nav-links a:not(:first-child):not(:last-child) {
         /* This targets all links that are not the first or the last child, 
