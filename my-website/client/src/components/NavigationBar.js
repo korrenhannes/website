@@ -10,6 +10,12 @@ const NavigationBar = () => {
     setIsLoggedIn(!!token); // Sets isLoggedIn to true if token exists
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear the token from local storage
+    setIsLoggedIn(false); // Update isLoggedIn state
+    // Redirect to login page or perform other actions as needed
+  };
+
   return (
     <nav className="navigation-bar">
       <div className="nav-logo">
@@ -22,9 +28,10 @@ const NavigationBar = () => {
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">
-        {/* Conditional rendering based on 'isLoggedIn' state */}
         {!isLoggedIn && <a href="/login" className="nav-login">Log in</a>}
-        {!isLoggedIn && <Link to="/signup" className="nav-signup no-underline">Join us</Link>}
+        {!isLoggedIn
+          ? <Link to="/signup" className="nav-signup no-underline">Join us</Link>
+          : <button onClick={handleLogout} className="nav-signup no-underline">Logout</button>}
       </div>
     </nav>
   );

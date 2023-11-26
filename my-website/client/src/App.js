@@ -31,10 +31,15 @@ function App() {
     // You may want to set isLoggedIn here as well, depending on your signup flow
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Clear the token
+    setIsLoggedIn(false); // Update the logged-in state
+  };
+
   return (
     <Router>
       <div className="App">
-        <NavigationBar isLoggedIn={isLoggedIn} />
+        <NavigationBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
         
         <Routes>
           <Route path="/" element={<Navigate replace to="/login" />} />
