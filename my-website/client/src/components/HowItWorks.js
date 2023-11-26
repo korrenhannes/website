@@ -107,7 +107,7 @@ function HowItWorks() {
 
       const touchEndY = e.touches[0].clientY;
       if (touchStartRef.current > touchEndY + 50) {
-        navigate('/convince');
+        navigate('/explore-further');
       } else if (touchStartRef.current < touchEndY - 50) {
         // Swiping up will navigate to the 'cloud-api' directory
         navigate('/cloud-api');
@@ -116,7 +116,7 @@ function HowItWorks() {
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) { // Adjust threshold based on your preference
-        navigate('/convince');
+        navigate('/explore-further');
       } else if (e.deltaY < -100) {
         // Swiping up will navigate to the 'cloud-api' directory
         navigate('/cloud-api');

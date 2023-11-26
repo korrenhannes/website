@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Use authentication routes
-app.use('/api/auth', authRoutes);c
+app.use('/api/auth', authRoutes);
 
 // MongoDB connection using environment variable for URI
 mongoose.connect(process.env.DB_URI, {
