@@ -36,6 +36,7 @@ function LoginForm() {
     }
   };
 
+  // Add a function to handle Facebook login
   const handleFacebookLogin = async (facebookData) => {
     try {
       const response = await api.post('/auth/facebook-login', {
@@ -92,7 +93,7 @@ function LoginForm() {
                 onError={() => console.log("Google login failed")}
               />
               <FacebookLogin
-                appId="YOUR_FACEBOOK_APP_ID"
+                appId="YOUR_FACEBOOK_APP_ID" // Replace with your actual Facebook App ID
                 onSuccess={handleFacebookLogin}
                 onFailure={() => console.log("Facebook login failed")}
               />

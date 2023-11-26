@@ -2,19 +2,11 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: {
-    type: String,
-    required: true,
-    unique: true
-  },
-  password: {
-    type: String,
-    required: true
-  },
-  paymentPlan: {
-    type: String,
-    default: 'free', // Options are 'free', 'regular', or 'premium'
-  }
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: false }, // Password is not required for social logins
+  paymentPlan: { type: String, default: 'free' },
+  googleId: { type: String, required: false }, // For Google OAuth
+  facebookId: { type: String, required: false }, // For Facebook OAuth
 });
 
 // Pre-save hook to hash password before saving it to the database

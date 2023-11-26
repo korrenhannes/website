@@ -12,22 +12,16 @@ passport.use(new GoogleStrategy({
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      // Check if user already exists in your database
       let user = await User.findOne({ googleId: profile.id });
-
       if (!user) {
-        // If not, create a new user in your database
         user = await User.create({
           googleId: profile.id,
           email: profile.emails[0].value,
-          // You might want to include additional fields here
+          // Additional fields as needed
         });
       }
-
-      // Create JWT token
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-
-      done(null, { user, token }); // Pass user and token to the callback
+      done(null, { user, token });
     } catch (error) {
       done(error);
     }
@@ -43,22 +37,16 @@ passport.use(new FacebookStrategy({
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      // Check if user already exists in your database
       let user = await User.findOne({ facebookId: profile.id });
-
       if (!user) {
-        // If not, create a new user in your database
         user = await User.create({
           facebookId: profile.id,
           email: profile.emails[0].value,
-          // You might want to include additional fields here
+          // Additional fields as needed
         });
       }
-
-      // Create JWT token
       const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
-
-      done(null, { user, token }); // Pass user and token to the callback
+      done(null, { user, token });
     } catch (error) {
       done(error);
     }

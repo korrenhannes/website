@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api'; // Ensure this path is correct
 import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+import FacebookLogin from '@greatsumini/react-facebook-login'; // Import FacebookLogin
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 
@@ -34,11 +35,25 @@ function SignupForm() {
   };
 
   const handleGoogleSignup = async (googleData) => {
-    // Here, you might want to send the Google token to your backend
-    // and handle the signup process
     console.log("Google signup data:", googleData);
     // Example: await api.post('/auth/google-signup', { token: googleData.credential });
     // Navigate or set state based on response
+  };
+
+  // Add a new function to handle Facebook signup
+  const handleFacebookSignup = async (facebookData) => {
+    try {
+      // Send the Facebook data to your backend
+      const response = await api.post('/auth/facebook-signup', {
+        accessToken: facebookData.accessToken,
+        userID: facebookData.userID
+      });
+      // Handle the response, e.g., navigate or set state
+      console.log(response.data);
+      navigate('/some-path-on-success'); // Update this path as needed
+    } catch (error) {
+      console.error("Facebook signup failed:", error);
+    }
   };
 
   return (
@@ -71,6 +86,11 @@ function SignupForm() {
               <GoogleLogin 
                 onSuccess={handleGoogleSignup} 
                 onError={() => console.log("Google signup failed")}
+              />
+              <FacebookLogin
+                appId="YOUR_FACEBOOK_APP_ID" // Replace with your actual Facebook App ID
+                onSuccess={handleFacebookSignup}
+                onFailure={() => console.log("Facebook signup failed")}
               />
             </div>
           </div>

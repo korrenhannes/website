@@ -13,8 +13,9 @@ router.get('/google',
 router.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
+    // Successful authentication, create and send token
+    const token = jwt.sign({ userId: req.user._id }, 'your_jwt_secret');
+    res.redirect('/?token=' + token); // or any other way you want to send the token
   });
 
 // Facebook Auth Route
@@ -24,11 +25,11 @@ router.get('/facebook',
 router.get('/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/login' }),
   function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/');
+    // Successful authentication, create and send token
+    const token = jwt.sign({ userId: req.user._id }, 'your_jwt_secret');
+    res.redirect('/?token=' + token); // or any other way you want to send the token
   });
 
-  
 router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -75,7 +76,7 @@ router.post('/login', async (req, res) => {
 // New route to update the user's payment plan
 router.post('/update-plan', async (req, res) => {
   try {
-    const { email, paymentPlan } = req.body; // assuming email and paymentPlan are sent
+    const { email, paymentPlan } = req.body;
     const user = await User.findOne({ email });
 
     if (!user) {
