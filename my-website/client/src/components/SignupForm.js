@@ -5,6 +5,8 @@ import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
 import FacebookLogin from '@greatsumini/react-facebook-login'; // Import FacebookLogin
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
+import '../styles/LoginForm.css'; // Import the new CSS styles for consistency with LoginForm
+
 
 function SignupForm() {
   const [email, setEmail] = useState('');
@@ -57,46 +59,42 @@ function SignupForm() {
   };
 
   return (
-    <>
+    <div className="main-container">
       <NavigationBar />
-      <div className="container mt-5" style={{ paddingTop: '60px' }}>
+      <div className="card">
         <h2 className="text-center">Signup</h2>
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <form onSubmit={handleSubmit} className="card p-4">
-              {error && <div className="alert alert-danger">{error}</div>}
-              <div className="mb-3">
-                <label className="form-label">Enter your email:</label>
-                <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Create a password:</label>
-                <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
-              </div>
-              <div className="mb-3">
-                <label className="form-label">Confirm your password:</label>
-                <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-              </div>
-              <button type="submit" className="btn btn-primary">Signup</button>
-              <div className="mt-3">
-                Already have an account? <Link to="/login">Login</Link>
-              </div>
-            </form>
-            <div className="social-signup">
-              <GoogleLogin 
-                onSuccess={handleGoogleSignup} 
-                onError={() => console.log("Google signup failed")}
-              />
-              <FacebookLogin
-                appId="YOUR_FACEBOOK_APP_ID" // Replace with your actual Facebook App ID
-                onSuccess={handleFacebookSignup}
-                onFailure={() => console.log("Facebook signup failed")}
-              />
-            </div>
+        <form onSubmit={handleSubmit}>
+          {error && <div className="alert alert-danger">{error}</div>}
+          <div className="mb-3">
+            <label className="form-label">Enter your email:</label>
+            <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
+          <div className="mb-3">
+            <label className="form-label">Create a password:</label>
+            <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Confirm your password:</label>
+            <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          </div>
+          <button type="submit" className="btn btn-primary">Signup</button>
+          <div className="text-center mt-3">
+            Already have an account? <Link to="/login">Login</Link>
+          </div>
+        </form>
+        <div className="social-login">
+          <GoogleLogin
+            onSuccess={handleGoogleSignup}
+            onError={() => console.log("Google signup failed")}
+          />
+          <FacebookLogin
+            appId="YOUR_FACEBOOK_APP_ID" // Replace with your actual Facebook App ID
+            onSuccess={handleFacebookSignup}
+            onFailure={() => console.log("Facebook signup failed")}
+          />
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
