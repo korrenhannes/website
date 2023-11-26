@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api'; // Adjust the path to the api.js file
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
@@ -12,11 +12,15 @@ function LoginForm() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      await api.post('/auth/login', { email, password });
-      // Assuming the login is successful, navigate to the CloudAPIPage
+      const response = await api.post('/auth/login', { email, password });
+      // Store the token in local storage
+      localStorage.setItem('token', response.data.token); // Assuming the token is in response.data.token
+
+      // Navigate to the CloudAPIPage after successful login
       navigate('/cloud-api');
     } catch (error) {
       console.error("Login failed:", error);
+      // You may want to show an error message to the user here
     }
   };
 
@@ -30,11 +34,23 @@ function LoginForm() {
             <form onSubmit={handleSubmit} className="card p-4">
               <div className="mb-3">
                 <label className="form-label">Enter your email:</label>
-                <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                <input 
+                  type="email" 
+                  className="form-control" 
+                  value={email} 
+                  onChange={(e) => setEmail(e.target.value)} 
+                  required 
+                />
               </div>
               <div className="mb-3">
                 <label className="form-label">Enter your password:</label>
-                <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                <input 
+                  type="password" 
+                  className="form-control" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  required 
+                />
               </div>
               <button type="submit" className="btn btn-primary">Login</button>
               <div className="mt-3">
