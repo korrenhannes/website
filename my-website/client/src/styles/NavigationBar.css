@@ -28,6 +28,9 @@
     text-decoration: underline;
   }
   
+  .no-underline {
+    text-decoration: none;
+  }
   .nav-actions .nav-login {
     text-decoration: none;
     color: #333; /* Adjust text color as needed */

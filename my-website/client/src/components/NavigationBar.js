@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const NavigationBar = () => {
     return (
       <nav className="navigation-bar">
@@ -13,7 +15,7 @@ const NavigationBar = () => {
         </div>
         <div className="nav-actions">
           <a href="/login" className="nav-login">Log in</a>
-          <button className="nav-signup">Create account</button>
+          <Link to="/signup" className="nav-signup no-underline">Join us</Link>
         </div>
       </nav>
     );
