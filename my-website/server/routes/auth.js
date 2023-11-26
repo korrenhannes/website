@@ -1,10 +1,34 @@
 const express = require('express');
+const passport = require('passport');
 const User = require('../models/User');
 const Log = require('../models/logModel'); // Import the Log model
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
+// Google Auth Route
+router.get('/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
+// Facebook Auth Route
+router.get('/facebook',
+  passport.authenticate('facebook'));
+
+router.get('/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
+  
 router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;

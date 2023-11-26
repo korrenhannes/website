@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api'; // Ensure this path is correct
-import NavigationBar from './NavigationBar'; // Import the navigation bar component
-import '../styles/NavigationBar.css'; // Import the navigation bar styles
+import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+import NavigationBar from './NavigationBar';
+import '../styles/NavigationBar.css';
 
 function SignupForm() {
   const [email, setEmail] = useState('');
@@ -22,22 +23,28 @@ function SignupForm() {
 
     try {
       await api.post('/auth/signup', { email, password });
-      // Navigate to the offers page upon successful signup
       navigate('/offers');
     } catch (error) {
-      // Handling error response for better user feedback
       if (error.response && error.response.data) {
-        setError("Signup failed: " + error.response.data.message); // Adjusted for better error handling
+        setError("Signup failed: " + error.response.data.message);
       } else {
         setError("Signup failed. Please try again.");
       }
     }
   };
 
+  const handleGoogleSignup = async (googleData) => {
+    // Here, you might want to send the Google token to your backend
+    // and handle the signup process
+    console.log("Google signup data:", googleData);
+    // Example: await api.post('/auth/google-signup', { token: googleData.credential });
+    // Navigate or set state based on response
+  };
+
   return (
     <>
-      <NavigationBar /> {/* This includes the navigation bar at the top */}
-      <div className="container mt-5" style={{ paddingTop: '60px' }}> {/* Add padding to push content down */}
+      <NavigationBar />
+      <div className="container mt-5" style={{ paddingTop: '60px' }}>
         <h2 className="text-center">Signup</h2>
         <div className="row justify-content-center">
           <div className="col-md-6">
@@ -60,6 +67,12 @@ function SignupForm() {
                 Already have an account? <Link to="/login">Login</Link>
               </div>
             </form>
+            <div className="social-signup">
+              <GoogleLogin 
+                onSuccess={handleGoogleSignup} 
+                onError={() => console.log("Google signup failed")}
+              />
+            </div>
           </div>
         </div>
       </div>

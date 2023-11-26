@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const passport = require('./passportSetup');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,6 +20,9 @@ app.use(express.json());
 
 // Use authentication routes
 app.use('/api/auth', authRoutes);
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // MongoDB connection using environment variable for URI
 mongoose.connect(process.env.DB_URI, {
