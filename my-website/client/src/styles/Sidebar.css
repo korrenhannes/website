@@ -1,0 +1,31 @@
+/* Sidebar.css */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 200px; /* Adjust width as necessary */
+    height: 100%;
+    background-color: #2c3e50; /* Adjust color as necessary */
+    padding: 10px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    z-index: 2; /* Ensure sidebar is above other content */
+  }
+  
+  .sidebar button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #34495e; /* Adjust button color as necessary */
+    color: white;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+  }
+  
+  .sidebar button:hover {
+    background-color: #4a6fa5; /* Adjust button hover color as necessary */
+  }
+  
+  /* Add any additional styling for other elements as needed */
+  

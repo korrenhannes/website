@@ -6,33 +6,36 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
-function PremiumUserPage() {
+function FreeUserPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu'; // Replace with your Pexels API key
+  const PEXELS_API_KEY = 'your_pexels_api_key'; // Replace with your Pexels API key
   const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
   const fetchVideos = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Add a random factor to the API call, such as random page number
-      const randomPage = Math.floor(Math.random() * 10) + 1; // Random page number between 1 and 10
+      const randomPage = Math.floor(Math.random() * 10) + 1;
       const response = await axios.get(PEXELS_API_URL, {
         headers: {
           Authorization: PEXELS_API_KEY
         },
         params: {
-          per_page: 2,
-          page: randomPage // Use the random page number
+          per_page: 3, // Fetch 3 videos instead of 2
+          page: randomPage
         }
       });
-      const backgroundVideo = response.data.videos[0].video_files[0].link;
-      backgroundVideoRef.current.src = backgroundVideo;
+
+      setVideos(response.data.videos.map(video => video.video_files[0].link));
+      setCurrentVideoIndex(0); // Reset to the first video
+      backgroundVideoRef.current.src = response.data.videos[0].video_files[0].link;
     } catch (err) {
       setError('Error fetching videos from Pexels: ' + err.message);
     } finally {
@@ -74,7 +77,11 @@ function PremiumUserPage() {
 
     // Double click event listener for fetching new video
     const handleDoubleClick = () => {
-      fetchVideos();
+      const nextVideoIndex = (currentVideoIndex + 1) % videos.length;
+      setCurrentVideoIndex(nextVideoIndex);
+      if (videos[nextVideoIndex]) {
+        backgroundVideoRef.current.src = videos[nextVideoIndex];
+      }
     };
 
     window.addEventListener('dblclick', handleDoubleClick);
@@ -82,7 +89,7 @@ function PremiumUserPage() {
     return () => {
       window.removeEventListener('dblclick', handleDoubleClick);
     };
-  }, []);
+  }, [currentVideoIndex, videos]);
 
   const handleRedirection = () => {
     // Redirect based on payment plan
@@ -111,4 +118,4 @@ function PremiumUserPage() {
   );
 }
 
-export default PremiumUserPage;
+export default FreeUserPage;
