@@ -8,7 +8,6 @@ import HeadlineEditor from './HeadlineEditor';
 import CaptionOptions from './CaptionOptions';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
-// Add a new CSS import for the sidebar
 import '../styles/Sidebar.css';
 
 function RegularUserPage() {
@@ -22,6 +21,7 @@ function RegularUserPage() {
     transition: 'pop', // 'karaoke', 'popline', 'pop', 'scale', 'slideLeft', 'slideUp'
     highlightColor: '#04f827' // Highlight color for caption
   });
+  const [activeComponent, setActiveComponent] = useState(null);
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
 
@@ -130,28 +130,32 @@ function RegularUserPage() {
   const toggleHeadlineEditor = () => setShowHeadlineEditor(!showHeadlineEditor);
   const toggleCaptionOptions = () => setShowCaptionOptions(!showCaptionOptions);
 
+  const handleSetActiveComponent = (component) => {
+    setActiveComponent(activeComponent === component ? null : component);
+  };
+
   return (
-    <div className="full-screen-wrapper">
+    <div className="full-screen-container">
       <NavigationBar />
       <div className="sidebar">
-        <button onClick={toggleSubtitleEditor}>Subtitles</button>
-        <button onClick={toggleHeadlineEditor}>Headline</button>
-        <button onClick={toggleCaptionOptions}>Caption Options</button>
-      </div>
-      <div className="full-screen-container">
-        <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
-        <div className="foreground-content">
-          {showSubtitleEditor && <SubtitleEditor subtitles={subtitles} setSubtitles={setSubtitles} videoRef={backgroundVideoRef} />}
-          {showHeadlineEditor && <HeadlineEditor headline={headline} setHeadline={setHeadline} />}
-          {showCaptionOptions && <CaptionOptions captionStyle={captionStyle} setCaptionStyle={setCaptionStyle} />}
-          <div className="video-subtitles">
-            {subtitles.find(sub => sub.startTime <= backgroundVideoRef.current.currentTime && sub.endTime >= backgroundVideoRef.current.currentTime)?.text}
-          </div>
-          <div className="video-headline">{headline}</div>
+        <button onClick={() => handleSetActiveComponent('subtitles')}>Subtitles</button>
+        <button onClick={() => handleSetActiveComponent('headline')}>Headline</button>
+        <button onClick={() => handleSetActiveComponent('captionOptions')}>Caption Options</button>
+        <div className="sidebar-content">
+          {activeComponent === 'subtitles' && <SubtitleEditor subtitles={subtitles} setSubtitles={setSubtitles} videoRef={backgroundVideoRef} />}
+          {activeComponent === 'headline' && <HeadlineEditor headline={headline} setHeadline={setHeadline} />}
+          {activeComponent === 'captionOptions' && <CaptionOptions captionStyle={captionStyle} setCaptionStyle={setCaptionStyle} />}
         </div>
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
       </div>
+      <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
+      <div className="foreground-content">
+        <div className="video-subtitles">
+          {subtitles.find(sub => sub.startTime <= backgroundVideoRef.current.currentTime && sub.endTime >= backgroundVideoRef.current.currentTime)?.text}
+        </div>
+        <div className="video-headline">{headline}</div>
+      </div>
+      {isLoading && <p>Loading...</p>}
+      {error && <p>Error: {error}</p>}
     </div>
   );
 }
