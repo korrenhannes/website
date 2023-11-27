@@ -6,11 +6,25 @@ import cv2
 import pandas as pd
 import requests
 import numpy as np
+import os
 
 from tqdm import tqdm
 import imutils
 import string
 
+from pexelsapi.pexels import Pexels
+from nltk.corpus import wordnet as wn
+from textblob import TextBlob
+from openai import OpenAI
+from moviepy.editor import VideoFileClip
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+
+
+
+pexels_api_key = "QfGj5czSqWpkA3F27J8V9tTw5h7Eo50sZ6rstEUJt7bbbIIQZt4Th0wq"
+CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases, which one of them is the most visually appealing in your mind and would fit well as a picture/video  in a clip? You're answer should be **JUST** the noun!"
+PICTURE_GPT_MODEL = 'gpt-3.5-turbo'
+chat_gpt_picture_api = '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'
 
 # def download_file(url):
 #     local_filename = url.split('/')[-1]
@@ -39,7 +53,7 @@ model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
 net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
 
-def text_clip(vid,text: str, duration: int, start_time: int = 0):
+def text_clip(vid, text: str, duration: int, start_time: int = 0):
     """Return a description string on the bottom-left of the video
 
     Args:
@@ -57,40 +71,46 @@ def text_clip(vid,text: str, duration: int, start_time: int = 0):
             .set_duration(duration).set_position('center')
             .set_start(start_time))
 
-def add_subs(df, vid,subs,cuts_indexes, start_times):
+def add_subs_video(df, vid, start_times):
     # need to change logic to fit to the new chat gpt model
     # this code used to work with a general df for the whole video, now we have personlized df per video, more simple
 
     ret = []
     final_neg_vid = vid
-    new_subs_neg = subs
-    ind_neg = cuts_indexes[0]
     st = start_times
-    inds_in_cut = list(np.array(list(range(len(new_subs_neg))))[df.iloc[cuts_indexes[j]]['start']  - df.iloc[ind_neg]['start'] >= st])
+
     # txt_clips_pos = [text_clip(pos_vid, new_subs_pos[i][0], new_subs_pos[i][2], new_subs_pos[i][1] - df.iloc[ind_pos]['start']) for i in range(len(new_subs_pos))]
-    txt_clips_neg = [text_clip(final_neg_vid, new_subs_neg[i][0], new_subs_neg[i][2], new_subs_neg[i][1] - df.iloc[ind_neg]['start'] - st) for i in inds_in_cut]
+    df = df[df['start_times'] >= st]
+
+    txt_clips_neg = [text_clip(final_neg_vid, df.iloc[i]['text'], df.iloc[i]['end_times'] - df.iloc[i]['start_times'], df.iloc[i]['start_times'] - st) for i in range(len(df))]
 
     # pos_vid = CompositeVideoClip([pos_vid] + txt_clips_pos)
     final_neg_vid = CompositeVideoClip([final_neg_vid] + txt_clips_neg)
 
-    added_min = 0
-    for k in inds_in_cut[:-1]:
-        if new_subs_neg[k][2] + new_subs_neg[k][1] + cut_buffer < new_subs_neg[k+1][1]:
-            print(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min, new_subs_neg[k+1][1]-added_min)
-            final_neg_vid = final_neg_vid.cutout(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min  - df.iloc[ind_neg]['start'] - st, new_subs_neg[k+1][1]-added_min  - df.iloc[ind_neg]['start'] - st - cut_buffer)
-            added_min += new_subs_neg[k][2] + new_subs_neg[k][1] - new_subs_neg[k+1][1] - cut_buffer
 
+    # THE PART THAT CUTS NONE SPOKEN TIME.,,
+    # I DONT KNOW ...
 
-        ret.append(final_neg_vid)
+    # added_min = 0
+    # for k in range(len(df) - 1):
+    #     if df.iloc[k]['end'] + cut_buffer < df.iloc[k+1]['end']:
+    #
+    #         final_neg_vid = final_neg_vid.cutout(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min  - df.iloc[ind_neg]['start'] - st, new_subs_neg[k+1][1]-added_min  - df.iloc[ind_neg]['start'] - st - cut_buffer)
+    #         added_min += new_subs_neg[k][2] + new_subs_neg[k][1] - new_subs_neg[k+1][1] - cut_buffer
+    #
+    #
+    #     ret.append(final_neg_vid)
 
-    return ret
+    return final_neg_vid
 
 def cut_faces(neg_vid, show_pics = False):
   boxes = []
   confs = []
-  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(neg_vid.iter_frames())]
-  times = np.linspace(0,neg_vid.length,len(frames))
+  # ADD fps = X to run faster
+  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(neg_vid.iter_frames(fps = 5))]
+  dur = neg_vid.duration
 
+  times = np.linspace(0,dur,len(frames))
 
   # call for recognize faces model
   for ind_0 in tqdm(list(range(len(times)))):
@@ -186,11 +206,14 @@ def cut_faces(neg_vid, show_pics = False):
   new_vids = []
   for i in range(len(cuts_times)):
       if i == len(cuts_times) - 1:
-        sub_vid = neg_vid.subclip(cuts_times[i], neg_time[1] - neg_time[0])
+        if dur == cuts_times[i]:
+            break
+        sub_vid = neg_vid.subclip(cuts_times[i], dur)
+
       else:
         sub_vid = neg_vid.subclip(cuts_times[i], cuts_times[i+1])
 
-      if len(cuts_poses[i]) == 1:
+      if len(cuts_poses[i]) == 1 or True: #Easy fix
         sub_vid = sub_vid.resize(height=1280)
         sub_vid = sub_vid.crop(x1= min(max(0,(2275 * cuts_poses[i][0][0] - 360)), 2275 - 720), y1=0,x2=min(max((2275 * cuts_poses[i][0][0]) + 360,720), 2275),y2=1280)
         new_vids.append(sub_vid)
@@ -228,4 +251,189 @@ def is_substring(text1, text2):
   # Check if one text is a substring of the other
   answer = text1_cleaned in text2_cleaned or text2_cleaned in text1_cleaned
   return answer
+
+# def group_words(words, max_char_count):
+#     groups = []
+#     current_group = []
+#     current_char_count = 0
+
+#     for word in words:
+#         word_len = len(word)
+        
+#         if current_char_count + word_len <= max_char_count:
+#             current_group.append(word)
+#             current_char_count += word_len
+#         else:
+#             groups.append(current_group)
+#             current_group = [word]
+#             current_char_count = word_len
+
+#     if current_group:
+#         groups.append(current_group)
+
+#     return groups
+
+# def words_to_pango_with_timing(text, duration=1, start_time=0):
+#     lines = [line.strip().split() for line in text.split('\n') if line.strip()]
+
+#     markup = ""
+
+#     for i, line in enumerate(lines):
+#         # Calculate the start time for each line
+#         line_start_time = start_time + i * duration
+
+#         # Get Pango markup for a single line
+#         line_markup = words_to_pango_with_timing_single_line(line, duration, line_start_time)
+
+#         # Append Pango markup for each line
+#         markup += line_markup + '\n'
+
+#     return markup.strip()
+
+# def words_to_pango_with_timing_single_line(words, duration=1, start_time=0):
+#     markup = ""
+
+#     for i, word in enumerate(words):
+#         # Calculate the start and end time for each word
+#         word_start_time = start_time + i * duration
+#         word_end_time = word_start_time + duration
+
+#         # Define color change for each word (e.g., from black to red)
+#         color = f"#{100 + i * 10:02x}0000"
+
+#         # Append Pango markup for each word with specified color and duration
+#         markup += f'<span foreground="{color}" rise="20000" begin="{word_start_time}s" end="{word_end_time}s">{word.upper()}</span>'
+
+#         # Add a space between words
+#         markup += ' '
+
+#     return markup.strip()
+
+# def make_subbed_vid(text):
+#     duration = 0.08
+#     max_words_screen = 30
+#     max_words_line = 15
+#     font_size = 25
+
+#     # Create a TextClip with the given text
+#     base_word_list_1 = text.upper().split()
+#     base_word_list_2 = group_words(base_word_list_1, max_words_screen)
+#     word_list = [group_words(base_word_list_2[i], max_words_line) for i in range(len(base_word_list_2))]
+
+#     text_clips = []
+
+#     for screen_ind in range(len(word_list)):
+#         text_lines = [' '.join(line) for line in word_list[screen_ind]]
+#         text_screen = '\n'.join(text_lines)
+#         final_text = words_to_pango_with_timing(text_screen)
+#         text_clip = TextClip(final_text,
+#                               font="Lucida-Sans-Demibold-Roman",
+#                               fontsize=font_size,
+#                               color='white',
+#                               bg_color='gray',
+#                               size=(640, 240),
+#                               stroke_color='black',
+#                               stroke_width=1,
+#                               method='pango',
+#                               align=("center")
+#                               ).set_duration(duration * max_words_screen).set_position('center').set_start(screen_ind*duration*max_words_screen)
+        
+#         text_clips.append(text_clip)
+
+#     # Create a CompositeVideoClip with the TextClip
+#     video_clip = CompositeVideoClip(text_clips)
+#     video_clip.write_videofile("C://Users//along//Downloads//test.mp4", codec='libx264', fps=24)
+
+# from PIL import Image, ImageDraw, ImageFont
+# import moviepy.editor as mp
+
+# def make_subbed_frames(text, frame_duration=100, start_time=0, frame_size=(640, 480), font_size=25):
+#     base_word_list = text.upper().split()
+#     word_groups = group_words(base_word_list, 15)  # Adjust the number as needed
+#     frames = []
+
+#     for i, group in enumerate(word_groups):
+#         # Create an image for each group of words
+#         image = Image.new('RGB', frame_size, color=(0, 0, 0))
+#         draw = ImageDraw.Draw(image)
+#         font = ImageFont.truetype("arial.ttf", font_size)  # Use a font available on your system
+
+#         # Calculate text position
+#         text = " ".join(group)
+#         textwidth, textheight = draw.textsize(text, font=font)
+#         x = (frame_size[0] - textwidth) / 2
+#         y = (frame_size[1] - textheight) / 2
+
+#         # Draw text onto the image
+#         draw.text((x, y), text, font=font, fill=(255, 255, 255))
+
+#         frames.append(image)
+
+#     return frames
+
+# def make_subbed_vid(text):
+#     frames = make_subbed_frames(text)
+#     clips = [mp.ImageClip(np.array(img)).set_duration(0.08) for img in frames]
+
+#     video = mp.concatenate_videoclips(clips, method="compose")
+#     video.write_videofile("C://Users//along//Downloads//test.mp4", fps=24)
+
+# import pandas as pd
+# import json
+
+# def csv_to_json(csv_file):
+#     # Read CSV file into a DataFrame
+#     df = pd.read_csv(csv_file)
+#     df.columns = ["Word Index", "Word", "Start", "End"]
+
+#     # Convert DataFrame to JSON
+#     json_data = df.to_json(orient='records', lines=True)
+
+
+#     return json_data
+
+def chat_gpt_noun_request(text):
+  blob = TextBlob(text)
+  chat_request = CHAT_PICTURE_PROMPT + '\n' + '\n'.join(blob.noun_phrases)
+  conversation = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": chat_request}
+        ]
+  # Make a request to the ChatGPT API
+  client = OpenAI(api_key=chat_gpt_picture_api)
+  response = client.chat.completions.create(
+      model=PICTURE_GPT_MODEL,
+      messages=conversation
+  )
+  # Extract and display the assistant's reply
+  assistant_reply = response.choices[0].message.content
+  print(assistant_reply)
+  # Output
+  return assistant_reply
+
+def download_video(query):
+    pexel = Pexels(pexels_api_key)
+    search_videos = pexel.search_videos(query=query, orientation='', size='', color='', locale='', page=1, per_page=1)
+    video_id = search_videos['videos'][0]['id']
+    video_url = 'https://www.pexels.com/video/' + str(video_id) + '/download'
+    r = requests.get(video_url)
+    with open(f"{query}.mp4", 'wb') as outfile:
+        outfile.write(r.content)
+    ffmpeg_extract_subclip(f"{query}.mp4", 0, 5, targetname=f"{query}_cut.mp4")
+    os.remove(f"{query}.mp4")
+
+if __name__ == "__main__":
+  txt = """
+        Elon, you won't believe what went down the last time I hit up Vegas. So, picture this: I'm in the middle of the dance floor, beats dropping, lights flashing, usual Vegas shenanigans, right? Out of nowhere, this bear strolls in. Yeah, a legit bear. Now, I'm thinking it's some kind of weird trip, maybe too much of that desert air, but no, it's real.
+        This bear starts breakdancing like it's been taking lessons from MJ or something. Spins, flips, the whole nine yards. People are losing their minds, and I'm just standing there, trying to process bear dance moves. The DJ gets in on it, throws in some bear-themed remix, and now it's a full-blown bear dance battle.
+        I'm not one to back down from a challenge, especially when it involves a bear on the dance floor. So, there I am, busting out moves I didn't even know I had. It's like a scene from a sci-fi movie meets a Vegas nightclub. The crowd's going nuts, and Elon, you'd appreciate this, but I swear the bear had some kind of autopilot dance algorithm going.
+        We went toe-to-paw for a good ten minutes. In the end, I think we called it a draw. Vegas, man, never a dull moment. And that, my friend, is the legend of the bear dance battle in Sin City.
+        """
+  # pexel_query = chat_gpt_noun_request(txt)
+  download_video('dance floor')
+
+
+
+
+
 
