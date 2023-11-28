@@ -15,10 +15,10 @@ import os
 from openai import OpenAI
 import pickle
 
-from edit_youtube_video_utils import cut_faces, is_substring, add_subs_video
+from edit_youtube_video_utils import cut_faces, get_start_times, add_subs_video, get_relevant_video
 
 MY_PATH = "C://Users//along//VS Code//Shorts Project//website//downloaded_files"
-SAVED_NAME = "second_test"
+SAVED_NAME = "first_test"
 USING_WHISPER = True # Change if using Google Cloud's Speech API
 
 # FIRST_INPUT = "I'm going to send you a text.\nI need you to summarize that text using only direct quotes from it.\nDo it with no fillers or additional words, just **DIRECT QUOTES**. If something doesn't make sense feel free to omit it.\nWhen the quotes are combined, I expect the result to be:\n- Simple\n- Interesting\n- To keep the original meaning\nKeep it short (no more than 100 words). Format the summary as a list of quotes from the original text, each one starting with a '-'.\nDon't use ellipsis under any circumstance!"
@@ -56,6 +56,8 @@ class EditedVideos:
                 self.dfs = obj.dfs
                 self.time_intervals = obj.time_intervals
                 # print(self.time_intervals)
+        print("getting relevant stock video")
+        self.stock_videos = self.relevant_videos()
         print("cutting vids")
         self.vids = self.cut_vids()
         print("cutting around faces vids")
@@ -65,12 +67,14 @@ class EditedVideos:
         print("saving files!")
         self.save_vids()
 
+    def relevant_videos(self):
+        return [get_relevant_video(text) for text in self.text_parts]
 
     def cuts_faces(self):
         faced_vids = []
         new_start_times = []
-        for vid in self.vids:
-            faced_vid, start_time = cut_faces(vid) # neg time to cut time
+        for i in range(len(self.vids)):
+            faced_vid, start_time = cut_faces(self.vids[i], self.stock_videos[i]) # neg time to cut time
             faced_vids.append(faced_vid)
             new_start_times.append(start_time)
 
@@ -96,6 +100,8 @@ class EditedVideos:
             self.text_parts.append(text_part)
             time_intervals, df = self.get_summeraztion_times(ind)
             print(f"Time Intervals: {time_intervals}")
+            if len(time_intervals) == 0:
+                print(text_part)
             self.time_intervals.append(time_intervals)
             self.dfs[ind] = df
 
@@ -210,12 +216,25 @@ class EditedVideos:
 
     def cut_vids(self):
         time_intervals = self.youtube_data.spans
+        dfs = self.dfs
+        stock_vids = self.stock_videos
+        key_words_lst = [sv[1] if sv else None for sv in stock_vids]
+        start_times = get_start_times(key_words_lst, dfs)
         filename = self.youtube_data.filename + ".mp4"
         all_vids = []
         for i, x in enumerate(time_intervals):
+            new_cut_vids = []
+            new_start_time = 0.0
             cut_vid = VideoFileClip(filename).subclip(x[0], x[1])
-            new_cut_vids = [cut_vid.subclip(x[0], x[1]) for x in self.time_intervals[i]]
+            for inner_time_interval in self.time_intervals[i]:
+                if start_times[i] and inner_time_interval[0] < start_times[i]:
+                    if start_times[i] > inner_time_interval[1]:
+                        new_start_time += inner_time_interval[1] - inner_time_interval[0]
+                    else:
+                        new_start_time += start_times[i] - inner_time_interval[0]
+                new_cut_vids.append(cut_vid.subclip(inner_time_interval[0], inner_time_interval[1]))
             all_vids.append(concatenate_videoclips(new_cut_vids))
+            self.stock_videos[i] = ((self.stock_videos[i][0], self.stock_videos[i][1], new_start_time) if new_start_time != 0.0 else None)
         # # Just do one video at a time
         # original_time = time_intervals[0]
         # cut_vid = VideoFileClip(filename).subclip(original_time[0], original_time[1])

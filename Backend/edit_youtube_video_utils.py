@@ -6,6 +6,7 @@ import cv2
 import pandas as pd
 import requests
 import numpy as np
+import subprocess
 import os
 
 from tqdm import tqdm
@@ -19,7 +20,7 @@ from openai import OpenAI
 from moviepy.editor import VideoFileClip
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
-
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
 pexels_api_key = "QfGj5czSqWpkA3F27J8V9tTw5h7Eo50sZ6rstEUJt7bbbIIQZt4Th0wq"
 CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases, which one of them is the most visually appealing in your mind and would fit well as a picture/video  in a clip? You're answer should be **JUST** the noun!"
@@ -67,7 +68,7 @@ def text_clip(vid, text: str, duration: int, start_time: int = 0):
     color = colors[ind]
     if text in censor.keys():
       text = censor[text]
-    return (TextClip(text.upper(), font="Courier-Bold", fontsize=70, color= color, stroke_color = colors_back[ind], stroke_width = 3, method = 'caption')
+    return (TextClip(text.upper(), font="Lucida-Sans-Demibold-Roman", fontsize=70, color= color, stroke_color = colors_back[ind], stroke_width = 3, method = 'caption')
             .set_duration(duration).set_position('center')
             .set_start(start_time))
 
@@ -103,7 +104,7 @@ def add_subs_video(df, vid, start_times):
 
     return final_neg_vid
 
-def cut_faces(neg_vid, show_pics = False):
+def cut_faces(neg_vid, stock_video, show_pics = False): # stock_video in the format: (VIdeoFileClip object, query, final_start_time) or None if there is no need to add it
   boxes = []
   confs = []
   # ADD fps = X to run faster
@@ -239,7 +240,15 @@ def cut_faces(neg_vid, show_pics = False):
                             [sub_vid1]]))
 
   # return new_vids, cuts_times[0]
-  final_neg_vid = concatenate_videoclips(new_vids)
+  if not stock_video:
+    final_neg_vid = concatenate_videoclips(new_vids)
+  else:
+    vid = concatenate_videoclips(new_vids)
+    pre_stock = vid.subclip(0, stock_video[2])
+    audio = vid.subclip(stock_video[2], stock_video[2]+stock_video[0].duration).audio
+    post_stock = vid.subclip(stock_video[2]+stock_video[0].duration)
+    stock_vid = stock_video[0].set_audio(audio)
+    final_neg_vid = concatenate_videoclips([pre_stock, stock_vid, post_stock])
   return final_neg_vid, cuts_times[0]
 
 
@@ -392,6 +401,45 @@ def is_substring(text1, text2):
 
 #     return json_data
 
+def get_relevant_video(text, res_per_page=50):
+    query = chat_gpt_noun_request(text)
+    pexel = Pexels(pexels_api_key)
+    video_found = False
+    page_num = 1
+    max_page_num = 10 # Random number I wrote. We actually need to check what happens if there are no more results
+    input_video_path = f"{query}.mp4"
+
+    while not video_found and page_num <= max_page_num:
+      search_videos = pexel.search_videos(query=query, orientation='', size='', color='', locale='', page=page_num, per_page=res_per_page)
+      for video in search_videos['videos']:
+        if video['height']/video['width'] == 16/9:
+          video_id = video['id']
+          video_found = True
+          break
+      page_num += 1
+    if not video_found:
+      return None # Needs to be compatible later with the handling of the info from this function
+    video_url = 'https://www.pexels.com/video/' + str(video_id) + '/download'
+    r = requests.get(video_url)
+
+    with open(f"{query}.mp4", 'wb') as outfile:
+        outfile.write(r.content)
+    try:
+      video = VideoFileClip(input_video_path)
+      # video.write_videofile(f"{query}_test.mp4")
+      # There is something wrong with the metadata of some of the videos being saved so this code recognises this, deletes the video and returns None
+      if video.h > video.w:
+        sub_clip = video.subclip(0, min(video.duration, 5))
+        final = sub_clip.resize(height=1280, width=720)
+        ret_val = (final, query)
+      else:
+        ret_val = None
+    except Exception as e:
+      print(f"Error processing video '{input_video_path}': {e}")
+      ret_val = None
+    # os.remove(input_video_path)
+    return ret_val
+
 def chat_gpt_noun_request(text):
   blob = TextBlob(text)
   chat_request = CHAT_PICTURE_PROMPT + '\n' + '\n'.join(blob.noun_phrases)
@@ -406,21 +454,29 @@ def chat_gpt_noun_request(text):
       messages=conversation
   )
   # Extract and display the assistant's reply
-  assistant_reply = response.choices[0].message.content
-  print(assistant_reply)
+  assistant_reply = clean_str(response.choices[0].message.content)
   # Output
   return assistant_reply
 
-def download_video(query):
-    pexel = Pexels(pexels_api_key)
-    search_videos = pexel.search_videos(query=query, orientation='', size='', color='', locale='', page=1, per_page=1)
-    video_id = search_videos['videos'][0]['id']
-    video_url = 'https://www.pexels.com/video/' + str(video_id) + '/download'
-    r = requests.get(video_url)
-    with open(f"{query}.mp4", 'wb') as outfile:
-        outfile.write(r.content)
-    ffmpeg_extract_subclip(f"{query}.mp4", 0, 5, targetname=f"{query}_cut.mp4")
-    os.remove(f"{query}.mp4")
+
+def get_start_times(key_words_lst, dfs):
+  target_words = [clean_str(key_words).split() if key_words else None for key_words in key_words_lst]
+  start_times = [filter_rows(target_words[i], dfs[i]) if target_words[i] else None for i in range(len(target_words))]
+  print(f"Start times are: {start_times}")
+  return start_times
+
+def filter_rows(target_words, df):
+  for i in range(len(df) - len(target_words) + 1):
+    window_words = df.loc[i:i+len(target_words)-1, 'text'].tolist()
+    window_words_clean = [clean_str(wrd) for wrd in window_words] # Sometimes empty at the end of the loop, not sure how or why that would be the case
+    if window_words_clean == target_words:
+      return df.loc[i, 'start']
+  return None
+
+def clean_str(s):
+  # Returns string with no punctuation marks in all lower case
+  return s.translate(str.maketrans('', '', string.punctuation)).lower()
+
 
 if __name__ == "__main__":
   txt = """
@@ -429,8 +485,7 @@ if __name__ == "__main__":
         I'm not one to back down from a challenge, especially when it involves a bear on the dance floor. So, there I am, busting out moves I didn't even know I had. It's like a scene from a sci-fi movie meets a Vegas nightclub. The crowd's going nuts, and Elon, you'd appreciate this, but I swear the bear had some kind of autopilot dance algorithm going.
         We went toe-to-paw for a good ten minutes. In the end, I think we called it a draw. Vegas, man, never a dull moment. And that, my friend, is the legend of the bear dance battle in Sin City.
         """
-  # pexel_query = chat_gpt_noun_request(txt)
-  download_video('dance floor')
+  # download_relevant_video(txt)
 
 
 

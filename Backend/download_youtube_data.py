@@ -289,5 +289,5 @@ def load_youtube_info(name, dest="downloaded_files/"):
     return obj
 
 if __name__ == "__main__":
-    link = "https://www.youtube.com/watch?v=VGWGcESPltM"
-    YoutubeData(link,"second_test")
+    link = "https://www.youtube.com/watch?v=8EIx_aCmg2g"
+    YoutubeData(link,"first_test")
