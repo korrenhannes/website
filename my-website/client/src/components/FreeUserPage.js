@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import io from 'socket.io-client';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+
 import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import SubtitleEditor from './SubtitleEditor';
@@ -11,46 +15,90 @@ import '../styles/NavigationBar.css';
 import '../styles/Sidebar.css';
 
 function RegularUserPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userPaymentPlan, setUserPaymentPlan] = useState('free');
-  const [subtitles, setSubtitles] = useState([]); // Subtitles array
-  const [headline, setHeadline] = useState(''); // Headline state
-  const [captionStyle, setCaptionStyle] = useState({ // Caption style state
-    position: 'bottom', // 'top', 'middle', 'bottom'
-    transition: 'pop', // 'karaoke', 'popline', 'pop', 'scale', 'slideLeft', 'slideUp'
-    highlightColor: '#04f827' // Highlight color for caption
-  });
-  const [activeComponent, setActiveComponent] = useState(null);
-  const backgroundVideoRef = useRef(null);
-  const navigate = useNavigate();
-
+  
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
   const [showHeadlineEditor, setShowHeadlineEditor] = useState(false);
   const [showCaptionOptions, setShowCaptionOptions] = useState(false);
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu'; // Replace with your Pexels API key
-  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [userPaymentPlan, setUserPaymentPlan] = useState('free');
+  const [subtitles, setSubtitles] = useState([]);
+  const [headline, setHeadline] = useState('');
+  const [captionStyle, setCaptionStyle] = useState({
+    position: 'bottom',
+    transition: 'pop',
+    highlightColor: '#04f827'
+  });
+  const [activeComponent, setActiveComponent] = useState(null);
+  const backgroundVideoRef = useRef(null);
+  const navigate = useNavigate();
+  const socket = useRef(null);
+
+  const videoOptions = {
+    autoplay: true,
+    controls: true,
+    fluid: true,
+    sources: [{
+      src: '', // Initially empty, will be set upon fetching video
+      type: 'video/mp4'
+    }]
+  };
+
+  // Initialize Socket.IO client
+  useEffect(() => {
+    socket.current = io('http://localhost:3000');
+
+    socket.current.on('connect', () => {
+      console.log('Connected to socket.io server');
+    });
+
+    return () => {
+      socket.current.disconnect();
+    };
+  }, []);
+
+  // Initialize video.js player
+  useEffect(() => {
+    const player = videojs(backgroundVideoRef.current, videoOptions);
+
+    return () => {
+      player.dispose();
+    };
+  }, []);
+
+  // Fetch videos and user payment plan
+  useEffect(() => {
+    fetchVideos();
+    fetchUserPaymentPlan();
+
+    const handleDoubleClick = () => {
+      fetchVideos();
+    };
+
+    window.addEventListener('dblclick', handleDoubleClick);
+
+    return () => {
+      window.removeEventListener('dblclick', handleDoubleClick);
+    };
+  }, []);
 
   const fetchVideos = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // Add a random factor to the API call, such as random page number
-      const randomPage = Math.floor(Math.random() * 10) + 1; // Random page number between 1 and 10
-      const response = await axios.get(PEXELS_API_URL, {
-        headers: {
-          Authorization: PEXELS_API_KEY
-        },
-        params: {
-          per_page: 2,
-          page: randomPage // Use the random page number
-        }
+      const randomPage = Math.floor(Math.random() * 10) + 1;
+      const response = await axios.get('https://api.pexels.com/videos/popular', {
+        headers: { Authorization: 'Your_Pexels_API_Key' },
+        params: { per_page: 2, page: randomPage }
       });
       const backgroundVideo = response.data.videos[0].video_files[0].link;
-      backgroundVideoRef.current.src = backgroundVideo;
+
+      // Update video source in video.js player
+      const player = videojs(backgroundVideoRef.current);
+      player.src({ src: backgroundVideo, type: 'video/mp4' });
     } catch (err) {
-      setError('Error fetching videos from Pexels: ' + err.message);
+      setError('Error fetching videos: ' + err.message);
     } finally {
       setIsLoading(false);
     }
@@ -64,13 +112,13 @@ function RegularUserPage() {
         setUserPaymentPlan('free');
         return;
       }
-
+  
       const response = await axios.get('http://localhost:3000/api/user/payment-plan', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
+  
       if (response && response.data && response.data.paymentPlan) {
         setUserPaymentPlan(response.data.paymentPlan);
       } else {
@@ -83,25 +131,31 @@ function RegularUserPage() {
     }
   };
 
+  const handleSetActiveComponent = (component) => {
+    setActiveComponent(activeComponent === component ? null : component);
+  };
 
-  useEffect(() => {
-    fetchVideos();
-    fetchUserPaymentPlan();
+  const toggleSubtitleEditor = () => {
+    setShowSubtitleEditor(!showSubtitleEditor);
+  };
 
-    // Double click event listener for fetching new video
-    const handleDoubleClick = () => {
-      fetchVideos();
+  const toggleHeadlineEditor = () => {
+    setShowHeadlineEditor(!showHeadlineEditor);
+  };
+
+  const toggleCaptionOptions = () => {
+    setShowCaptionOptions(!showCaptionOptions);
+  };
+
+  const getCaptionStyle = () => {
+    return {
+      color: captionStyle.highlightColor,
+      positionClass: `caption-${captionStyle.position}`,
+      transitionClass: `transition-${captionStyle.transition}`
     };
-
-    window.addEventListener('dblclick', handleDoubleClick);
-
-    return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
-    };
-  }, []);
+  };
 
   const handleRedirection = () => {
-    // Redirect based on payment plan
     switch(userPaymentPlan) {
       case 'regular':
         navigate('/regular-user');
@@ -113,26 +167,8 @@ function RegularUserPage() {
         navigate('/free-user'); // Default or non-registered users
     }
   };
-
-  const getCaptionStyle = () => {
-    const style = {
-      // Add other styles like color, transition effects based on captionStyle state
-      color: captionStyle.highlightColor,
-      // This example assumes you have predefined CSS classes for positions and transitions
-      positionClass: `caption-${captionStyle.position}`, 
-      transitionClass: `transition-${captionStyle.transition}`
-    };
-    return style;
-  };
-
-  const { positionClass, transitionClass } = getCaptionStyle();
-  const toggleSubtitleEditor = () => setShowSubtitleEditor(!showSubtitleEditor);
-  const toggleHeadlineEditor = () => setShowHeadlineEditor(!showHeadlineEditor);
-  const toggleCaptionOptions = () => setShowCaptionOptions(!showCaptionOptions);
-
-  const handleSetActiveComponent = (component) => {
-    setActiveComponent(activeComponent === component ? null : component);
-  };
+  
+  
 
   return (
     <div className="full-screen-container">
@@ -147,7 +183,7 @@ function RegularUserPage() {
           {activeComponent === 'captionOptions' && <CaptionOptions captionStyle={captionStyle} setCaptionStyle={setCaptionStyle} />}
         </div>
       </div>
-      <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
+      <video ref={backgroundVideoRef} className="video-js" id="background-video"></video>
       <div className="foreground-content">
         <div className="video-subtitles">
           {subtitles.find(sub => sub.startTime <= backgroundVideoRef.current.currentTime && sub.endTime >= backgroundVideoRef.current.currentTime)?.text}
