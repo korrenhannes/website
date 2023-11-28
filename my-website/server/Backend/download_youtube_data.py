@@ -1,15 +1,21 @@
+import io  # For io operations
+import re  # For regular expressions
+
+import os
+import shutil
+import pickle
+import requests
+from pytube import YouTube
+from moviepy.editor import AudioFileClip
+from google.cloud import speech
+import pandas as pd
+import numpy as np
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service
-from google.cloud import speech
-import pandas as pd
-import os
-import io
-import re
-import requests
-from download_youtube_data_utils import parse_chapters
+from download_youtube_data_utils import parse_chapters  # Assuming this is in another module
 
 
 from moviepy.editor import VideoFileClip, TextClip,CompositeVideoClip
@@ -34,42 +40,37 @@ class YoutubeData:
         self.link = link  # Link is now passed as an argument
         self.buffer = buffer
         self.name = name
-        self.link = link
-        self.dest = dest + name + "/"
+        self.dest = os.path.join(dest, name)
         # self.create_fold()
         self.n_vids = n_vids
+        self.create_fold()
         self.download_data()
 
     def create_fold(self):
-        try:
-            os.mkdir(self.dest)
-        except:
+        if not os.path.exists(self.dest):
+            os.makedirs(self.dest)
+        else:
             inp = input("This name exists, do you want to delete it? [Y/n]")
             if inp.lower() == 'y':
                 shutil.rmtree(self.dest)
-                os.mkdir(self.dest)
+                os.makedirs(self.dest)
             else:
-                raise MyCustomException("Proccses stoped.")
+                raise MyCustomException("Process stopped.")
 
     def get_heatmap(self):
-        link = self.link
         chrome_options = webdriver.ChromeOptions()
-        service = Service()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
-        chrome_options.headless = True
-        wd = webdriver.Chrome(options=chrome_options,service=service)
-        wd.get(link)
-        # Wait for the specific element to be present
-        wait = WebDriverWait(wd, 30)  # wait for a maximum of 10 seconds
-        els = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ytp-heat-map-svg')))
-
-      # If you want to get specific attributes or text from these elements, you can loop over them:
-        # TODO: NEED TO JOIN THE RETS SOMEHOW
-        rets = []
-        for el in els:
-            rets.append(str(el.get_attribute('outerHTML')))
-
+        chrome_options.add_argument('--disable-gpu')
+        service = Service(DRIVER_PATH)
+        wd = webdriver.Chrome(service=service, options=chrome_options)
+        wd.get(self.link)
+        try:
+            wait = WebDriverWait(wd, 30)
+            els = wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ytp-heat-map-svg')))
+            rets = [str(el.get_attribute('outerHTML')) for el in els]
+        finally:
+            wd.quit()
         return rets
 
     def preProcessData(self):
@@ -124,33 +125,13 @@ class YoutubeData:
 
 
     def download_audio_video(self):
-        
-        link = self.link
-        destination = self.dest
-        # url input from user
-        yt = YouTube(link)
-        # extract only audio
-        # video = yt.streams.filter(only_audio=True).first()
-
-        # download the file
-        # out_file = video.download(output_path=destination)
-
-        # save the file
-        # base, ext = os.path.splitext(out_file)
-        base = r"C://Users//along//VS Code//Shorts Project//downloaded_files//second_test//How to Optimize Your Brain-Body Function & Health  Huberman Lab Podcast 30"
-        # new_file = base + '.mp3'
-        # os.rename(out_file, new_file)
-
-        # video = yt.streams.get_highest_resolution()
-
-        # out_file = video.download(destination)
-
-        new_file = base + '.mp4'
-        # os.rename(out_file, new_file)
-
-        return new_file[:-4], yt.length
-
-
+        yt = YouTube(self.link)
+        video = yt.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        if not video:
+            raise Exception("No suitable video stream found")
+        out_file = video.download(output_path=self.dest)
+        new_file = os.path.join(self.dest, os.path.basename(out_file))
+        return new_file, yt.length
 
     def save_wanted_parts(self):
         interesting_points = self.interesting_points
@@ -272,9 +253,8 @@ def load_youtube_info(name, dest="downloaded_files/"):
 # This function can be used to process data for a given YouTube link
 def process_youtube_link(youtube_link, name):
     yt_data = YoutubeData(youtube_link, name)
-    # ... (you can add more processing here if needed)
+    # additional processing here if needed
 
 if __name__ == "__main__":
-    # Assume 'input_link' is the YouTube link received from the frontend
     input_link = "REPLACE_WITH_INPUT_LINK_FROM_FRONTEND"
     process_youtube_link(input_link, "second_test")
