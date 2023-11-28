@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
@@ -9,6 +8,7 @@ import '../styles/NavigationBar.css';
 function CloudAPIPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
@@ -91,7 +91,7 @@ function CloudAPIPage() {
     };
 
     const handleWheel = (e) => {
-      if (e.deltaY > 100) { // Adjust threshold based on your preference
+      if (e.deltaY > 100) {
         navigate('/how-it-works');
       }
     };
@@ -108,6 +108,27 @@ function CloudAPIPage() {
       window.removeEventListener('wheel', handleWheel);
     };
   }, []);
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      // Send the request to the backend
+      axios.post('http://localhost:5000/api/process-video', { link: searchQuery })
+           .then(response => {
+               console.log('Video processing started:', response.data);
+           })
+           .catch(error => {
+               console.error('Error starting video processing:', error.message);
+           });
+  
+      // Redirect immediately after sending the request
+      handleRedirection();
+    } catch (error) {
+      console.error('Error submitting search:', error.message);
+    }
+  };
+  
+  
 
   const handleRedirection = () => {
     switch(userPaymentPlan) {
@@ -128,7 +149,15 @@ function CloudAPIPage() {
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
         <h1>Transform Your Content, Transform Your Influence</h1>
-        <button onClick={handleRedirection}>Go to Your Plan Page</button>
+        <form onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Enter search query"
+          />
+          <button type="submit">Search</button>
+        </form>
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
