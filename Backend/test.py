@@ -4,7 +4,6 @@
 # import pandas as pd
 # import json
 
-
 # def download_file(url):
 #     local_filename = url.split('/')[-1]
 #     # NOTE the stream=True parameter below
@@ -156,10 +155,30 @@
 
 #     return json_data
 
+import whisper
+import pandas as pd
+import numpy as np
+WHISPER_MODEL = "medium.en"
+
+
 if __name__ == "__main__":
-  txt = """
-        Elon, you won't believe what went down the last time I hit up Vegas. So, picture this: I'm in the middle of the dance floor, beats dropping, lights flashing, usual Vegas shenanigans, right? Out of nowhere, this bear strolls in. Yeah, a legit bear. Now, I'm thinking it's some kind of weird trip, maybe too much of that desert air, but no, it's real.
-        This bear starts breakdancing like it's been taking lessons from MJ or something. Spins, flips, the whole nine yards. People are losing their minds, and I'm just standing there, trying to process bear dance moves. The DJ gets in on it, throws in some bear-themed remix, and now it's a full-blown bear dance battle.
-        I'm not one to back down from a challenge, especially when it involves a bear on the dance floor. So, there I am, busting out moves I didn't even know I had. It's like a scene from a sci-fi movie meets a Vegas nightclub. The crowd's going nuts, and Elon, you'd appreciate this, but I swear the bear had some kind of autopilot dance algorithm going.
-        We went toe-to-paw for a good ten minutes. In the end, I think we called it a draw. Vegas, man, never a dull moment. And that, my friend, is the legend of the bear dance battle in Sin City.
-        """
+  filename = "C://Users//along//VS Code//Shorts Project//website//downloaded_files//third_test//PART 1 Piers Morgan vs Andrew Tate In Romania  Latest Interview_tmp4.wav"
+  texts = []
+  starts = []
+  ends = []
+
+  # Whisper STT
+  model = whisper.load_model(WHISPER_MODEL)
+  result = model.transcribe(filename, word_timestamps=True)
+  for segment in result['segments']:
+      segment_word_data = segment['words']
+      for word_data in segment_word_data:
+          # print(f"Word:{word_data['word']}. Start: {word_data['start']}. End: {word_data['end']}")
+          # if word_data['probability'] < 0.8:
+          #         print(f"Accuracy of{word_data['word']} only {word_data['probability']}")
+          texts.append(word_data['word'][1:] if word_data['word'][0] == ' ' else word_data['word'])
+          starts.append(word_data['start'])
+          ends.append(word_data['end'])
+  df = pd.DataFrame(np.array([texts,starts,ends]).transpose(), columns = ["text","start","end"])
+  df.to_csv("C://Users//along//VS Code//Shorts Project//website/test.csv")
+    

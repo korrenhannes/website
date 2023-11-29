@@ -224,6 +224,9 @@ def cut_faces(neg_vid, stock_video, show_pics = False): # stock_video in the for
     final_neg_vid = concatenate_videoclips(new_vids)
   else:
     vid = concatenate_videoclips(new_vids)
+
+    if stock_video[2] + stock_video[0].duration >= vid.duration:
+      stock_video = (stock_video[0], stock_video[1], vid.duration - stock_video[0].duration - 3) # The 3 in the end is just random. Regardless we need to think where we need to put the stock videos 
     pre_stock = vid.subclip(0, stock_video[2])
     audio = vid.subclip(stock_video[2], stock_video[2]+stock_video[0].duration).audio
     post_stock = vid.subclip(stock_video[2]+stock_video[0].duration)

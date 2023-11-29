@@ -189,7 +189,7 @@ class YoutubeData:
                 # print(f"Word:{word_data['word']}. Start: {word_data['start']}. End: {word_data['end']}")
                 # if word_data['probability'] < 0.8:
                 #         print(f"Accuracy of{word_data['word']} only {word_data['probability']}")
-                texts.append(word_data['word'][1:])
+                texts.append(word_data['word'][1:] if word_data['word'][0] == ' ' else word_data['word'])
                 starts.append(word_data['start'])
                 ends.append(word_data['end'])
 

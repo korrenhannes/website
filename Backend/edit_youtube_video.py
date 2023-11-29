@@ -172,9 +172,8 @@ class EditedVideos:
             all_locs = all_locs_list[ind]
         print(all_locs)
         if len(all_locs) == 0:
-            time_intervals = [(df['start_times'].iloc[0], df['end_times'].iloc[-1])]
-        else:
-            time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
+            all_locs = [(0, len(df['text']) - 1)]
+        time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
         # Not elegant and might need reworking but stitches time intervals if one ends and the other starts on the same instance
         # if len(time_intervals) > 1:
         #     final_time_intervals = []
