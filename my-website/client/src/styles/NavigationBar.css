@@ -1,0 +1,69 @@
+/* NavigationBar.css */
+.navigation-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5em 2em;
+    background-color: rgba(255, 255, 255, 0.5); /* Or any color you prefer */
+    backdrop-filter: blur(10px); /* Blur effect for the background */
+    position: fixed; /* Fixed position to stick to the top */
+    top: 0;
+    left: 0;
+    width: 100%; /* Full width */
+    z-index: 1000; /* High z-index to stay on top */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-logo img {
+    height: 40px; /* Adjust size as needed */
+  }
+  
+  .nav-links a {
+    margin: 0 1em;
+    text-decoration: none;
+    color: #333; /* Adjust text color as needed */
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .no-underline {
+    text-decoration: none;
+  }
+  .nav-actions .nav-login {
+    text-decoration: none;
+    color: #333; /* Adjust text color as needed */
+    margin-right: 1em;
+  }
+  
+  .nav-actions .nav-signup {
+    padding: 0.5em 1em;
+    background-color: #3897f0; /* Default button color */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  
+  .nav-actions .nav-signup:hover {
+    background-color: #2878b5; /* Darker shade on hover */
+  }
+
+  .logo-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .logo-button img {
+    height: 40px; /* Adjust to your logo size */
+  }
+  
+  @media (max-width: 768px) {
+    .nav-links a:not(:first-child):not(:last-child) {
+        /* This targets all links that are not the first or the last child, 
+           assuming these are the ones you want to keep on small screens */
+        display: none;
+    }
+}
