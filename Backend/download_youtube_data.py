@@ -4,9 +4,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
 from google.cloud import speech
+import whisper
 import pandas as pd
 import os
 import io
+import json
 import re
 import requests
 from download_youtube_data_utils import parse_chapters
@@ -26,6 +28,8 @@ import pickle
 
 DRIVER_PATH = "C://Users//along//VS Code//Shorts Project//chromium//chromedriver.exe"
 api_key = 'AIzaSyDuCDLpv1XKwlv1ZLeG8WSkyEH2PwHRgkk'
+WHISPER_MODEL = "medium.en"
+
 
 class MyCustomException(Exception):
     pass
@@ -35,7 +39,7 @@ class YoutubeData:
         self.name = name
         self.link = link
         self.dest = dest + name + "/"
-        # self.create_fold()
+        self.create_fold()
         self.n_vids = n_vids
         self.download_data()
 
@@ -128,28 +132,29 @@ class YoutubeData:
         destination = self.dest
         # url input from user
         yt = YouTube(link)
+
         # extract only audio
-        # video = yt.streams.filter(only_audio=True).first()
+        video = yt.streams.filter(only_audio=True).first()
 
         # download the file
-        # out_file = video.download(output_path=destination)
+        out_file = video.download(output_path=destination)
 
         # save the file
-        # base, ext = os.path.splitext(out_file)
-        base = r"C://Users//along//VS Code//Shorts Project//downloaded_files//second_test//How to Optimize Your Brain-Body Function & Health  Huberman Lab Podcast 30"
-        # new_file = base + '.mp3'
-        # os.rename(out_file, new_file)
+        base, ext = os.path.splitext(out_file)
+        new_file = base + '.mp3'
+        os.rename(out_file, new_file)
 
-        # video = yt.streams.get_highest_resolution()
+        youtube = YouTube(link)
 
-        # out_file = video.download(destination)
+        video = youtube.streams.get_highest_resolution()
 
+        out_file = video.download(destination)
+
+        base, ext = os.path.splitext(out_file)
         new_file = base + '.mp4'
-        # os.rename(out_file, new_file)
+        os.rename(out_file, new_file)
 
         return new_file[:-4], yt.length
-
-
 
     def save_wanted_parts(self):
         interesting_points = self.interesting_points
@@ -171,39 +176,54 @@ class YoutubeData:
         return spans, filenames
 
     def transcribe_file(self, filename):
-        client = speech.SpeechClient(client_options={"api_key": api_key})
-        file_name = filename
-
-        with io.open(file_name, "rb") as audio_file:
-         content = audio_file.read()
-         audio = speech.RecognitionAudio(content=content)
-
-        config = speech.RecognitionConfig(
-         encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-         audio_channel_count = 2,
-         language_code="en-US",
-         enable_word_time_offsets=True,
-        )
-
-        operation = client.long_running_recognize(config=config, audio=audio)
-
-        print("Waiting for operation to complete...")
-        result = operation.result(timeout=90)
         texts = []
         starts = []
         ends = []
-        for result in result.results:
-            alternative = result.alternatives[0]
-            print(f"Transcript: {alternative.transcript}")
-            print(f"Confidence: {alternative.confidence}")
 
-            for word_info in alternative.words:
-                word = word_info.word
-                start_time = word_info.start_time
-                end_time = word_info.end_time
-                texts.append(word)
-                starts.append(start_time)
-                ends.append(end_time)
+        # Whisper STT
+        model = whisper.load_model(WHISPER_MODEL)
+        result = model.transcribe(filename, word_timestamps=True)
+        for segment in result['segments']:
+            segment_word_data = segment['words']
+            for word_data in segment_word_data:
+                # print(f"Word:{word_data['word']}. Start: {word_data['start']}. End: {word_data['end']}")
+                # if word_data['probability'] < 0.8:
+                #         print(f"Accuracy of{word_data['word']} only {word_data['probability']}")
+                texts.append(word_data['word'][1:])
+                starts.append(word_data['start'])
+                ends.append(word_data['end'])
+
+        
+        # # Google's Cloud Speech STT
+        # client = speech.SpeechClient(client_options={"api_key": api_key})
+        # file_name = filename
+
+        # with io.open(file_name, "rb") as audio_file:
+        #  content = audio_file.read()
+        #  audio = speech.RecognitionAudio(content=content)
+
+        # config = speech.RecognitionConfig(
+        #  encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        #  audio_channel_count = 2,
+        #  language_code="en-US",
+        #  enable_word_time_offsets=True,
+        # )
+
+        # operation = client.long_running_recognize(config=config, audio=audio)
+        # print("Waiting for operation to complete...")
+        # result = operation.result(timeout=90)
+        # for result in result.results:
+        #     alternative = result.alternatives[0]
+        #     print(f"Transcript: {alternative.transcript}")
+        #     print(f"Confidence: {alternative.confidence}")
+
+        #     for word_info in alternative.words:
+        #         word = word_info.word
+        #         start_time = word_info.start_time
+        #         end_time = word_info.end_time
+        #         texts.append(word)
+        #         starts.append(start_time)
+        #         ends.append(end_time)
 
         df = pd.DataFrame(np.array([texts,starts,ends]).transpose(), columns = ["text","start","end"])
         return df
@@ -269,5 +289,5 @@ def load_youtube_info(name, dest="downloaded_files/"):
     return obj
 
 if __name__ == "__main__":
-    link = "https://www.youtube.com/watch?v=rW9QKc-iFoY"
-    YoutubeData(link,"second_test")
+    link = "https://www.youtube.com/watch?v=8EIx_aCmg2g"
+    YoutubeData(link,"first_test")
