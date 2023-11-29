@@ -109,7 +109,7 @@ class EditedVideos:
 
     def read_df(self, ind):
         df = self.dfs[ind]
-        text_part = ' '.join(df['text'])
+        text_part = ' '.join(str(df['text']))
         if not USING_WHISPER:
             df['start'] = df['start'].apply(get_seconds)
             df['end'] = df['end'].apply(get_seconds) # This replaced the line of code beneath which is commented out. Still need to check that it maintains the same functionality and logic
@@ -156,6 +156,13 @@ class EditedVideos:
             spans = list(dict.fromkeys(re.compile(regg).findall(assistant_reply)))
             # change indexing from 1 - ..., to 0 - ....
             all_locs = [(int(x.split('-')[0]) - 1,int(x.split('-')[1]) - int(x.split('-')[0])) for x in spans]
+
+            # In case all_locs is empty, which happens when Chat_GPT returns an answer which isn't in the expected format,
+            # no time intervals will be made and thus no video. In addition some functions down the line that assume that
+            # there's a video that exists will crash. We can send an additional request to the chat in case that happens but
+            # that's just decreasing the odds of it happening and not solving the issue. In the mean time I'm just passing the
+            # whole video with no cuts
+
         else:
             all_locs_list = [[(3, 10), (36, 41), (214, 29)],
                             [(0, 58), (59, 29), (152, 52), (207, 41)],
@@ -164,7 +171,10 @@ class EditedVideos:
                             [(5, 10), (16, 13), (62, 18), (101, 20), (132, 23)]]
             all_locs = all_locs_list[ind]
         print(all_locs)
-        time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
+        if len(all_locs) == 0:
+            time_intervals = [(df['start_times'].iloc[0], df['end_times'].iloc[-1])]
+        else:
+            time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
         # Not elegant and might need reworking but stitches time intervals if one ends and the other starts on the same instance
         # if len(time_intervals) > 1:
         #     final_time_intervals = []
