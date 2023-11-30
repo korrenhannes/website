@@ -3,6 +3,7 @@ from flask_cors import CORS
 import pandas as pd
 import os
 import threading
+from google.cloud import storage
 
 from download_youtube_data import YoutubeData
 from edit_youtube_video import EditedVideos
@@ -10,48 +11,46 @@ from edit_youtube_video import EditedVideos
 app = Flask(__name__)
 CORS(app)
 
+# Function to upload files to Google Cloud Storage
+def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name):
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+    print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+
 # Function to process the YouTube video and handle the data
 def process_youtube_video(link, save_folder_name):
-    # Define the base directory and the destination folder
     base_dir = os.path.abspath(os.path.dirname(__file__))
     dest_folder = os.path.join(base_dir, save_folder_name)
 
-    # Create the destination folder if it does not exist
     if not os.path.exists(dest_folder):
         os.makedirs(dest_folder)
 
-    # Instantiate the YoutubeData class and save the object
     yt_data_obj = YoutubeData(link, save_folder_name, dest=dest_folder)
     yt_data_obj.save_object()
 
-    # Form the path for the pickled object
-    pickled_obj_loc = os.path.join(dest_folder, "object_data.pkl")
+    edited_videos = EditedVideos(yt_data_obj, load_gpt=True)
 
-    # Check if the pickled object file exists
-    if not os.path.isfile(pickled_obj_loc):
-        raise FileNotFoundError(f"Pickled data file not found: {pickled_obj_loc}")
+    gcloud_bucket_name = "clipitshorts"
+    for i in range(len(edited_videos.faced_subs_vids)):
+        video_file_path = os.path.join(yt_data_obj.dest, "finalvideo" + "_" + str(i) + ".mp4")
+        gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
+        upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name)
 
-    # Load the pickled YoutubeData object
-    yt_data_obj = pd.read_pickle(pickled_obj_loc)
-
-    # Process the video using the EditedVideos class
-    EditedVideos(yt_data_obj, load_gpt=True)
-
-# Route to handle YouTube video processing requests
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
     data = request.json
     youtube_link = data.get('link')
     save_folder_name = data.get('folder_name')
 
-    # Validate the input data
     if not youtube_link:
         return jsonify({'error': 'No YouTube link provided'}), 400
     if not save_folder_name:
         return jsonify({'error': 'No folder name provided'}), 400
 
     try:
-        # Process the video in a separate thread
         thread = threading.Thread(target=process_youtube_video, args=(youtube_link, save_folder_name))
         thread.start()
         return jsonify({'message': 'YouTube video processing started'})

@@ -46,11 +46,11 @@ class EditedVideos:
             self.text_parts = []
             self.dfs = [pd.read_csv(fn[:-4] + ".csv") for fn in self.youtube_data.filenames]
             self.do_nlp()
-            with open(self.youtube_data.dest + "after_gpt_object_data.pkl", 'wb') as outp:
+            with open(self.youtube_data.dest + "object_data.pkl", 'wb') as outp:
                 pickle.dump(self, outp, pickle.HIGHEST_PROTOCOL)
 
         else:
-            with open(self.youtube_data.dest + "after_gpt_object_data.pkl", 'rb') as inp:
+            with open(self.youtube_data.dest + "object_data.pkl", 'rb') as inp:
                 obj = pickle.load(inp)
                 self.text_parts = obj.text_parts
                 self.dfs = obj.dfs
@@ -261,7 +261,7 @@ class EditedVideos:
 
 
 if __name__ == "__main__":
-  pickled_obj_loc = f"{MY_PATH}//{SAVED_NAME}//object_data.pkl"
+  pickled_obj_loc = f"{MY_PATH}/{SAVED_NAME}/object_data.pkl"
   youtube_obj = pd.read_pickle(pickled_obj_loc)
   EditedVideos(youtube_obj, load_gpt=True)
     
