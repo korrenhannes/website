@@ -112,7 +112,7 @@ function CloudAPIPage() {
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true); // Set loading state to true when search starts
-    const folderName = 'your_folder_name'; // Replace this with the logic for setting your folder name
+    const folderName = 'folder_check'; // Replace this with the logic for setting your folder name
     try {
       // Send the request to the backend
       const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
