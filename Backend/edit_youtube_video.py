@@ -17,7 +17,7 @@ import pickle
 
 from edit_youtube_video_utils import cut_faces, get_start_times, add_subs_video, get_relevant_video
 
-MY_PATH = "C://Users//along//VS Code//Shorts Project//website//downloaded_files"
+MY_PATH = "C:/Users/SharonH/Documents/GitHub/website"
 SAVED_NAME = "first_test"
 USING_WHISPER = True # Change if using Google Cloud's Speech API
 

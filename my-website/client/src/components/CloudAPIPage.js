@@ -111,22 +111,20 @@ function CloudAPIPage() {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true when the search starts
     try {
       // Send the request to the backend
-      axios.post('http://localhost:5000/api/process-video', { link: searchQuery })
-           .then(response => {
-               console.log('Video processing started:', response.data);
-           })
-           .catch(error => {
-               console.error('Error starting video processing:', error.message);
-           });
-  
-      // Redirect immediately after sending the request
-      handleRedirection();
+      const response = await axios.post('http://localhost:5000/api/process-youtube-video', { link: searchQuery });
+      console.log('Video processing started:', response.data);
+      handleRedirection(); // Redirect immediately after sending the request
     } catch (error) {
       console.error('Error submitting search:', error.message);
+      setError('Error processing your request. Please try again.');
+    } finally {
+      setIsLoading(false); // Set loading to false after the request is handled
     }
   };
+
   
   
 
