@@ -111,17 +111,21 @@ function CloudAPIPage() {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading to true when the search starts
+    setIsLoading(true); // Set loading state to true when search starts
+    const folderName = 'your_folder_name'; // Replace this with the logic for setting your folder name
     try {
       // Send the request to the backend
-      const response = await axios.post('http://localhost:5000/api/process-youtube-video', { link: searchQuery });
+      const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
+        link: searchQuery,
+        folder_name: folderName
+      });
       console.log('Video processing started:', response.data);
-      handleRedirection(); // Redirect immediately after sending the request
+      handleRedirection(); // Call handleRedirection to navigate to the appropriate route
     } catch (error) {
       console.error('Error submitting search:', error.message);
-      setError('Error processing your request. Please try again.');
+      setError('Error processing your request. Please try again.'); // Set error state
     } finally {
-      setIsLoading(false); // Set loading to false after the request is handled
+      setIsLoading(false); // Set loading state to false after the request is complete
     }
   };
 
