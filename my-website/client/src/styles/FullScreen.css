@@ -62,7 +62,6 @@
   }
 }
 
-
 .foreground-content button {
   padding: 0.5em 1.5em;
   font-size: 1.5em;
@@ -78,7 +77,6 @@
   background-color: #2878b5; /* Darker shade on hover */
 }
 
-/* Styles for swipeable video cards */
 .video-container {
   position: absolute;
   z-index: 2; /* Above the overlay */
@@ -99,8 +97,6 @@
   opacity: 1; /* Only the active card is visible */
 }
 
-
-
 .search-container {
   position: absolute;
   top: 50%;
@@ -110,13 +106,13 @@
   text-align: center;
 }
 
-
 .search-form {
   display: flex;
   align-items: center; /* Align items vertically in the center */
   margin-top: 20px;
+  width: 80%; /* Set the width of the search form */
+  padding-left: 135px; /* Add padding to move the form to the right */
 }
-
 
 .search-logo {
   width: 24px; /* Adjust the width as needed */
@@ -129,34 +125,22 @@
   align-items: center; /* Align items in the center vertically */
   border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
   border-radius: 24px; /* Rounded corners */
-  flex-grow: 1; /* Take available space */
-}
-
-.input-logo-container {
-  display: flex;
-  align-items: center; /* Align items in the center vertically */
-  border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
-  border-radius: 24px; /* Rounded corners */
-  flex-grow: 1; /* Take available space */
+  width: 100%; /* Set width to take full space of the search form */
   background-color: white; /* Ensuring the background inside the border is white */
-  padding-left: 10px; /* Space on the left inside the container */
 }
 
 #google-like-search {
   flex-grow: 1; /* Allows the input to take the available space */
-  width: auto; /* Auto width to fit flex container */
+  width: 100%; /* Set the width to fill the container */
   height: 44px; /* Height for a comfortable search bar */
-  padding: 0 20px;
+  padding: 0 170px;
   font-size: 16px; /* Font size similar to Google's */
   border: none;
   border-radius: 24px; /* Rounded corners */
-  margin-right: 10px; /* Spacing between search input and button */
 }
-
 
 #google-like-search:focus {
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
   border-color: rgba(223,225,229,0);
 }
-

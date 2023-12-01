@@ -169,7 +169,6 @@ function CloudAPIPage() {
                 onClick={handleLogoClick}
               />
             </div>
-            <button type="submit">search</button>
           </form>
         </div>
         {isLoading && <p>Loading...</p>}
