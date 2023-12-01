@@ -151,18 +151,21 @@ function CloudAPIPage() {
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
         <h1>Transform Your Content, Transform Your Influence</h1>
-        <form onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Enter search query"
-          />
-          <button type="submit">Search</button>
-        </form>
+        <div className="search-bar-container">
+          <form onSubmit={handleSearchSubmit} className="search-form">
+            <input
+              type="text"
+              id="google-like-search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Enter search query"
+            />
+            <button type="submit">search</button>
+          </form>
+        </div>
+        {isLoading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
       </div>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
     </div>
   );
 }

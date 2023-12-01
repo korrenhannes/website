@@ -48,9 +48,25 @@
 }
 
 .foreground-content h1 {
-  font-size: 4em;
+  font-size: 4em; /* Starting font size */
   margin-bottom: 0.5em;
+  max-width: 90%; /* Restrict width to allow some breathing space */
+  word-wrap: break-word; /* Wrap long words */
+  line-height: 1.2; /* Adequate line height for readability */
+  padding: 0 20px; /* Padding for spacing */
+  box-sizing: border-box; /* Include padding in width calculation */
+  overflow-wrap: break-word; /* Break words that are too long */
+
+  /* Responsive font size */
+  @media (max-width: 768px) {
+    font-size: 3em; /* Smaller font size on smaller screens */
+  }
+
+  @media (max-width: 480px) {
+    font-size: 2em; /* Even smaller font size on very small screens */
+  }
 }
+
 
 .foreground-content button {
   padding: 0.5em 1.5em;
@@ -88,4 +104,39 @@
   opacity: 1; /* Only the active card is visible */
 }
 
-/* Additional styles as needed for video controls and user info */
+
+
+.search-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+}
+
+.search-form {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+
+.search-form {
+  margin-top: 20px; /* Spacing above the search form */
+}
+
+#google-like-search {
+  width: 480px; /* Google's search bar width */
+  height: 44px; /* Height for a comfortable search bar */
+  padding: 0 20px;
+  font-size: 16px; /* Font size similar to Google's */
+  border: 1px solid #dfe1e5; /* Google's border color */
+  border-radius: 24px; /* Rounded corners */
+  margin-bottom: 20px; /* Spacing for aesthetic */
+}
+
+#google-like-search:focus {
+  outline: none;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+  border-color: rgba(223,225,229,0);
+}
