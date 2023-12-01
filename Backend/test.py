@@ -158,27 +158,7 @@
 import whisper
 import pandas as pd
 import numpy as np
-WHISPER_MODEL = "medium.en"
-
+import os
 
 if __name__ == "__main__":
-  filename = "C://Users//along//VS Code//Shorts Project//website//downloaded_files//third_test//PART 1 Piers Morgan vs Andrew Tate In Romania  Latest Interview_tmp4.wav"
-  texts = []
-  starts = []
-  ends = []
-
-  # Whisper STT
-  model = whisper.load_model(WHISPER_MODEL)
-  result = model.transcribe(filename, word_timestamps=True)
-  for segment in result['segments']:
-      segment_word_data = segment['words']
-      for word_data in segment_word_data:
-          # print(f"Word:{word_data['word']}. Start: {word_data['start']}. End: {word_data['end']}")
-          # if word_data['probability'] < 0.8:
-          #         print(f"Accuracy of{word_data['word']} only {word_data['probability']}")
-          texts.append(word_data['word'][1:] if word_data['word'][0] == ' ' else word_data['word'])
-          starts.append(word_data['start'])
-          ends.append(word_data['end'])
-  df = pd.DataFrame(np.array([texts,starts,ends]).transpose(), columns = ["text","start","end"])
-  df.to_csv("C://Users//along//VS Code//Shorts Project//website/test.csv")
-    
+  pass

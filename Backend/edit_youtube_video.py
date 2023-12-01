@@ -10,14 +10,16 @@ import imutils
 import numpy as np
 import pandas as pd
 import cv2
+import gc
 
 import os
 from openai import OpenAI
 import pickle
+import shutil
+import time
 
 from edit_youtube_video_utils import cut_faces, get_start_times, add_subs_video, get_relevant_video
 
-MY_PATH = "C://Users//along//VS Code//Shorts Project//website//downloaded_files"
 SAVED_NAME = "first_test"
 USING_WHISPER = True # Change if using Google Cloud's Speech API
 
@@ -42,6 +44,7 @@ def get_seconds(t):
 class EditedVideos:
     def __init__(self, youtube_data, load_gpt = False):
         self.youtube_data = youtube_data
+        self.temp_folder = self.create_temp_folder()
         if not load_gpt:
             self.text_parts = []
             self.dfs = [pd.read_csv(fn[:-4] + ".csv") for fn in self.youtube_data.filenames]
@@ -67,8 +70,19 @@ class EditedVideos:
         print("saving files!")
         self.save_vids()
 
+        # Currently not working and need to delete the temp_folder library manually
+        # self.del_temp_folder()
+
     def relevant_videos(self):
-        return [get_relevant_video(text) for text in self.text_parts]
+        return [get_relevant_video(text, self.temp_folder) for text in self.text_parts]
+    
+    def create_temp_folder(self):
+          temp_folder_name = "temp_files"
+          os.mkdir(temp_folder_name)
+          return temp_folder_name
+
+    def del_temp_folder(self):
+        shutil.rmtree(self.temp_folder)
 
     def cuts_faces(self):
         faced_vids = []
@@ -80,7 +94,6 @@ class EditedVideos:
 
         return faced_vids, new_start_times
     
-
     def add_subs(self):
         subed_faced_vids = []
         for i, vid in tqdm(enumerate(self.faced_vids)):
@@ -90,7 +103,7 @@ class EditedVideos:
     
     def save_vids(self):
         for i in range(len(self.faced_subs_vids)):
-            self.faced_subs_vids[i].write_videofile(self.youtube_data.dest + "finalvideo" + "_" + str(i) + ".mp4")
+            self.faced_subs_vids[i].write_videofile(self.youtube_data.dest + "finalvideo" + "_" + str(i) + ".mp4", fps=24, audio_codec='aac')
 
     def do_nlp(self):
         self.time_intervals = []
@@ -260,8 +273,8 @@ class EditedVideos:
 
 
 if __name__ == "__main__":
-  pickled_obj_loc = f"{MY_PATH}//{SAVED_NAME}//object_data.pkl"
-  youtube_obj = pd.read_pickle(pickled_obj_loc)
-  EditedVideos(youtube_obj, load_gpt=True)
+    pickled_obj_loc = f"downloaded_files//{SAVED_NAME}//object_data.pkl"
+    youtube_obj = pd.read_pickle(pickled_obj_loc)
+    EditedVideos(youtube_obj, load_gpt=True)
     
     

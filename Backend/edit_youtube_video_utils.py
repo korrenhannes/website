@@ -23,7 +23,7 @@ from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
 pexels_api_key = "QfGj5czSqWpkA3F27J8V9tTw5h7Eo50sZ6rstEUJt7bbbIIQZt4Th0wq"
-CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases, which one of them is the most visually appealing in your mind and would fit well as a picture/video  in a clip? You're answer should be **JUST** the noun!"
+CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases. Which one of them is the most visually appealing in your mind and would fit well as a picture/video in a clip? You're answer should be **JUST** the noun!"
 PICTURE_GPT_MODEL = 'gpt-3.5-turbo'
 chat_gpt_picture_api = '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'
 
@@ -245,15 +245,16 @@ def is_substring(text1, text2):
   return answer
 
 
-def get_relevant_video(text, res_per_page=50):
+def get_relevant_video(text, temp_folder, res_per_page=50):
     query = chat_gpt_noun_request(text)
     pexel = Pexels(pexels_api_key)
     video_found = False
     page_num = 1
     max_page_num = 10 # Random number I wrote. We actually need to check what happens if there are no more results
-    input_video_path = f"{query}.mp4"
+    input_video_path = f"{temp_folder}//{query}.mp4"
 
     while not video_found and page_num <= max_page_num:
+      print(f"Currently searching for {query} on page number: {page_num} out of {max_page_num}")
       search_videos = pexel.search_videos(query=query, orientation='', size='', color='', locale='', page=page_num, per_page=res_per_page)
       for video in search_videos['videos']:
         if video['height']/video['width'] == 16/9:
@@ -266,22 +267,21 @@ def get_relevant_video(text, res_per_page=50):
     video_url = 'https://www.pexels.com/video/' + str(video_id) + '/download'
     r = requests.get(video_url)
 
-    with open(f"{query}.mp4", 'wb') as outfile:
+    with open(input_video_path, 'wb') as outfile:
         outfile.write(r.content)
     try:
       video = VideoFileClip(input_video_path)
-      # video.write_videofile(f"{query}_test.mp4")
       # There is something wrong with the metadata of some of the videos being saved so this code recognises this, deletes the video and returns None
       if video.h > video.w:
         sub_clip = video.subclip(0, min(video.duration, 5))
         final = sub_clip.resize(height=1280, width=720)
         ret_val = (final, query)
       else:
+        print(f"Metadata is wrong for {query} video")
         ret_val = None
     except Exception as e:
       print(f"Error processing video '{input_video_path}': {e}")
       ret_val = None
-    # os.remove(input_video_path)
     return ret_val
 
 def chat_gpt_noun_request(text):
