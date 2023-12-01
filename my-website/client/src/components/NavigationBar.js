@@ -63,8 +63,9 @@ const NavigationBar = () => {
         </button>
       </div>
       <div className="nav-links">
-        <a href="/products">Products <Countdown /></a>
-        <a href="/HowItWorks" className="how-it-works">Why us</a>
+        {/* Updated this line */}
+        <Link to="/offers">Products <Countdown /></Link>
+        <Link to="/how-it-works" className="how-it-works">Why us</Link>
         <a href="/safety" className="hide-on-small">Safety</a>
         <a href="/support">Support</a>
       </div>
