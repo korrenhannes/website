@@ -153,13 +153,16 @@ function CloudAPIPage() {
         <h1>Transform Your Content, Transform Your Influence</h1>
         <div className="search-bar-container">
           <form onSubmit={handleSearchSubmit} className="search-form">
-            <input
-              type="text"
-              id="google-like-search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Enter search query"
-            />
+            <div className="input-logo-container">
+              <input
+                type="text"
+                id="google-like-search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Enter search query"
+              />
+              <img src="\magnifying-glass_2015241.png" alt="Logo" className="search-logo" />
+            </div>
             <button type="submit">search</button>
           </form>
         </div>

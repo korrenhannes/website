@@ -32,17 +32,12 @@
   z-index: 2; /* Above the overlay */
   text-align: center;
   color: white;
-
-  /* Full width and height to fill the parent container */
   width: 100%;
   height: 100%;
-
-  /* Use flexbox to center the content */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
   padding: 20px;
   box-sizing: border-box;
 }
@@ -115,28 +110,53 @@
   text-align: center;
 }
 
+
 .search-form {
-  display: inline-block;
-  margin: 0 auto;
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  margin-top: 20px;
 }
 
 
-.search-form {
-  margin-top: 20px; /* Spacing above the search form */
+.search-logo {
+  width: 24px; /* Adjust the width as needed */
+  height: 24px; /* Adjust the height as needed */
+  margin-right: 10px; /* Space between logo and search input */
+}
+
+.input-logo-container {
+  display: flex;
+  align-items: center; /* Align items in the center vertically */
+  border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
+  border-radius: 24px; /* Rounded corners */
+  flex-grow: 1; /* Take available space */
+}
+
+.input-logo-container {
+  display: flex;
+  align-items: center; /* Align items in the center vertically */
+  border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
+  border-radius: 24px; /* Rounded corners */
+  flex-grow: 1; /* Take available space */
+  background-color: white; /* Ensuring the background inside the border is white */
+  padding-left: 10px; /* Space on the left inside the container */
 }
 
 #google-like-search {
-  width: 480px; /* Google's search bar width */
+  flex-grow: 1; /* Allows the input to take the available space */
+  width: auto; /* Auto width to fit flex container */
   height: 44px; /* Height for a comfortable search bar */
   padding: 0 20px;
   font-size: 16px; /* Font size similar to Google's */
-  border: 1px solid #dfe1e5; /* Google's border color */
+  border: none;
   border-radius: 24px; /* Rounded corners */
-  margin-bottom: 20px; /* Spacing for aesthetic */
+  margin-right: 10px; /* Spacing between search input and button */
 }
+
 
 #google-like-search:focus {
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
   border-color: rgba(223,225,229,0);
 }
+
