@@ -8,13 +8,13 @@ import '../styles/NavigationBar.css';
 function CloudAPIPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu'; // Replace with your Pexels API key
+  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu';
   const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
   const fetchVideos = async () => {
@@ -110,27 +110,24 @@ function CloudAPIPage() {
   }, []);
 
   const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true); // Set loading state to true when search starts
-    const folderName = 'folder_check'; // Replace this with the logic for setting your folder name
+    if (e) e.preventDefault();
+    setIsLoading(true);
+    // ... rest of the function logic
+    const folderName = 'folder_check';
     try {
-      // Send the request to the backend
       const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
         link: searchQuery,
         folder_name: folderName
       });
       console.log('Video processing started:', response.data);
-      handleRedirection(); // Call handleRedirection to navigate to the appropriate route
+      handleRedirection();
     } catch (error) {
       console.error('Error submitting search:', error.message);
-      setError('Error processing your request. Please try again.'); // Set error state
+      setError('Error processing your request. Please try again.');
     } finally {
-      setIsLoading(false); // Set loading state to false after the request is complete
+      setIsLoading(false);
     }
   };
-
-  
-  
 
   const handleRedirection = () => {
     switch(userPaymentPlan) {
@@ -143,6 +140,10 @@ function CloudAPIPage() {
       default:
         navigate('/free-user');
     }
+  };
+
+  const handleLogoClick = () => {
+    handleSearchSubmit();
   };
 
   return (
@@ -161,7 +162,12 @@ function CloudAPIPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter search query"
               />
-              <img src="\magnifying-glass_2015241.png" alt="Logo" className="search-logo" />
+              <img
+                src="\magnifying-glass_2015241.png"
+                alt="Logo"
+                className="search-logo"
+                onClick={handleLogoClick}
+              />
             </div>
             <button type="submit">search</button>
           </form>
