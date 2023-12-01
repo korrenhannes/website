@@ -59,7 +59,7 @@ const NavigationBar = () => {
     <nav className="navigation-bar">
       <div className="nav-logo">
         <button onClick={navigateToCloudAPI} className="logo-button">
-          <img src="/path-to-your-logo.png" alt="Logo" />
+          <img src="/WhatsApp Image 2023-12-01 at 01.53.28.jpeg" alt="Logo" />
         </button>
       </div>
       <div className="nav-links">
