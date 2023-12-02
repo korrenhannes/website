@@ -155,10 +155,50 @@
 
 #     return json_data
 
+def read_csv_column(csv_file, column_name):
+    try:
+        # Read the CSV file into a DataFrame
+        df = pd.read_csv(csv_file)
+
+        # Extract the values from the specified column
+        column_values = df[column_name].tolist()
+
+        for i in range(len(column_values)):
+            print(f"{i+1}. {column_values[i]}")
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
 import whisper
 import pandas as pd
 import numpy as np
 import os
-
+from textblob import TextBlob
+import spacy
 if __name__ == "__main__":
-  pass
+  # read_csv_column("C://Users//along//VS Code//Shorts Project//website//downloaded_files//fourth_test//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392_tmp0.csv", 'text')
+
+  nlp = spacy.load("en_core_web_trf")
+  text = """Alright, listen, I gotta tell you guys about this mind-blowing conversation I had the other day. I had this expert on the podcast, right? And we started talking about the moon landing. Now, I know, I know, we've all heard the stories, but this one, man, it's next level.
+  So, this dude comes on, and he's dropping knowledge bombs left and right. He's like, 'Joe, you ever thought about the moon landing being a giant psychedelic experience for the entire planet?' And I'm like, 'Hold on, what? Psychedelic moon landing?' So, I'm all ears, right?
+  He starts breaking it down, talking about how the whole moon landing was this massive, collective trip for humanity. Like, the government, they hired the best minds in psychedelics to design this experience for us. The whole world tuned in, and we were all tripping together, man.
+  He's like, 'Picture this, Joe. You got Neil Armstrong, Buzz Aldrin, and Michael Collins up there in the capsule, dropping acid. Mission Control? All on shrooms. And the rest of us down here on Earth? We're watching the whole thing unfold on our black and white TVs, totally unaware that we're part of this cosmic journey.'
+  Now, I'm sitting there, mind blown, thinking, 'What if the moon landing wasn't just a technological achievement but a global, mind-expanding event?' Like, the whole world was connected through this shared hallucination of space travel.
+  And then, he drops the bombshell – he's like, 'Joe, what if the moon isn't even real? What if it's a projection, a hologram, and the moon landing was just a way to program our minds with this idea of space exploration?' Dude, my head nearly exploded at that point.
+  I'm not saying I buy into it, but it's wild, right? Just imagine, the moon landing as a trip for the masses, expanding our collective consciousness. It's the kind of stuff that makes you question everything, man. So, there you have it, the moon landing, not just a giant leap for mankind, but a giant trip for mankind!
+  """
+  # lst = text.split(" ")
+  # for i in range(len(lst)):
+  #   print(f"{i+1}. {lst[i]}", end="\\n")
+  # # blob = TextBlob(text)
+  doc = nlp(text)
+  noun_chunks = [chunk.text for chunk in doc.noun_chunks]
+  unique_chunks = {}
+
+# Iterate through noun chunks and add them to the dictionary
+for chunk in doc.noun_chunks:
+    unique_chunks[chunk.text] = True
+
+# Print the unique noun chunks
+print(unique_chunks.keys())

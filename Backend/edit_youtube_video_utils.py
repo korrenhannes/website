@@ -18,12 +18,12 @@ from nltk.corpus import wordnet as wn
 from textblob import TextBlob
 from openai import OpenAI
 from moviepy.editor import VideoFileClip
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
+import spacy
 
 from moviepy.video.io.VideoFileClip import VideoFileClip
 
 pexels_api_key = "QfGj5czSqWpkA3F27J8V9tTw5h7Eo50sZ6rstEUJt7bbbIIQZt4Th0wq"
-CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases. Which one of them is the most visually appealing in your mind and would fit well as a picture/video in a clip? You're answer should be **JUST** the noun!"
+CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases. Which one of them is the most visually appealing in your mind and would fit well as a picture/video in a clip? You're answer should be **JUST** the noun.\n**NO ADDITIONAL WORDS!**"
 PICTURE_GPT_MODEL = 'gpt-3.5-turbo'
 chat_gpt_picture_api = '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'
 
@@ -285,8 +285,15 @@ def get_relevant_video(text, temp_folder, res_per_page=50):
     return ret_val
 
 def chat_gpt_noun_request(text):
-  blob = TextBlob(text)
-  chat_request = CHAT_PICTURE_PROMPT + '\n' + '\n'.join(blob.noun_phrases)
+  nlp = spacy.load("en_core_web_trf")
+  doc = nlp(text)
+  unique_chunks = {}
+
+# Iterate through noun chunks and add them to the dictionary
+  for chunk in doc.noun_chunks:
+    unique_chunks[chunk.text] = True
+
+  chat_request = CHAT_PICTURE_PROMPT + '\n' + '\n'.join(unique_chunks.keys())
   conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": chat_request}
@@ -311,10 +318,11 @@ def get_start_times(key_words_lst, dfs):
 
 def filter_rows(target_words, df):
   for i in range(len(df) - len(target_words) + 1):
-    window_words = df.loc[i:i+len(target_words)-1, 'text'].tolist()
+    # lst = df.iloc[i:i+len(target_words)-1]['text'].tolist()
+    window_words = df.iloc[i:i+len(target_words)]['text'].tolist()
     window_words_clean = [clean_str(wrd) for wrd in window_words] # Sometimes empty at the end of the loop, not sure how or why that would be the case
     if window_words_clean == target_words:
-      return df.loc[i, 'start']
+      return df.iloc[i]['start']
   return None
 
 def clean_str(s):

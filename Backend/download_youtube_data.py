@@ -34,7 +34,7 @@ WHISPER_MODEL = "medium.en"
 class MyCustomException(Exception):
     pass
 class YoutubeData:
-    def __init__(self, link, name, n_vids=5, dest="downloaded_files/",buffer = 29):
+    def __init__(self, link, name, n_vids=5, dest="downloaded_files/",buffer = 69):
         self.buffer = buffer
         self.name = name
         self.link = link
