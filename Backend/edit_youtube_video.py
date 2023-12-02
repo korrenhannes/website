@@ -28,7 +28,7 @@ USING_WHISPER = True # Change if using Google Cloud's Speech API
 
 FIRST_RES = "Of course! Please provide the text you'd like me to summarize using direct quotes, and I'll follow your instructions."
 FIRST_INPUT = "\n send me a full long list that numbers all the words in the original text I sent you"
-SECOND_INPUT = "Create a COHERENT summary of the MAIN IDEA OF THE TEXT using only **comprehensive** and **LONG** quotes from the text. WRITE the INDEX RANGE of each quotation on the LIST!"
+SECOND_INPUT = "Create a COHERENT summary of the MAIN IDEA OF THE TEXT using only **comprehensive** and **LONG** quotes from the text. WRITE the INDEX RANGE of each quotation on the LIST! Format: (x-y)"
 
 # BASIC_PROMPT = "delete the less relavent parts of the next text. Don't rewrite ANYTHING just delete parts. remain with 100 words\n"
 openai_api_key = "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"
