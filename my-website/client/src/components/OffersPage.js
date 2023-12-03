@@ -2,13 +2,14 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
 import '../styles/NavigationBar.css'; // Ensure the styles for the navigation bar are imported
+import PayPalButton from './PaypalButton';
 
 function OffersPage() {
   const navigate = useNavigate();
 
-  const handleSelectPlan = (plan) => {
-    navigate('/payment', { state: { plan } });
-  };
+  //const handleSelectPlan = (plan) => {
+   // navigate('/payment', { state: { plan } });
+  //};
 
   return (
     <>
@@ -28,7 +29,7 @@ function OffersPage() {
                   <div className="card-body">
                     <h5 className="card-title">Plan A</h5>
                     <p className="card-text">Description of Plan A...</p>
-                    <button className="btn btn-primary" onClick={() => handleSelectPlan('Plan A')}>Select Plan A</button>
+                    <PayPalButton />
                   </div>
                 </div>
               </div>
@@ -46,7 +47,7 @@ function OffersPage() {
                   <div className="card-body">
                     <h5 className="card-title">Plan B</h5>
                     <p className="card-text">Description of Plan B...</p>
-                    <button className="btn btn-primary" onClick={() => handleSelectPlan('Plan B')}>Select Plan B</button>
+                    <PayPalButton />
                   </div>
                 </div>
               </div>

@@ -6,7 +6,6 @@ import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
 import CloudAPIPage from './components/CloudAPIPage';
 import OffersPage from './components/OffersPage';
-import PaymentPage from './components/PaymentPage';
 import FreeUserPage from './components/FreeUserPage';
 import RegularUserPage from './components/RegularUserPage';
 import PremiumUserPage from './components/PremiumUserPage';
@@ -55,7 +54,6 @@ function App() {
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/explore-further" element={<ExploreFurther />} />
             <Route path="/offers" element={<OffersPage />} />
-            <Route path="/payment" element={<PaymentPage />} />
             <Route path="/free-user" element={<FreeUserPage />} />
             <Route path="/regular-user" element={<RegularUserPage />} />
             <Route path="/premium-user" element={<PremiumUserPage />} />
