@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
 import '../styles/NavigationBar.css'; // Ensure the styles for the navigation bar are imported
 import PayPalButton from './PaypalButton';
+import planImage from "../assets/planIcon2.jpg"
 
 function OffersPage() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function OffersPage() {
             <div className="card mb-3" style={{ maxWidth: '540px' }}>
               <div className="row g-0">
                 <div className="col-md-4">
-                  <img src="path_to_plan_a_image.jpg" className="img-fluid rounded-start" alt="Plan A" />
+                  <img src={planImage} className="img-fluid rounded-start" alt="Plan A" />
                 </div>
                 <div className="col-md-8">
                   <div className="card-body">
@@ -41,7 +42,7 @@ function OffersPage() {
             <div className="card" style={{ maxWidth: '540px' }}>
               <div className="row g-0">
                 <div className="col-md-4">
-                  <img src="path_to_plan_b_image.jpg" className="img-fluid rounded-start" alt="Plan B" />
+                  <img src={planImage} className="img-fluid rounded-start" alt="Plan B" />
                 </div>
                 <div className="col-md-8">
                   <div className="card-body">
