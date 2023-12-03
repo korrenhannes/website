@@ -3,10 +3,20 @@ import fetch from "node-fetch";
 import "dotenv/config";
 import path from "path";
   
-const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PORT = 8888 } = process.env;
+const  PAYPAL_CLIENT_ID= AVkoSETxNqk-fNzT5wZPZd-fRKOSwpoUwJzlC26D8XZJ0LcfFGP3U5LyFSzMOj9NaZg4gGvgOGWDgV0L;
+const  PAYPAL_CLIENT_SECRET = EIsApyu-xeMbr738BnnvmjWsLQLELbhNZEkOH4LRn2uOQXswnypXoeVEFQc5VGkwtdy-Sz7GIcthG9kW;
+const PORT = 3001;
+const express = require('express');
+const cors = require('cors');
 const base = "https://api-m.sandbox.paypal.com";
 const app = express();
   
+const corsOptions = {
+  origin: 'http://localhost:3001/payment', // Replace with your frontend URL
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 // host static files
 app.use(express.static("client"));
   

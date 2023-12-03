@@ -1,96 +1,80 @@
-import React, { useEffect } from 'react';
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  usePayPalScriptReducer
+} from "@paypal/react-paypal-js";
 
 const PayPalButton = () => {
-  useEffect(() => {
-    window.paypal
-      .Buttons({
-        async createOrder() {
-          try {
-            const response = await fetch("/api/orders", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                cart: [
-                  {
-                    id: "YOUR_PRODUCT_ID",
-                    quantity: "YOUR_PRODUCT_QUANTITY",
-                  },
-                ],
-              }),
-            });
-
-            const orderData = await response.json();
-
-            if (orderData.id) {
-              return orderData.id;
-            } else {
-              const errorDetail = orderData?.details?.[0];
-              const errorMessage = errorDetail
-                ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                : JSON.stringify(orderData);
-
-              throw new Error(errorMessage);
-            }
-          } catch (error) {
-            console.error(error);
-            resultMessage(`Could not initiate PayPal Checkout...<br><br>${error}`);
-          }
+  const style = {"layout":"vertical"};
+  function createOrder() {
+    // replace this url with your server
+    return fetch("https://react-paypal-js-storybook.fly.dev/api/paypal/create-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
         },
-        async onApprove(data, actions) {
-          try {
-            const response = await fetch(`/api/orders/${data.orderID}/capture`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            });
-
-            const orderData = await response.json();
-
-            const errorDetail = orderData?.details?.[0];
-
-            if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-              return actions.restart();
-            } else if (errorDetail) {
-              throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
-            } else if (!orderData.purchase_units) {
-              throw new Error(JSON.stringify(orderData));
-            } else {
-              const transaction =
-                orderData?.purchase_units?.[0]?.payments?.captures?.[0] ||
-                orderData?.purchase_units?.[0]?.payments?.authorizations?.[0];
-              resultMessage(
-                `Transaction ${transaction.status}: ${transaction.id}<br><br>See console for all available details`,
-              );
-              console.log(
-                "Capture result",
-                orderData,
-                JSON.stringify(orderData, null, 2),
-              );
-            }
-          } catch (error) {
-            console.error(error);
-            resultMessage(
-              `Sorry, your transaction could not be processed...<br><br>${error}`,
-            );
-          }
+        // use the "body" param to optionally pass additional order information
+        // like product ids and quantities
+        body: JSON.stringify({
+            cart: [
+                {
+                    sku: "1blwyeo8",
+                    quantity: 2,
+                },
+            ],
+        }),
+    })
+        .then((response) => response.json())
+        .then((order) => {
+            // Your code here after create the order
+            return order.id;
+        });
+}
+function onApprove(data) {
+    // replace this url with your server
+    return fetch("https://react-paypal-js-storybook.fly.dev/api/paypal/capture-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
         },
-      })
-      .render("#paypal-button-container");
-  }, []);
+        body: JSON.stringify({
+            orderID: data.orderID,
+        }),
+    })
+        .then((response) => response.json())
+        .then((orderData) => {
+            // Your code here after capture the order
+        });
+}
 
   // Example function to show a result to the user. You can customize this function.
   const resultMessage = (message) => {
     const container = document.querySelector("#result-message");
     container.innerHTML = message;
   };
+  const ButtonWrapper = ({ showSpinner }) => {
+    const [{ isPending }] = usePayPalScriptReducer();
+
+    return (
+        <>
+            { (showSpinner && isPending) && <div className="spinner" /> }
+            <PayPalButtons
+                style={style}
+                disabled={false}
+                forceReRender={[style]}
+                fundingSource={undefined}
+                createOrder={createOrder}
+                onApprove={onApprove}
+            />
+        </>
+    );
+}
 
   return (
-    <div>
-      <div id="paypal-button-container"></div>
-      <p id="result-message"></p>
+    <div style={{ maxWidth: "750px", minHeight: "200px" }}>
+      <PayPalScriptProvider options={{ clientId: "test", components: "buttons", currency: "USD" }}>
+        <ButtonWrapper showSpinner={false} />
+      </PayPalScriptProvider>
     </div>
   );
 };
