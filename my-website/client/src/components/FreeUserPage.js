@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
@@ -15,14 +14,12 @@ import '../styles/NavigationBar.css';
 import '../styles/Sidebar.css';
 
 function RegularUserPage() {
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
   const [showHeadlineEditor, setShowHeadlineEditor] = useState(false);
   const [showCaptionOptions, setShowCaptionOptions] = useState(false);
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [userPaymentPlan, setUserPaymentPlan] = useState('free');
   const [subtitles, setSubtitles] = useState([]);
   const [headline, setHeadline] = useState('');
   const [captionStyle, setCaptionStyle] = useState({
@@ -32,102 +29,55 @@ function RegularUserPage() {
   });
   const [activeComponent, setActiveComponent] = useState(null);
   const backgroundVideoRef = useRef(null);
-  const navigate = useNavigate();
   const socket = useRef(null);
+  const playerRef = useRef(null);
 
-  const videoOptions = {
-    autoplay: true,
-    controls: true,
-    fluid: true,
-    sources: [{
-      src: '', // Initially empty, will be set upon fetching video
-      type: 'video/mp4'
-    }]
-  };
-
-  // Initialize Socket.IO client
   useEffect(() => {
     socket.current = io('http://localhost:3000');
+    socket.current.on('connect', () => console.log('Connected to socket.io server'));
+    return () => {
+      if (socket.current) {
+        socket.current.disconnect();
+      }
+    };
+  }, []);
 
-    socket.current.on('connect', () => {
-      console.log('Connected to socket.io server');
+  useEffect(() => {
+    // Initialize video.js player
+    playerRef.current = videojs(backgroundVideoRef.current, {
+      autoplay: true,
+      controls: true,
+      fluid: true,
+    }, () => {
+      console.log('Player is ready');
+      fetchVideosFromGCloud();
     });
 
+    // Dispose the player on dismount
     return () => {
-      socket.current.disconnect();
+      if (playerRef.current) {
+        playerRef.current.dispose();
+      }
     };
   }, []);
 
-  // Initialize video.js player
-  useEffect(() => {
-    const player = videojs(backgroundVideoRef.current, videoOptions);
-
-    return () => {
-      player.dispose();
-    };
-  }, []);
-
-  // Fetch videos and user payment plan
-  useEffect(() => {
-    fetchVideos();
-    fetchUserPaymentPlan();
-
-    const handleDoubleClick = () => {
-      fetchVideos();
-    };
-
-    window.addEventListener('dblclick', handleDoubleClick);
-
-    return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
-    };
-  }, []);
-
-  const fetchVideos = async () => {
+  const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const randomPage = Math.floor(Math.random() * 10) + 1;
-      const response = await axios.get('https://api.pexels.com/videos/popular', {
-        headers: { Authorization: 'Your_Pexels_API_Key' },
-        params: { per_page: 2, page: randomPage }
-      });
-      const backgroundVideo = response.data.videos[0].video_files[0].link;
-
-      // Update video source in video.js player
-      const player = videojs(backgroundVideoRef.current);
-      player.src({ src: backgroundVideo, type: 'video/mp4' });
+      const response = await axios.get('http://localhost:3000/api/signed-urls');
+      const signedUrls = response.data.signedUrls;
+      if (signedUrls && signedUrls.length > 0) {
+        setVideos(signedUrls);
+        // Set the source for the video player
+        playerRef.current.src({ src: signedUrls[0], type: 'video/mp4' });
+      } else {
+        setError('No videos found in Google Cloud Storage.');
+      }
     } catch (err) {
-      setError('Error fetching videos: ' + err.message);
+      setError(`Error fetching videos: ${err.message}`);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchUserPaymentPlan = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, defaulting to free plan');
-        setUserPaymentPlan('free');
-        return;
-      }
-  
-      const response = await axios.get('http://localhost:3000/api/user/payment-plan', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-  
-      if (response && response.data && response.data.paymentPlan) {
-        setUserPaymentPlan(response.data.paymentPlan);
-      } else {
-        console.log('No payment plan info found, defaulting to free plan');
-        setUserPaymentPlan('free');
-      }
-    } catch (error) {
-      console.error('Error fetching user payment plan:', error.message);
-      setUserPaymentPlan('free');
     }
   };
 
@@ -155,28 +105,13 @@ function RegularUserPage() {
     };
   };
 
-  const handleRedirection = () => {
-    switch(userPaymentPlan) {
-      case 'regular':
-        navigate('/regular-user');
-        break;
-      case 'premium':
-        navigate('/premium-user');
-        break;
-      default:
-        navigate('/free-user'); // Default or non-registered users
-    }
-  };
-  
-  
-
   return (
     <div className="full-screen-container">
       <NavigationBar />
       <div className="sidebar">
-        <button onClick={() => handleSetActiveComponent('subtitles')}>Subtitles</button>
-        <button onClick={() => handleSetActiveComponent('headline')}>Headline</button>
-        <button onClick={() => handleSetActiveComponent('captionOptions')}>Caption Options</button>
+        <button onClick={() => setShowSubtitleEditor(!showSubtitleEditor)}>Subtitles</button>
+        <button onClick={() => setShowHeadlineEditor(!showHeadlineEditor)}>Headline</button>
+        <button onClick={() => setShowCaptionOptions(!showCaptionOptions)}>Caption Options</button>
         <div className="sidebar-content">
           {activeComponent === 'subtitles' && <SubtitleEditor subtitles={subtitles} setSubtitles={setSubtitles} videoRef={backgroundVideoRef} />}
           {activeComponent === 'headline' && <HeadlineEditor headline={headline} setHeadline={setHeadline} />}
