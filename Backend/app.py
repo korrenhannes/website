@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
 import os
 import threading
@@ -21,8 +21,14 @@ mongo_client = MongoClient(mongo_uri)
 db = mongo_client['your_database_name']
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3001"}})
-socketio = SocketIO(app, cors_allowed_origins="*")
+
+#Enable CORS for Flask routes with support for credentials
+# Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
+CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
+
+# Specify the origins that are allowed to connect for SocketIO
+# Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:3001", logger=True, engineio_logger=True)
 
 google_cloud_key_file = os.getenv('GOOGLE_CLOUD_KEY_FILE')
 if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):

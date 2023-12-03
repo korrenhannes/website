@@ -66,7 +66,7 @@ const NavigationBar = () => {
         {/* Updated this line */}
         <Link to="/offers">Products <Countdown /></Link>
         <Link to="/how-it-works" className="how-it-works">Why us</Link>
-        <a href="/safety" className="hide-on-small">Safety</a>
+        <a href="/safety" className="hide-on-small">partner with us</a>
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">

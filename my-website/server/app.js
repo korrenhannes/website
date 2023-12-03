@@ -12,7 +12,23 @@ const passport = require('./passportSetup');
 const app = express();
 const port = process.env.PORT || 3000;
 const server = http.createServer(app);
-const io = socketIO(server);
+
+// Configure CORS for Express
+const corsOptions = {
+  origin: "http://localhost:3001", // Replace with your client's origin
+  credentials: true, // Allow credentials (cookies, sessions, etc.)
+};
+app.use(cors(corsOptions));
+
+// Configure CORS for Socket.IO
+const io = socketIO(server, {
+  cors: {
+    origin: "http://localhost:3001", // Replace with your client's origin
+    methods: ["GET", "POST"],
+    credentials: true
+  }
+});
+
 const storage = new Storage({ keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE });
 const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET);
 const upload = multer({ dest: 'uploads/' });
@@ -25,8 +41,6 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 console.log('GOOGLE_CLOUD_KEY_FILE:', process.env.GOOGLE_CLOUD_KEY_FILE);
 console.log('GOOGLE_CLOUD_BUCKET:', process.env.GOOGLE_CLOUD_BUCKET);
 
-// Use CORS and JSON middleware
-app.use(cors());
 app.use(express.json());
 
 // Use authentication routes
@@ -35,7 +49,6 @@ app.use('/api/auth', authRoutes);
 // Initialize Passport
 app.use(passport.initialize());
 
-// MongoDB connection using environment variable for URI
 mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -47,14 +60,11 @@ mongoose.connect(process.env.DB_URI, {
     process.exit(1);
 });
 
-// Socket.IO connection setup
 io.on('connection', (socket) => {
     console.log('New client connected');
-
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
-
     // Handle other socket events as necessary
 });
 

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import { GoogleOAuthProvider } from '@react-oauth/google'; // Import GoogleOAuthProvider
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import io from 'socket.io-client';
+
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
@@ -15,6 +17,18 @@ import ExploreFurther from './components/ExploreFurther';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    // Establish Socket.IO connection
+    const newSocket = io('http://localhost:3000');
+    setSocket(newSocket);
+
+    return () => {
+      // Disconnect Socket.IO when the app unmounts
+      if (newSocket) newSocket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -23,20 +37,22 @@ function App() {
 
   const handleLoginSuccess = (data) => {
     console.log('Logged in user:', data);
+    localStorage.setItem('token', data.token); // Assuming the token is in the data response
     setIsLoggedIn(true);
   };
 
   const handleSignupSuccess = (data) => {
     console.log('Signed up user:', data);
-    // You may want to set isLoggedIn here as well, depending on your signup flow
+    // Handle signup success (similar to login, if applicable)
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    // Disconnect Socket.IO when the user logs out
+    if (socket) socket.disconnect();
   };
 
-  // Your Google client ID
   const googleClientId = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your actual client ID
 
   return (
@@ -44,12 +60,9 @@ function App() {
       <Router>
         <div className="App">
           <NavigationBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
-          
           <Routes>
-            <Route path="/" element={<Navigate replace to="/login" />} />
-            <Route path="/login" element={
-              isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />
-            } />
+            <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
+            <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
             <Route path="/cloud-api" element={<CloudAPIPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
