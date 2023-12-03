@@ -1,28 +1,84 @@
 import React, { useState, useEffect } from 'react';
-import PayPalButton from './PayPalButton';
-import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Ensure axios is imported
+import {
+  PayPalScriptProvider,
+  PayPalButtons,
+  usePayPalScriptReducer
+} from "@paypal/react-paypal-js";
 
 function PaymentPage() {
-  const location = useLocation();
+  const style = {"layout":"vertical"};
   const [plan, setPlan] = useState('');
-  //const setUserEmail = useState(''); // Add state to store user email
+  function createOrder() {
+    // replace this url with your server
+    return fetch("https://react-paypal-js-storybook.fly.dev/api/paypal/create-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        // use the "body" param to optionally pass additional order information
+        // like product ids and quantities
+        body: JSON.stringify({
+            cart: [
+                {
+                    sku: "1blwyeo8",
+                    quantity: 2,
+                },
+            ],
+        }),
+    })
+        .then((response) => response.json())
+        .then((order) => {
+            // Your code here after create the order
+            return order.id;
+        });
+}
+function onApprove(data) {
+    // replace this url with your server
+    return fetch("https://react-paypal-js-storybook.fly.dev/api/paypal/capture-order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            orderID: data.orderID,
+        }),
+    })
+        .then((response) => response.json())
+        .then((orderData) => {
+            // Your code here after capture the order
+        });
+}
 
-  useEffect(() => {
-    // Assuming user's email and selected plan are passed in location.state
-    if (location.state) {
-      setPlan(location.state.plan);
-      //setUserEmail(location.state.userEmail);
+  // Example function to show a result to the user. You can customize this function.
+  const resultMessage = (message) => {
+    const container = document.querySelector("#result-message");
+    container.innerHTML = message;
+  };
+  const ButtonWrapper = ({ showSpinner }) => {
+    const [{ isPending }] = usePayPalScriptReducer();
+
+    return (
+        <>
+            { (showSpinner && isPending) && <div className="spinner" /> }
+            <PayPalButtons
+                style={style}
+                disabled={false}
+                forceReRender={[style]}
+                fundingSource={undefined}
+                createOrder={createOrder}
+                onApprove={onApprove}
+            />
+        </>
+    );
     }
-  }, [location.state]);
-
 
   return (
     <div>
       <h1>Complete Your Payment</h1>
       <p>You have selected: {plan}</p>
-      <PayPalButton />
-    </div>
+      <PayPalScriptProvider options={{ clientId: "test", components: "buttons", currency: "USD" }}>
+        <ButtonWrapper showSpinner={false} />
+      </PayPalScriptProvider>    </div>
   );
 };
 
