@@ -176,29 +176,51 @@ import numpy as np
 import os
 from textblob import TextBlob
 import spacy
+import face_recognition
+import cv2
+from tqdm import tqdm
+from skimage.metrics import structural_similarity as ssim
+from moviepy.video.io.VideoFileClip import VideoFileClip
+import imutils
+
+prototxt = 'deploy.prototxt'
+model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
+net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
+
+def is_cut(frame1, frame2, threshold=0.7):
+    # Convert frames to grayscale
+    gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+
+    # Compute the Structural Similarity Index (SSI)
+    similarity_index, _ = ssim(gray1, gray2, full=True)
+
+    # Check if the SSI is below the threshold
+    return similarity_index < threshold
+
+def get_frame_info(frame, cut_time):
+  cut_info = [[], [], cut_time]
+  image = imutils.resize(frame, width=400)
+  (h, w) = image.shape[:2]
+  # resize it to have a maximum width of 400 pixels
+  blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
+  net.setInput(blob)
+  detections = net.forward()
+  for i in range(0, detections.shape[2]):
+    # extract the confidence (i.e., probability) associated with the prediction
+    confidence = detections[0, 0, i, 2]
+    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+    (startX, startY, endX, endY) = box.astype("int")
+    if confidence > 0.3:
+      cut_info[0].append(((startX + endX) / 2, (startY + endY) / 2))
+      cut_info[1].append(confidence)
+  return cut_info
+
+
 if __name__ == "__main__":
-  # read_csv_column("C://Users//along//VS Code//Shorts Project//website//downloaded_files//fourth_test//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392_tmp0.csv", 'text')
-
-  nlp = spacy.load("en_core_web_trf")
-  text = """Alright, listen, I gotta tell you guys about this mind-blowing conversation I had the other day. I had this expert on the podcast, right? And we started talking about the moon landing. Now, I know, I know, we've all heard the stories, but this one, man, it's next level.
-  So, this dude comes on, and he's dropping knowledge bombs left and right. He's like, 'Joe, you ever thought about the moon landing being a giant psychedelic experience for the entire planet?' And I'm like, 'Hold on, what? Psychedelic moon landing?' So, I'm all ears, right?
-  He starts breaking it down, talking about how the whole moon landing was this massive, collective trip for humanity. Like, the government, they hired the best minds in psychedelics to design this experience for us. The whole world tuned in, and we were all tripping together, man.
-  He's like, 'Picture this, Joe. You got Neil Armstrong, Buzz Aldrin, and Michael Collins up there in the capsule, dropping acid. Mission Control? All on shrooms. And the rest of us down here on Earth? We're watching the whole thing unfold on our black and white TVs, totally unaware that we're part of this cosmic journey.'
-  Now, I'm sitting there, mind blown, thinking, 'What if the moon landing wasn't just a technological achievement but a global, mind-expanding event?' Like, the whole world was connected through this shared hallucination of space travel.
-  And then, he drops the bombshell – he's like, 'Joe, what if the moon isn't even real? What if it's a projection, a hologram, and the moon landing was just a way to program our minds with this idea of space exploration?' Dude, my head nearly exploded at that point.
-  I'm not saying I buy into it, but it's wild, right? Just imagine, the moon landing as a trip for the masses, expanding our collective consciousness. It's the kind of stuff that makes you question everything, man. So, there you have it, the moon landing, not just a giant leap for mankind, but a giant trip for mankind!
-  """
-  # lst = text.split(" ")
-  # for i in range(len(lst)):
-  #   print(f"{i+1}. {lst[i]}", end="\\n")
-  # # blob = TextBlob(text)
-  doc = nlp(text)
-  noun_chunks = [chunk.text for chunk in doc.noun_chunks]
-  unique_chunks = {}
-
-# Iterate through noun chunks and add them to the dictionary
-for chunk in doc.noun_chunks:
-    unique_chunks[chunk.text] = True
-
-# Print the unique noun chunks
-print(unique_chunks.keys())
+  video = VideoFileClip("C://Users//along//VS Code//Shorts Project//website//downloaded_files//third_test//finalvideo_0.mp4")
+  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(video.iter_frames())]
+  dur = video.duration
+  for i in range(len(frames)-1):
+    if is_cut(frame1=frames[i], frame2=frames[i+1]):
+      print(f"Cut on frame num: {i+1}")
