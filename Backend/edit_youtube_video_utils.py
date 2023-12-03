@@ -308,10 +308,11 @@ def get_start_times(key_words_lst, dfs):
 
 def filter_rows(target_words, df):
   for i in range(len(df) - len(target_words) + 1):
-    window_words = df.loc[i:i+len(target_words)-1, 'text'].tolist()
+    # lst = df.iloc[i:i+len(target_words)-1]['text'].tolist()
+    window_words = df.iloc[i:i+len(target_words)]['text'].tolist()
     window_words_clean = [clean_str(wrd) for wrd in window_words] # Sometimes empty at the end of the loop, not sure how or why that would be the case
     if window_words_clean == target_words:
-      return df.loc[i, 'start']
+      return df.iloc[i]['start']
   return None
 
 def clean_str(s):

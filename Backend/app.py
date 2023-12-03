@@ -4,21 +4,40 @@ import pandas as pd
 import os
 import threading
 from google.cloud import storage
+from dotenv import load_dotenv
 
 from download_youtube_data import YoutubeData
 from edit_youtube_video import EditedVideos
 
+# Load environment variables from .env file
+load_dotenv()
+
 app = Flask(__name__)
 CORS(app)
 
+# Now check if the GOOGLE_CLOUD_KEY_FILE variable is set
+google_cloud_key_file = os.getenv('GOOGLE_CLOUD_KEY_FILE')
+
+print(f"GOOGLE_CLOUD_KEY_FILE: {google_cloud_key_file}")
+
 # Function to upload files to Google Cloud Storage
 def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name):
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
+    # Check if the source file exists before attempting to upload
+    if not os.path.isfile(source_file_name):
+        print(f"The file {source_file_name} does not exist.")
+        return False
+    
+    try:
+        storage_client = storage.Client.from_service_account_json(os.getenv('GOOGLE_CLOUD_KEY_FILE'))
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_filename(source_file_name)
-    print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+        blob.upload_from_filename(source_file_name)
+        print(f"File {source_file_name} uploaded to {destination_blob_name}.")
+        return True
+    except Exception as e:
+        print(f"Failed to upload {source_file_name} to {destination_blob_name}: {e}")
+        return False
 
 # Function to process the YouTube video and handle the data
 def process_youtube_video(link, save_folder_name):
@@ -31,7 +50,7 @@ def process_youtube_video(link, save_folder_name):
     yt_data_obj = YoutubeData(link, save_folder_name, dest=dest_folder)
     yt_data_obj.save_object()
 
-    edited_videos = EditedVideos(yt_data_obj, load_gpt=True)
+    edited_videos = EditedVideos(yt_data_obj, load_gpt=False)
 
     gcloud_bucket_name = "clipitshorts"
     for i in range(len(edited_videos.faced_subs_vids)):
