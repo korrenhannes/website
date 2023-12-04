@@ -56,17 +56,22 @@ function FreeUserPage() {
           console.log('Player is ready');
           fetchVideosFromGCloud();
         });
+
+        // Add event listener for video end
+        playerRef.current.on('ended', () => {
+          loadNextVideo();
+        });
       }
     }, 0);
 
     return () => {
       if (playerRef.current) {
+        playerRef.current.off('ended'); // Remove the event listener for video end
         playerRef.current.dispose();
         playerRef.current = null;
       }
     };
-}, [backgroundVideoRef]);
-
+  }, [backgroundVideoRef]);
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
@@ -76,13 +81,7 @@ function FreeUserPage() {
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
-        setCurrentVideoIndex(Math.floor(Math.random() * signedUrls.length)); // Set a random video index on load
-        playerRef.current.src({ src: signedUrls[currentVideoIndex], type: 'video/mp4' });
-        playerRef.current.play().then(() => {
-          console.log('Video is playing');
-        }).catch(e => {
-          console.error('Error playing video:', e);
-        });
+        loadVideo(signedUrls[0]); // Load the first video from the list
       } else {
         setError('No videos found in Google Cloud Storage.');
       }
@@ -93,11 +92,21 @@ function FreeUserPage() {
     }
   };
 
+  const loadVideo = (videoUrl) => {
+    playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
+    playerRef.current.load(); // Load the new source
+    playerRef.current.play().catch(e => console.error('Error playing video:', e));
+  }
+
   const loadNextVideo = () => {
+    if (!videos || videos.length === 0) {
+      console.error('Error: Video list is empty or not loaded');
+      return;
+    }
+
     const nextIndex = (currentVideoIndex + 1) % videos.length;
     setCurrentVideoIndex(nextIndex);
-    playerRef.current.src({ src: videos[nextIndex], type: 'video/mp4' });
-    playerRef.current.play().catch(e => console.error('Error playing video:', e));
+    loadVideo(videos[nextIndex]);
   };
 
   // Custom Double Tap Handler
