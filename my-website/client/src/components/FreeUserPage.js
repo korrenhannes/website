@@ -17,6 +17,7 @@ function FreeUserPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
   const [showHeadlineEditor, setShowHeadlineEditor] = useState(false);
   const [showCaptionOptions, setShowCaptionOptions] = useState(false);
@@ -43,14 +44,14 @@ function FreeUserPage() {
   }, []);
 
   useEffect(() => {
-    // Delay the initialization to ensure the video element is available
     setTimeout(() => {
       if (backgroundVideoRef.current && !playerRef.current) {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
+          muted: true, // Mute the video initially
           controls: true,
-          fluid: false, // Set to false to disable automatic resizing
-          aspectRatio: "16:9" // Adjust the aspect ratio if needed
+          fluid: false,
+          aspectRatio: "16:9"
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();
@@ -74,7 +75,13 @@ function FreeUserPage() {
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
-        playerRef.current.src({ src: signedUrls[0], type: 'video/mp4' });
+        playerRef.current.src({ src: signedUrls[currentVideoIndex], type: 'video/mp4' });
+        playerRef.current.play().then(() => {
+          console.log('Video is playing');
+        }).catch(e => {
+          console.error('Error playing video:', e);
+          // Handle autoplay rejection here if needed
+        });
       } else {
         setError('No videos found in Google Cloud Storage.');
       }
@@ -84,6 +91,37 @@ function FreeUserPage() {
       setIsLoading(false);
     }
   };
+
+  const loadNextVideo = () => {
+    const nextIndex = (currentVideoIndex + 1) % videos.length;
+    setCurrentVideoIndex(nextIndex);
+    playerRef.current.src({ src: videos[nextIndex], type: 'video/mp4' });
+    playerRef.current.play().catch(e => console.error('Error playing video:', e));
+  };
+
+  useEffect(() => {
+    const videoElement = backgroundVideoRef.current;
+    let lastTap = 0;
+
+    const handleDoubleTap = (event) => {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 500 && tapLength > 0) {
+        loadNextVideo();
+      }
+      lastTap = currentTime;
+    };
+
+    if (videoElement) {
+      videoElement.addEventListener('touchend', handleDoubleTap);
+    }
+
+    return () => {
+      if (videoElement) {
+        videoElement.removeEventListener('touchend', handleDoubleTap);
+      }
+    };
+  }, [currentVideoIndex, videos]);
 
   const handleSetActiveComponent = (component) => setActiveComponent(activeComponent === component ? null : component);
   const toggleSubtitleEditor = () => setShowSubtitleEditor(!showSubtitleEditor);
