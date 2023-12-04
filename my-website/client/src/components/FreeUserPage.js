@@ -49,7 +49,8 @@ function FreeUserPage() {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
           controls: true,
-          fluid: true,
+          fluid: false, // Set to false to disable automatic resizing
+          aspectRatio: "16:9" // Adjust the aspect ratio if needed
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();
