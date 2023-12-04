@@ -22,9 +22,8 @@ db = mongo_client['your_database_name']
 
 app = Flask(__name__)
 
-#Enable CORS for Flask routes with support for credentials
-# Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
-CORS(app, resources={r"/*": {"origins": "http://localhost:3001"}})
+# Enable CORS with support for credentials and specific origins
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3001"}})
 
 # Specify the origins that are allowed to connect for SocketIO
 # Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
@@ -42,15 +41,21 @@ def generate_signed_url(bucket_name, blob_name):
         storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
+
+        if not blob.exists():
+            print(f"Blob {blob_name} does not exist in the bucket {bucket_name}.")
+            return None
+
         url = blob.generate_signed_url(
             version="v4",
-            expiration=datetime.timedelta(minutes=15),
+            expiration=datetime.timedelta(minutes=1500),
             method="GET"
         )
         return url
     except GoogleCloudError as e:
         print(f"Failed to generate signed URL for {blob_name}: {e}")
         return None
+
 
 def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name):
     if not os.path.isfile(source_file_name):
@@ -108,7 +113,8 @@ def handle_youtube_video():
 def get_signed_urls():
     bucket_name = 'clipitshorts'
     storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-    blobs = storage_client.list_blobs(bucket_name)
+    blobs = list(storage_client.list_blobs(bucket_name))  # Convert iterator to list
+
     signed_urls = [generate_signed_url(bucket_name, blob.name) for blob in blobs]
     return jsonify({'signedUrls': signed_urls})
 

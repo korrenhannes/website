@@ -5,6 +5,7 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
+
 function CloudAPIPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);

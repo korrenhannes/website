@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../api'; // Adjust this path as needed
+import { api } from '../api'; // Importing the Axios instance for Flask
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 import '../styles/LoginForm.css'; // Import the new CSS styles
