@@ -75,12 +75,13 @@ function FreeUserPage() {
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
-        playerRef.current.src({ src: signedUrls[currentVideoIndex], type: 'video/mp4' });
+        const randomIndex = Math.floor(Math.random() * signedUrls.length);
+        setCurrentVideoIndex(randomIndex); // Set a random video index on load
+        playerRef.current.src({ src: signedUrls[randomIndex], type: 'video/mp4' });
         playerRef.current.play().then(() => {
           console.log('Video is playing');
         }).catch(e => {
           console.error('Error playing video:', e);
-          // Handle autoplay rejection here if needed
         });
       } else {
         setError('No videos found in Google Cloud Storage.');
@@ -101,27 +102,16 @@ function FreeUserPage() {
 
   useEffect(() => {
     const videoElement = backgroundVideoRef.current;
-    let lastTap = 0;
-
-    const handleDoubleTap = (event) => {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 500 && tapLength > 0) {
-        loadNextVideo();
-      }
-      lastTap = currentTime;
-    };
-
     if (videoElement) {
-      videoElement.addEventListener('touchend', handleDoubleTap);
+      videoElement.ondblclick = loadNextVideo; // Simplified double-click handling
     }
 
     return () => {
       if (videoElement) {
-        videoElement.removeEventListener('touchend', handleDoubleTap);
+        videoElement.ondblclick = null;
       }
     };
-  }, [currentVideoIndex, videos]);
+  }, [currentVideoIndex, videos, loadNextVideo]);
 
   const handleSetActiveComponent = (component) => setActiveComponent(activeComponent === component ? null : component);
   const toggleSubtitleEditor = () => setShowSubtitleEditor(!showSubtitleEditor);
