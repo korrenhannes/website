@@ -43,8 +43,9 @@ function FreeUserPage() {
   }, []);
 
   useEffect(() => {
-    const initVideoPlayer = () => {
-      if (backgroundVideoRef.current) {
+    // Delay the initialization to ensure the video element is available
+    setTimeout(() => {
+      if (backgroundVideoRef.current && !playerRef.current) {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
           controls: true,
@@ -54,14 +55,12 @@ function FreeUserPage() {
           fetchVideosFromGCloud();
         });
       }
-    };
-
-    // Delay the initialization to ensure the video element is available
-    setTimeout(initVideoPlayer, 0);
+    }, 0);
 
     return () => {
       if (playerRef.current) {
         playerRef.current.dispose();
+        playerRef.current = null;
       }
     };
   }, [backgroundVideoRef]);
