@@ -43,7 +43,6 @@ function FreeUserPage() {
   }, []);
 
   useEffect(() => {
-    // Initialize Video.js player
     const initVideoPlayer = () => {
       if (backgroundVideoRef.current) {
         playerRef.current = videojs(backgroundVideoRef.current, {
@@ -57,21 +56,21 @@ function FreeUserPage() {
       }
     };
 
-    initVideoPlayer();
+    // Delay the initialization to ensure the video element is available
+    setTimeout(initVideoPlayer, 0);
 
     return () => {
-      // Dispose the player on dismount
       if (playerRef.current) {
         playerRef.current.dispose();
       }
     };
-  }, []);
+  }, [backgroundVideoRef]);
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await apiFlask.get('/signed-urls'); // Using Flask Axios instance
+      const response = await apiFlask.get('/signed-urls');
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
