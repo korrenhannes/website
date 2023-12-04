@@ -65,7 +65,8 @@ function FreeUserPage() {
         playerRef.current = null;
       }
     };
-  }, [backgroundVideoRef]);
+}, [backgroundVideoRef]);
+
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
@@ -75,9 +76,8 @@ function FreeUserPage() {
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
-        const randomIndex = Math.floor(Math.random() * signedUrls.length);
-        setCurrentVideoIndex(randomIndex); // Set a random video index on load
-        playerRef.current.src({ src: signedUrls[randomIndex], type: 'video/mp4' });
+        setCurrentVideoIndex(Math.floor(Math.random() * signedUrls.length)); // Set a random video index on load
+        playerRef.current.src({ src: signedUrls[currentVideoIndex], type: 'video/mp4' });
         playerRef.current.play().then(() => {
           console.log('Video is playing');
         }).catch(e => {
@@ -100,18 +100,45 @@ function FreeUserPage() {
     playerRef.current.play().catch(e => console.error('Error playing video:', e));
   };
 
+  // Custom Double Tap Handler
+  const handleDoubleTap = (function() {
+    let lastTap = 0;
+    return function(event) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 500 && tapLength > 0) {
+        loadNextVideo();
+      }
+      lastTap = currentTime;
+    };
+  })();
+
+  // Handling the Enter key press to load the next video
+  const handleKeyPress = (event) => {
+    if (event.keyCode === 13) { // keyCode 13 is the Enter key
+      loadNextVideo();
+    }
+  };
+
   useEffect(() => {
     const videoElement = backgroundVideoRef.current;
     if (videoElement) {
-      videoElement.ondblclick = loadNextVideo; // Simplified double-click handling
+      videoElement.addEventListener('dblclick', handleDoubleTap); // Use 'dblclick' for desktop
+      videoElement.addEventListener('touchend', handleDoubleTap); // 'touchend' for touch devices
     }
+
+    // Add keypress event listener
+    window.addEventListener('keydown', handleKeyPress);
 
     return () => {
       if (videoElement) {
-        videoElement.ondblclick = null;
+        videoElement.removeEventListener('dblclick', handleDoubleTap);
+        videoElement.removeEventListener('touchend', handleDoubleTap);
       }
+      // Remove keypress event listener
+      window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [currentVideoIndex, videos, loadNextVideo]);
+  }, [currentVideoIndex, videos]);
 
   const handleSetActiveComponent = (component) => setActiveComponent(activeComponent === component ? null : component);
   const toggleSubtitleEditor = () => setShowSubtitleEditor(!showSubtitleEditor);
