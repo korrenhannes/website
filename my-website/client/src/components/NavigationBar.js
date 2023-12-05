@@ -48,15 +48,11 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-<<<<<<< HEAD
-    setIsLoggedIn(false);
-=======
     localStorage.removeItem('userId'); // Removing the user ID
 
     setIsLoggedIn(false);
     navigate('/cloud-api');
 
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
   };
 
   const navigateToCloudAPI = () => {
@@ -67,15 +63,6 @@ const NavigationBar = () => {
     <nav className="navigation-bar">
       <div className="nav-logo">
         <button onClick={navigateToCloudAPI} className="logo-button">
-<<<<<<< HEAD
-          <img src="/path-to-your-logo.png" alt="Logo" />
-        </button>
-      </div>
-      <div className="nav-links">
-        <a href="/products">Products <Countdown /></a>
-        <a href="/HowItWorks" className="how-it-works">Why us</a>
-        <a href="/safety" className="hide-on-small">Safety</a>
-=======
           <img src="/Untitled.png" alt="Logo" />
         </button>
       </div>
@@ -84,7 +71,6 @@ const NavigationBar = () => {
         <Link to="/offers">Products <Countdown /></Link>
         <Link to="/how-it-works" className="how-it-works">Why us</Link>
         <a href="/safety" className="hide-on-small">partner with us</a>
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">

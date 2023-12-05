@@ -32,34 +32,17 @@
   z-index: 2; /* Above the overlay */
   text-align: center;
   color: white;
-<<<<<<< HEAD
-
-  /* Full width and height to fill the parent container */
   width: 100%;
   height: 100%;
-
-  /* Use flexbox to center the content */
-=======
-  width: 100%;
-  height: 100%;
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-<<<<<<< HEAD
-
-=======
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
   padding: 20px;
   box-sizing: border-box;
 }
 
 .foreground-content h1 {
-<<<<<<< HEAD
-  font-size: 4em;
-  margin-bottom: 0.5em;
-=======
   font-size: 4em; /* Starting font size */
   margin-bottom: 0.5em;
   max-width: 90%; /* Restrict width to allow some breathing space */
@@ -78,7 +61,6 @@
   @media (max-width: 480px) {
     font-size: 2em; /* Even smaller font size on very small screens */
   }
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 }
 
 .foreground-content button {
@@ -96,10 +78,6 @@
   background-color: #2878b5; /* Darker shade on hover */
 }
 
-<<<<<<< HEAD
-/* Styles for swipeable video cards */
-=======
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 .video-container {
   position: absolute;
   z-index: 2; /* Above the overlay */
@@ -120,9 +98,6 @@
   opacity: 1; /* Only the active card is visible */
 }
 
-<<<<<<< HEAD
-/* Additional styles as needed for video controls and user info */
-=======
 .search-container {
   position: absolute;
   top: 50%;
@@ -170,4 +145,3 @@
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
   border-color: rgba(223,225,229,0);
 }
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76

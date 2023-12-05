@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
 import '../styles/NavigationBar.css'; // Ensure the styles for the navigation bar are imported
-import PayPalButton from './PayPalButton';
+import PayPalButton from './PaypalButton';
 import planImage from "../assets/planIcon2.jpg"
 import '../styles/PlanSelection.css'; // Assume you have a corresponding CSS file for styles
 

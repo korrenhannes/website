@@ -73,11 +73,6 @@ mongoose.connect(process.env.DB_URI, {
     process.exit(1);
   });
 
-// Start the server
-app.listen(port, () => {
-
-    process.exit(1);
-});
 
 io.on('connection', (socket) => {
     console.log('New client connected');
