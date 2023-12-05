@@ -1,18 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Make sure to import Bootstrap CSS
+import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
 
 const ContentSection = () => (
-  <div className="content-section text-center">
+  <div className="content-section">
     <h2 className="content-heading">“Content creation has never been this easy!”</h2>
     <p className="content-description">With our innovative algorithm, you will be able to make your favorite podcasts and videos into content for your viewers with a push of a button.</p>
     <button className="cliplt-button">Cliplt</button>
-    <h3 className="clips-heading">Some of our Clips</h3>
     <div className="video-thumbnails">
-      {/* Add placeholders for video thumbnails */}
       {[...Array(5)].map((_, index) => (
         <div key={index} className="video-thumbnail"></div>
       ))}
@@ -25,7 +23,6 @@ function ExploreFurther() {
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const navigate = useNavigate();
-  const touchStartRef = useRef(null);
 
   // Replace with your actual Pexels API key
   const PEXELS_API_KEY = 'YOUR_ACTUAL_PEXELS_API_KEY';
@@ -52,38 +49,15 @@ function ExploreFurther() {
 
   useEffect(() => {
     fetchVideos();
-    const handleTouchStart = (e) => {
-      touchStartRef.current = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e) => {
-      if (!touchStartRef.current) {
-        return;
-      }
-      const touchEndY = e.touches[0].clientY;
-      if (touchStartRef.current > touchEndY + 50) {
-        navigate('/next-page');
-      } else if (touchStartRef.current < touchEndY - 50) {
-        navigate('/previous-page');
-      }
-    };
-
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchmove', handleTouchMove);
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchmove', handleTouchMove);
-    };
   }, [navigate]);
 
   return (
     <div className="explore-further-container">
       <NavigationBar />
-      <div className="video-tab-container">
-        <video ref={videoRef} autoPlay muted loop className="video-tab"></video>
-      </div>
-      <div className="content-wrapper">
+      <div className="main-content">
+        <div className="video-tab-container">
+          <video ref={videoRef} autoPlay muted loop className="video-tab"></video>
+        </div>
         <ContentSection />
       </div>
       {isLoading && <div className="text-center mt-3">Loading...</div>}
@@ -93,3 +67,5 @@ function ExploreFurther() {
 }
 
 export default ExploreFurther;
+
+// Note: Make sure to update '../styles/ExploreFurther.css' to style the 'main-content' div accordingly.

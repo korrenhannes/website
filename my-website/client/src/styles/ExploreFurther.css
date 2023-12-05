@@ -1,104 +1,113 @@
 /* ExploreFurther.css */
 
-/* Apply a full height to the container and center its children */
 .explore-further-container {
     background-color: #E5F0FF; /* Light blue background */
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Common sans-serif font */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #333; /* Dark grey color for text */
-    display: flex; /* Enables flexbox layout */
-    flex-direction: column; /* Stacks children vertically */
-    justify-content: center; /* Centers children along the main axis */
-    align-items: center; /* Centers children along the cross axis */
-    text-align: center; /* Centers text */
     min-height: 100vh; /* Full viewport height */
-    padding-top: 2rem; /* Padding at the top of the container */
-    padding-bottom: 2rem; /* Padding at the bottom of the container */
-  }
-  
-  /* Ensure the navigation bar styles remain the same */
-  
-  /* Style the video container with a shadow and rounded corners */
-  .explore-further-container .video-tab-container {
-    width: 90%;
-    max-width: 600px;
-    height: 300px; /* Adjust height as needed */
-    border-radius: 24px; /* Rounded corners */
-    overflow: hidden; /* Clip the children */
-    background: #fff; /* White background */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    margin-bottom: 1rem; /* Space below the video container */
-  }
-  
-  /* Adjust the video to cover the space without distortion */
-  .explore-further-container .video-tab {
+    padding: 2rem; /* Padding on all sides */
+}
+
+/* The navigation bar styles remain the same */
+
+/* Flex container for the video and content section */
+.explore-further-container .main-content {
+    display: flex;
+    width: 100%;
+    max-width: 1200px; /* Max width of the content */
+    gap: 2rem; /* Space between video and content */
+}
+
+/* Adjust the video container to be smaller and resemble a phone */
+.explore-further-container .video-tab-container {
+    width: 250px; /* Smaller width for the video container */
+    height: 500px; /* Smaller height for the video container */
+    background-color: #fff; /* White background */
+    border-radius: 36px; /* Rounded corners for the 'phone' */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow to give depth */
+    overflow: hidden; /* Ensure the video doesn't overflow the rounded corners */
+    position: relative; /* Keep this to maintain the layout */
+    margin: auto; /* Center the container in the parent */
+}
+
+
+/* Ensure the video fills the container and respects the rounded corners */
+.explore-further-container .video-tab {
+    position: absolute; /* Position absolutely within the container */
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-  }
-  
-  /* Content section styling */
-  .explore-further-container .content-section {
-    max-width: 500px; /* Adjust width as needed */
-    margin: 1rem auto; /* Space above and below */
-  }
-  
-  /* Button styling to match the design */
-  .explore-further-container .cliplt-button {
+    object-fit: cover; /* Cover the container fully */
+}
+
+
+/* Styling for the content section to be next to the video */
+.explore-further-container .content-section {
+    flex-basis: 60%; /* Takes up the remaining 60% of the flex container */
+    padding: 0; /* Remove padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; /* Align text to the left */
+}
+
+/* Button styling */
+.explore-further-container .cliplt-button {
     background-color: #4A90E2; /* Button color */
-    color: #fff; /* Text color */
-    border: none; /* Remove border */
-    padding: 12px 48px; /* Padding for a larger button */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Padding for the button */
     border-radius: 20px; /* Rounded corners */
-    cursor: pointer; /* Cursor indication for clickable button */
-    font-size: 1rem; /* Font size */
+    cursor: pointer;
+    font-size: 18px; /* Larger font size */
     margin-top: 1rem; /* Space above the button */
-    transition: background-color 0.2s; /* Smooth transition for hover effect */
-  }
-  
-  /* Darken button color on hover */
-  .explore-further-container .cliplt-button:hover {
-    background-color: #3a7bcd;
-  }
-  
-  /* Styling for the video thumbnail placeholders */
-  .explore-further-container .video-thumbnails {
-    display: flex; /* Align thumbnails in a row */
-    justify-content: center; /* Center thumbnails */
-    gap: 0.5rem; /* Space between thumbnails */
-    margin-top: 1rem; /* Space above thumbnails */
-  }
-  
-  .explore-further-container .video-thumbnail {
-    width: 10px; /* Thumbnail width */
-    height: 10px; /* Thumbnail height */
-    border-radius: 50%; /* Circle shape */
-    background: #fff; /* White background */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  }
-  
-  /* Error and loading message styling */
-  .explore-further-container .loading,
-  .explore-further-container .error {
-    color: #6c757d; /* Secondary text color */
-    margin-top: 1rem; /* Space above messages */
-    font-weight: bold; /* Bold text */
-  }
-  
-  /* Responsive adjustments for smaller devices */
-  @media (max-width: 768px) {
+    transition: background-color 0.2s; /* Transition for hover effect */
+    align-self: center; /* Center button - adjusted */
+}
+
+.explore-further-container .cliplt-button:hover {
+    background-color: #357abd; /* Darker blue on hover */
+}
+
+
+/* Error/loading message styling */
+.explore-further-container .text-danger,
+.explore-further-container .text-center {
+    position: absolute; /* Position the message absolutely */
+    bottom: 10px; /* Position it at the bottom of the screen */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Adjust the horizontal position to truly center it */
+    width: 100%; /* Let it take the full width */
+    max-width: 600px; /* Max-width so it doesn't get too wide */
+    text-align: center; /* Center the text */
+}
+
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .explore-further-container .main-content {
+        flex-direction: column-reverse; /* Stack video and content vertically on mobile */
+    }
+
     .explore-further-container .video-tab-container {
-      width: 85%; /* Slightly smaller width */
-      height: 200px; /* Adjusted height */
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
     }
-  
-    .explore-further-container .content-section,
-    .explore-further-container .section {
-      padding: 1rem; /* Padding for smaller screens */
+
+    .explore-further-container .video-tab-container {
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
     }
-  
+
     .explore-further-container .cliplt-button {
-      padding: 10px 20px; /* Smaller padding */
-      font-size: 0.9rem; /* Smaller font size */
+        padding: 10px 20px; /* Adjust padding for smaller screens */
+        font-size: 16px; /* Adjust font size for smaller screens */
+        align-self: center; /* Center button on mobile */
     }
-  }
-  
+}
