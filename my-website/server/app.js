@@ -1,21 +1,19 @@
-require('dotenv').config(); // Load environment variables from .env file
+// app.js
+
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-<<<<<<< HEAD
-=======
 const http = require('http');
 const socketIO = require('socket.io');
 const multer = require('multer');
 const { Storage } = require('@google-cloud/storage');
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 const authRoutes = require('./routes/auth');
+const paypalRoutes = require('./routes/paypalserver'); // Import the PayPal router
 const passport = require('./passportSetup');
 
 const app = express();
 const port = process.env.PORT || 3000;
-<<<<<<< HEAD
-=======
 const server = http.createServer(app);
 
 // Configure CORS for Express
@@ -37,7 +35,6 @@ const io = socketIO(server, {
 const storage = new Storage({ keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE });
 const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET);
 const upload = multer({ dest: 'uploads/' });
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 
 // Log environment variables to ensure they are loaded correctly
 console.log('Environment Variables:');
@@ -45,8 +42,12 @@ console.log('PORT:', process.env.PORT);
 console.log('DB_URI:', process.env.DB_URI);
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 // Use CORS and JSON middleware
+=======
+// Middleware setup
+>>>>>>> new-branch-paypal
 app.use(cors());
 =======
 console.log('GOOGLE_CLOUD_KEY_FILE:', process.env.GOOGLE_CLOUD_KEY_FILE);
@@ -55,28 +56,35 @@ console.log('GOOGLE_CLOUD_BUCKET:', process.env.GOOGLE_CLOUD_BUCKET);
 >>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 app.use(express.json());
 
-// Use authentication routes
+// Using routers
 app.use('/api/auth', authRoutes);
+app.use('/api/paypal', paypalRoutes); // Use PayPal routes under /api/paypal
 
-// Initialize Passport
+// Passport initialization
 app.use(passport.initialize());
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 // MongoDB connection using environment variable for URI
 =======
 >>>>>>> 4353c732b80537dea39e20140b5e75195065be76
+=======
+// MongoDB connection
+>>>>>>> new-branch-paypal
 mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useCreateIndex: true,
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((error) => {
+}).then(() => console.log('Connected to MongoDB'))
+  .catch((error) => {
     console.error('MongoDB connection error:', error);
 <<<<<<< HEAD
+<<<<<<< HEAD
     // Exit the application if there is a connection error
+=======
+>>>>>>> new-branch-paypal
     process.exit(1);
-});
+  });
 
 // Start the server
 app.listen(port, () => {
