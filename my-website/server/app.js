@@ -41,19 +41,14 @@ console.log('Environment Variables:');
 console.log('PORT:', process.env.PORT);
 console.log('DB_URI:', process.env.DB_URI);
 console.log('JWT_SECRET:', process.env.JWT_SECRET);
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 // Use CORS and JSON middleware
-=======
 // Middleware setup
->>>>>>> new-branch-paypal
+
 app.use(cors());
-=======
 console.log('GOOGLE_CLOUD_KEY_FILE:', process.env.GOOGLE_CLOUD_KEY_FILE);
 console.log('GOOGLE_CLOUD_BUCKET:', process.env.GOOGLE_CLOUD_BUCKET);
 
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 app.use(express.json());
 
 // Using routers
@@ -63,14 +58,8 @@ app.use('/api/paypal', paypalRoutes); // Use PayPal routes under /api/paypal
 // Passport initialization
 app.use(passport.initialize());
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 // MongoDB connection using environment variable for URI
-=======
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
-=======
 // MongoDB connection
->>>>>>> new-branch-paypal
 mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -78,17 +67,15 @@ mongoose.connect(process.env.DB_URI, {
 }).then(() => console.log('Connected to MongoDB'))
   .catch((error) => {
     console.error('MongoDB connection error:', error);
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     // Exit the application if there is a connection error
-=======
->>>>>>> new-branch-paypal
+
     process.exit(1);
   });
 
 // Start the server
 app.listen(port, () => {
-=======
+
     process.exit(1);
 });
 
@@ -126,6 +113,5 @@ app.post('/upload-video', upload.single('video'), (req, res) => {
 
 // Start the server with socket.io
 server.listen(port, () => {
->>>>>>> 4353c732b80537dea39e20140b5e75195065be76
   console.log(`Server is running on port ${port}`);
 });
