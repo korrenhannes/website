@@ -45,7 +45,6 @@ console.log('JWT_SECRET:', process.env.JWT_SECRET);
 // Use CORS and JSON middleware
 // Middleware setup
 
-app.use(cors());
 console.log('GOOGLE_CLOUD_KEY_FILE:', process.env.GOOGLE_CLOUD_KEY_FILE);
 console.log('GOOGLE_CLOUD_BUCKET:', process.env.GOOGLE_CLOUD_BUCKET);
 
