@@ -110,7 +110,7 @@ function HowItWorks() {
         navigate('/explore-further');
       } else if (touchStartRef.current < touchEndY - 50) {
         // Swiping up will navigate to the 'cloud-api' directory
-        navigate('/cloud-api');
+        navigate('/explore-further');
       }
     };
 
@@ -119,7 +119,7 @@ function HowItWorks() {
         navigate('/explore-further');
       } else if (e.deltaY < -100) {
         // Swiping up will navigate to the 'cloud-api' directory
-        navigate('/cloud-api');
+        navigate('/explore-further');
       }
     };
 

@@ -87,13 +87,13 @@ function CloudAPIPage() {
 
       const touchEndY = e.touches[0].clientY;
       if (touchStartRef.current > touchEndY + 50) {
-        navigate('/how-it-works');
+        navigate('/explore-further');
       }
     };
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) {
-        navigate('/how-it-works');
+        navigate('/explore-further');
       }
     };
 

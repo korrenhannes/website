@@ -29,6 +29,7 @@ function ExploreFurther() {
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const playerRef = useRef(null);
+  const touchStartRef = useRef(0);
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
@@ -84,6 +85,50 @@ function ExploreFurther() {
       playerRef.current.play();
     }
   }, [currentVideoIndex, videos]);
+
+  // Swipe event handlers
+  const handleSwipe = (direction) => {
+    // Placeholder functions - replace these with actual navigation logic
+    const navigateUp = () => navigate('/how-it-works'); // Navigate to your next page
+    const navigateDown = () => navigate('/cloud-api'); // Navigate to your previous page
+
+    if (direction === 'up') navigateUp();
+    if (direction === 'down') navigateDown();
+  };
+
+  useEffect(() => {
+    const handleTouchStart = (e) => {
+      touchStartRef.current = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      if (!touchStartRef.current) return;
+      const touchEndY = e.touches[0].clientY;
+      if (touchStartRef.current > touchEndY + 50) {
+        handleSwipe('up');
+      } else if (touchStartRef.current < touchEndY - 50) {
+        handleSwipe('down');
+      }
+    };
+
+    const handleWheel = (e) => {
+      if (e.deltaY > 100) {
+        handleSwipe('up');
+      } else if (e.deltaY < -100) {
+        handleSwipe('down');
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('wheel', handleWheel);
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, []);
 
   return (
     <div className="explore-further-container">
