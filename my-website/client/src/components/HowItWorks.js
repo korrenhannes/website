@@ -116,10 +116,10 @@ function HowItWorks() {
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) { // Adjust threshold based on your preference
-        navigate('/explore-further');
+        navigate('/cloud-api');
       } else if (e.deltaY < -100) {
         // Swiping up will navigate to the 'cloud-api' directory
-        navigate('/explore-further');
+        navigate('/cloud-api');
       }
     };
 
