@@ -1,0 +1,94 @@
+/* HowItWorks.css */
+
+.full-screen-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Start content below the NavBar */
+    text-align: center;
+    padding-top: 60px; /* Add padding to avoid NavBar overlap */
+    padding-bottom: 30px; /* Add padding at the bottom */
+    min-height: calc(100vh - 90px); /* Full viewport height minus padding */
+}
+
+#background-video {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+.foreground-content {
+    z-index: 1;
+    color: #fff;
+    width: 90%; /* Use more horizontal space */
+    max-width: 1200px; /* Maximum width for very large screens */
+    margin: 0 auto; /* Center content */
+    padding-bottom: 30px; /* Ensure space at bottom */
+}
+
+.foreground-content h1 {
+    font-size: 5vw; /* Dynamically scales with the viewport width */
+    max-font-size: 3em; /* Set a maximum size */
+    white-space: nowrap; /* Prevents text wrap */
+    overflow: hidden; /* Hides any overflow */
+    text-overflow: ellipsis; /* Ellipsis for overflow text */
+    margin-bottom: 15px;
+}
+
+.section {
+    text-align: left; /* Align text to the left for readability */
+    margin: 20px 0;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section h2 {
+    font-size: 1.8em;
+    margin-bottom: 8px;
+}
+
+.section p {
+    font-size: 1.1em;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .foreground-content {
+        width: 95%; /* More horizontal space on smaller screens */
+    }
+
+    .foreground-content h1 {
+        font-size: calc(100% - 2px); /* Adjust as needed */
+    }
+    
+    .section h2, .section p {
+        font-size: calc(100% - 2px); /* Adjust as needed */
+    }
+    
+    .section {
+        padding: 10px;
+    }
+}
+
+/* Very small screens adjustments */
+@media (max-width: 480px) {
+    .foreground-content h1 {
+        font-size: 1.8em; /* Adjust font size */
+    }
+
+    .section h2 {
+        font-size: 1.5em;
+    }
+
+    .section p {
+        font-size: 1em;
+    }
+}

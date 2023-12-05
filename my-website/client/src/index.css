@@ -1,0 +1,66 @@
+/* Existing base styles remain the same */
+
+/* Universal Card Customizations */
+.card {
+  margin: 1rem;
+  padding: 2rem;
+  transition: all 0.3s ease; /* Smooth transition for hover effects */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Default shadow */
+}
+
+.card:hover {
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+}
+
+/* Universal Image Hover Effects */
+.App img {
+  transition: transform 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.App img:hover {
+  transform: scale(1.03); /* Slight zoom effect */
+}
+
+/* Universal Text Styles */
+.App .text {
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
+  color: #333; /* Default text color */
+}
+
+.App .text:hover {
+  color: #555; /* Slightly darker color on hover */
+  transform: translateX(5px);
+}
+
+/* Universal Button Styles */
+.App .btn {
+  transition: all 0.3s ease; /* Smooth transition for hover effect */
+  background-color: #3897f0; /* Default button color */
+  color: white;
+}
+
+.App .btn:hover {
+  background-color: #2878b5; /* Darker shade on hover */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.App .btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(56, 151, 240, 0.5);
+}
+
+/* Video Container Styles */
+.App .video-container {
+  max-width: 640px; /* Adjust based on your layout */
+  margin: auto;
+  position: relative; /* For swipe position */
+  overflow: hidden; /* To keep everything contained */
+}
+
+.App video {
+  width: 100%;
+  display: block; /* Prevents extra space below video */
+}
+
+/* Responsive Design remains the same */

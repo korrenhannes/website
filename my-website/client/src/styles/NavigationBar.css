@@ -1,0 +1,71 @@
+.navigation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5em 2em;
+  background-color: #ffffff; /* Changed to white */
+  position: fixed; /* Fixed position to stick to the top */
+  top: 0;
+  left: 0;
+  width: 100%; /* Full width */
+  z-index: 1000; /* High z-index to stay on top */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-logo img {
+  height: 40px; /* Adjust size as needed */
+}
+
+.nav-links a {
+  margin: 0 1em;
+  text-decoration: none;
+  color: #333; /* Adjust text color as needed */
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+  color: #555; /* Slightly darker shade on hover */
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+.nav-actions .nav-login {
+  text-decoration: none;
+  color: #333; /* Adjust text color as needed */
+  margin-right: 1em;
+}
+
+.nav-actions .nav-login:hover {
+  color: #555; /* Slightly darker shade on hover */
+}
+
+.nav-actions .nav-signup {
+  padding: 0.5em 1em;
+  background-color: #3897f0; /* Default button color */
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.nav-actions .nav-signup:hover {
+  background-color: #2878b5; /* Darker shade on hover */
+}
+
+.logo-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.logo-button img {
+  height: 40px; /* Adjust to your logo size */
+}
+
+@media (max-width: 768px) {
+  .nav-links a:not(:first-child):not(:last-child) {
+      display: none;
+  }
+}
