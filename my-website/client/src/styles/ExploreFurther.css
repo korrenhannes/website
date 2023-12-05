@@ -110,3 +110,10 @@
         align-self: center; /* Center button on mobile */
     }
 }
+
+/* Specific styles to ensure video.js player fills its container */
+.explore-further-container .video-tab-container .video-js {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}

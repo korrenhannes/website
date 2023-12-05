@@ -41,8 +41,7 @@ function ExploreFurther() {
               autoplay: true,
               muted: true,
               controls: true,
-              fluid: false,
-              aspectRatio: "16:9",
+              fluid: true,
               sources: [{ src: signedUrls[0], type: 'video/mp4' }]
             });
           }
