@@ -24,6 +24,8 @@ const ContentSection = () => (
 function ExploreFurther() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const playerRef = useRef(null);
@@ -35,6 +37,7 @@ function ExploreFurther() {
       const response = await apiFlask.get('/signed-urls');
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
+        setVideos(signedUrls); // Save the list of video URLs
         setTimeout(() => {
           if (videoRef.current && !playerRef.current) {
             playerRef.current = videojs(videoRef.current, {
@@ -42,7 +45,13 @@ function ExploreFurther() {
               muted: true,
               controls: true,
               fluid: true,
-              sources: [{ src: signedUrls[0], type: 'video/mp4' }]
+              sources: [{ src: signedUrls[currentVideoIndex], type: 'video/mp4' }]
+            });
+
+            playerRef.current.on('ended', () => {
+              // Increment the index or loop back to the start
+              const nextVideoIndex = (currentVideoIndex + 1) % signedUrls.length;
+              setCurrentVideoIndex(nextVideoIndex); // Update the state to the new index
             });
           }
         }, 0);
@@ -58,7 +67,7 @@ function ExploreFurther() {
 
   useEffect(() => {
     fetchVideosFromGCloud();
-    // Clean up the video player on component unmount
+
     return () => {
       if (playerRef.current) {
         playerRef.current.dispose();
@@ -66,6 +75,15 @@ function ExploreFurther() {
       }
     };
   }, [navigate]);
+
+  useEffect(() => {
+    // Whenever the currentVideoIndex changes, load the new video
+    if (videos.length > 0 && playerRef.current) {
+      playerRef.current.src({ src: videos[currentVideoIndex], type: 'video/mp4' });
+      playerRef.current.load();
+      playerRef.current.play();
+    }
+  }, [currentVideoIndex, videos]);
 
   return (
     <div className="explore-further-container">
@@ -83,5 +101,3 @@ function ExploreFurther() {
 }
 
 export default ExploreFurther;
-
-// Note: Make sure to update '../styles/ExploreFurther.css' to style the 'main-content' div accordingly.
