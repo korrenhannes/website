@@ -12,49 +12,62 @@ import FacebookLogin from '@greatsumini/react-facebook-login';
 function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState(''); // State for handling login errors
   const navigate = useNavigate();
+
+  const storeUserDataAndNavigate = (token, userId) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('userId', userId); // Storing the user ID
+    // Consider storing userId in a more secure way than localStorage
+    // localStorage.setItem('userId', userId);
+    navigate('/cloud-api');
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/login', { email, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/cloud-api');
+      storeUserDataAndNavigate(response.data.token, response.data.userId);
     } catch (error) {
       console.error("Login failed:", error);
+      setLoginError('Login failed. Please check your credentials.');
     }
   };
 
   const handleGoogleLogin = async (googleData) => {
+    setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/google-login', {
         token: googleData?.credential,
       });
-      localStorage.setItem('token', response.data.token);
-      navigate('/cloud-api');
+      storeUserDataAndNavigate(response.data.token, response.data.userId);
     } catch (error) {
       console.error("Google login failed:", error);
+      setLoginError('Google login failed. Please try again.');
     }
   };
 
   const handleFacebookLogin = async (facebookData) => {
+    setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/facebook-login', {
         accessToken: facebookData.accessToken,
         userID: facebookData.userID
       });
-      localStorage.setItem('token', response.data.token);
-      navigate('/cloud-api');
+      storeUserDataAndNavigate(response.data.token, response.data.userId);
     } catch (error) {
       console.error("Facebook login failed:", error);
+      setLoginError('Facebook login failed. Please try again.');
     }
   };
-
+  
   return (
     <div className="main-container">
       <NavigationBar />
       <div className="card">
         <h2 className="text-center">Login</h2>
+        {loginError && <div className="alert alert-danger">{loginError}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Enter your email:</label>
@@ -87,13 +100,19 @@ function LoginForm() {
         <div className="social-login">
           <GoogleLogin
             onSuccess={handleGoogleLogin}
-            onError={() => console.error("Google login failed")}
+            onError={() => {
+              console.error("Google login failed");
+              setLoginError('Google login failed. Please try again.');
+            }}
             // Ensure your button rendering here matches the style you want
           />
           <FacebookLogin
             appId="YOUR_FACEBOOK_APP_ID" // Replace with your actual Facebook App ID
             onSuccess={handleFacebookLogin}
-            onFailure={() => console.error("Facebook login failed")}
+            onFailure={() => {
+              console.error("Facebook login failed");
+              setLoginError('Facebook login failed. Please try again.');
+            }}
             // Ensure your button rendering here matches the style you want
           />
         </div>

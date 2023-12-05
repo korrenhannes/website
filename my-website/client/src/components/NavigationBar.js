@@ -48,7 +48,11 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userId'); // Removing the user ID
+
     setIsLoggedIn(false);
+    navigate('/cloud-api');
+
   };
 
   const navigateToCloudAPI = () => {

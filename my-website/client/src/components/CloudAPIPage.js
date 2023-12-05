@@ -113,12 +113,21 @@ function CloudAPIPage() {
   const handleSearchSubmit = async (e) => {
     if (e) e.preventDefault();
     setIsLoading(true);
-    // ... rest of the function logic
-    const folderName = 'folder_check';
+  
+    // Retrieve user ID from localStorage or another secure method
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      setError('User ID not found. Please log in again.');
+      setIsLoading(false);
+      return;
+    }
+  
+    const folderName = 'folder_check'; // Example folder name
     try {
       const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
         link: searchQuery,
-        folder_name: folderName
+        folder_name: folderName,
+        user_id: userId  // Include the user ID in the request
       });
       console.log('Video processing started:', response.data);
       handleRedirection();
@@ -129,6 +138,8 @@ function CloudAPIPage() {
       setIsLoading(false);
     }
   };
+  
+  
 
   const handleRedirection = () => {
     switch(userPaymentPlan) {

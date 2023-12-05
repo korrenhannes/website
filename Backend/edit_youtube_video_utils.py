@@ -243,6 +243,7 @@ def is_substring(text1, text2):
 
 
 def get_relevant_video(text, res_per_page=50):
+    return None
     query = chat_gpt_noun_request(text)
     pexel = Pexels(pexels_api_key)
     video_found = False
