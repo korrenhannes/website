@@ -1,73 +1,95 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   PayPalScriptProvider,
   PayPalButtons,
-  usePayPalScriptReducer
 } from "@paypal/react-paypal-js";
 
-const PayPalButton = () => {
-  const style = { layout: "vertical" };
-  const [plan, setPlan] = useState(''); // Update this as needed based on your app's logic
 
+const PayPalButton = ({ onSuccessfulPayment }) => {  
   // Function to create an order
-  function createOrder() {
-    return fetch(`http://localhost:3000/api/orders`, { // Updated to use REACT_APP_API_URL
+  const createOrder = (data, actions) => {
+    return fetch(`${process.env.REACT_APP_API_URL}/paypal/create-order`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        'PayPal-Request-Id': '7b92603e-77ed-4896-8e78-5dea2050476a',
+        'Authorization': 'Bearer 6V7rbVwmlM1gFZKW_8QtzWXqpcwQ6T5vhEGYNJDAAdn3paCgRpdeMdVYmWzgbKSsECednupJ3Zx5Xd-g'
       },
-      body: JSON.stringify({
-        cart: [ // Update this part based on your actual cart items
-          {
-            sku: "1blwyeo8",
-            quantity: 2,
-          },
-        ],
-      }),
+      body: JSON.stringify({ amount: "100.00" }),
     })
-    .then((response) => response.json())
-    .then((order) => order.id);
-  }
-
-  // Function to handle order approval
-  function onApprove(data) {
-    return fetch(`http://localhost:3000/api/orders/${data.orderID}/capture`, { // Updated to use REACT_APP_API_URL
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+    .then(response => {
+      console.log('response:', response);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
     })
-    .then((response) => response.json())
-    .then((orderData) => {
-      // Your code here after capturing the order
+    .then(data => {
+      // Log the response to see its structure
+      console.log('Order response:', data);
+      console.log('checking next:', data.orderID);
+      if (data.orderID) {
+        console.log('setting data as order id:', data.orderID);
+        return data.orderID;
+      } else {
+        throw new Error('frontend error: Order ID not found in the response');
+      }
+    })
+    .catch(error => {
+      console.error('Error creating order:', error);
     });
-  }
+  };
 
-  // Wrapper component for the PayPalButtons
-  const ButtonWrapper = ({ showSpinner }) => {
-    const [{ isPending }] = usePayPalScriptReducer();
+  // Function to capture the order after payment
+  const onApprove = (data, actions) => {
+    const currentOrderID = data.orderID;  // Use the orderID from the data if available
+    return fetch(`${process.env.REACT_APP_API_URL}/paypal/capture-order/${currentOrderID}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        'PayPal-Request-Id': '7b92603e-77ed-4896-8e78-5dea2050476a',
+        'Authorization': 'Bearer access_token6V7rbVwmlM1gFZKW_8QtzWXqpcwQ6T5vhEGYNJDAAdn3paCgRpdeMdVYmWzgbKSsECednupJ3Zx5Xd-g'
+      },
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log('capture response:', response.json)
+      return response.json();
+    })
+    .then(order => {
+      // Handle successful transaction
+      console.log('handle transaction', currentOrderID,'order:', order);
+      if (onSuccessfulPayment) {
+        onSuccessfulPayment(); // Call the passed callback
+      }
+    })
+    .catch(error => {
+      // Handle error
+      console.error('capture frontend error:',error, 'orderid:', currentOrderID);
+    });
+  };
 
-    return (
-      <>
-        {showSpinner && isPending && <div className="spinner" />}
-        <PayPalButtons
-          style={style}
-          disabled={false}
-          forceReRender={[style]}
-          fundingSource={undefined}
-          createOrder={createOrder}
-          onApprove={onApprove}
-        />
-      </>
-    );
+  // Handle errors
+  const onError = (err) => {
+    // Handle errors
+    console.error("PayPal Checkout onError, no frontend or backend", err);
   };
 
   return (
-    <div style={{ maxWidth: "750px", minHeight: "200px" }}>
-      <PayPalScriptProvider options={{ clientId: "AVkoSETxNqk-fNzT5wZPZd-fRKOSwpoUwJzlC26D8XZJ0LcfFGP3U5LyFSzMOj9NaZg4gGvgOGWDgV0L", components: "buttons", currency: "USD" }}>
-        <ButtonWrapper showSpinner={false} />
-      </PayPalScriptProvider>
-    </div>
+    <PayPalScriptProvider options={{
+      "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
+      currency: "USD",
+      intent: "capture"
+    }}>
+      <PayPalButtons
+        style={{"color": "blue"}}
+        createOrder={createOrder}
+        onApprove={onApprove}
+        onError={onError}
+      />
+    </PayPalScriptProvider>
   );
 };
 

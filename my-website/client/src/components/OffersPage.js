@@ -1,63 +1,69 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
 import '../styles/NavigationBar.css'; // Ensure the styles for the navigation bar are imported
-import PayPalButton from './PaypalButton';
+import PayPalButton from './PayPalButton';
 import planImage from "../assets/planIcon2.jpg"
+import '../styles/PlanSelection.css'; // Assume you have a corresponding CSS file for styles
+
 
 function OffersPage() {
+  const [selectedPlan, setSelectedPlan] = useState('basic');
+  const [planDescription1, setPlanDescription1] = useState('this is the Basic plan,you get one additional video with smaller water mark');
+  const [planDescription2, setPlanDescription2] = useState('why you should choose the Basic plan');
+  const [planDescription3, setPlanDescription3] = useState('let me convince you');
   const navigate = useNavigate();
 
-  //const handleSelectPlan = (plan) => {
-   // navigate('/payment', { state: { plan } });
-  //};
+  const plans = [
+    { name: 'Basic', price: 'free', quality: 'Good', title:'you get one additional video with smaller water mark' },
+    { name: 'Standard', price: '27.99', quality: 'Better', title: 'you get 10 videos to edit' },
+    { name: 'Premium', price: '79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
+  ];
+
+  const selectPlan = (plan) => {
+    setSelectedPlan(plan);
+    const selected = plans.find(p => p.name.toLowerCase() === plan);
+    setPlanDescription1(`this is the ${selected.name} plan,${selected.title} `);
+    setPlanDescription2(`why you should choose the ${selected.name} plan `);
+    setPlanDescription3(`let me convince you`);
+  };
+
+  const handleNextClick = () => {
+    navigate('/cloud-api');
+  };
+
+  const handleSuccessfulPayment = () => {
+    navigate('/cloud-api');
+  };
 
   return (
-    <>
-      <NavigationBar /> {/* Include the navigation bar at the top */}
-      <div className="container mt-5" style={{ paddingTop: '60px' }}> {/* Add padding to the top */}
-        <h1 className="text-center">Choose Your Plan</h1>
-        <div className="row justify-content-center">
-          
-          {/* Plan A */}
-          <div className="col-md-6">
-            <div className="card mb-3" style={{ maxWidth: '540px' }}>
-              <div className="row g-0">
-                <div className="col-md-4">
-                  <img src={planImage} className="img-fluid rounded-start" alt="Plan A" />
-                </div>
-                <div className="col-md-8">
-                  <div className="card-body">
-                    <h5 className="card-title">Plan A</h5>
-                    <p className="card-text">Description of Plan A...</p>
-                    <PayPalButton />
-                  </div>
-                </div>
-              </div>
-            </div>
+    <div className="plan-selection">
+      <NavigationBar />
+      <h1>Choose the plan that’s right for you</h1>
+      <ul>
+        <li>{planDescription1}</li>
+        <li>{planDescription2}</li>
+        <li>{planDescription3}</li>
+      </ul>
+      <div className="plans">
+        {plans.map((plan) => (
+          <div
+            key={plan.name}
+            className={`plan ${selectedPlan === plan.name.toLowerCase() ? 'selected' : ''}`}
+            onClick={() => selectPlan(plan.name.toLowerCase())}
+          >
+            <div className="plan-name">{plan.name}</div>
+            <div className="plan-price">{plan.price}</div>
           </div>
-
-          {/* Plan B */}
-          <div className="col-md-6">
-            <div className="card" style={{ maxWidth: '540px' }}>
-              <div className="row g-0">
-                <div className="col-md-4">
-                  <img src={planImage} className="img-fluid rounded-start" alt="Plan B" />
-                </div>
-                <div className="col-md-8">
-                  <div className="card-body">
-                    <h5 className="card-title">Plan B</h5>
-                    <p className="card-text">Description of Plan B...</p>
-                    <PayPalButton />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
+        ))}
       </div>
-    </>
+      <div className="plan-details">
+        {/* ...Additional plan details here... */}
+      </div>
+      {selectedPlan === 'basic'? 
+      <button className="next-button" onClick={handleNextClick}>Next</button>:
+      (<PayPalButton className ='pay-button' amount={plans.find(p => p.name.toLowerCase() === selectedPlan).price} onSuccessfulPayment={handleSuccessfulPayment}/>)}
+    </div>
   );
 }
 
