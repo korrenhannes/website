@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import { apiFlask } from '../api'; // Assuming this is the correct import for your Flask API
 import NavigationBar from './NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
@@ -23,32 +26,46 @@ function ExploreFurther() {
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
   const navigate = useNavigate();
+  const playerRef = useRef(null);
 
-  // Replace with your actual Pexels API key
-  const PEXELS_API_KEY = 'YOUR_ACTUAL_PEXELS_API_KEY';
-  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
-
-  const fetchVideos = async () => {
+  const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${PEXELS_API_URL}?per_page=1`, {
-        headers: {
-          Authorization: PEXELS_API_KEY
-        }
-      });
-      const data = await response.json();
-      const backgroundVideo = data.videos[0].video_files.find(file => file.height === 1080).link;
-      videoRef.current.src = backgroundVideo;
+      const response = await apiFlask.get('/signed-urls');
+      const signedUrls = response.data.signedUrls;
+      if (signedUrls && signedUrls.length > 0) {
+        setTimeout(() => {
+          if (videoRef.current && !playerRef.current) {
+            playerRef.current = videojs(videoRef.current, {
+              autoplay: true,
+              muted: true,
+              controls: true,
+              fluid: false,
+              aspectRatio: "16:9",
+              sources: [{ src: signedUrls[0], type: 'video/mp4' }]
+            });
+          }
+        }, 0);
+      } else {
+        setError('No videos found in Google Cloud Storage.');
+      }
     } catch (err) {
-      setError(`Error fetching videos from Pexels: ${err.message}`);
+      setError(`Error fetching videos from Google Cloud: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchVideos();
+    fetchVideosFromGCloud();
+    // Clean up the video player on component unmount
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.dispose();
+        playerRef.current = null;
+      }
+    };
   }, [navigate]);
 
   return (
@@ -56,7 +73,7 @@ function ExploreFurther() {
       <NavigationBar />
       <div className="main-content">
         <div className="video-tab-container">
-          <video ref={videoRef} autoPlay muted loop className="video-tab"></video>
+          <video ref={videoRef} className="video-js" />
         </div>
         <ContentSection />
       </div>
