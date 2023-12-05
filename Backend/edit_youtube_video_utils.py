@@ -6,27 +6,26 @@ import cv2
 import pandas as pd
 import requests
 import numpy as np
+import subprocess
+import os
 
 from tqdm import tqdm
 import imutils
+import string
 
+from pexelsapi.pexels import Pexels
+from nltk.corpus import wordnet as wn
+from textblob import TextBlob
+from openai import OpenAI
+from moviepy.editor import VideoFileClip
+from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 
-# def download_file(url):
-#     local_filename = url.split('/')[-1]
-#     # NOTE the stream=True parameter below
-#     with requests.get(url, stream=True) as r:
-#         r.raise_for_status()
-#         with open(local_filename, 'wb') as f:
-#             for chunk in r.iter_content(chunk_size=8192): 
-#                 # If you have chunk encoded response uncomment if
-#                 # and set chunk_size parameter to None.
-#                 #if chunk: 
-#                 f.write(chunk)
-#     return local_filename
+from moviepy.video.io.VideoFileClip import VideoFileClip
 
-# download_file("https://raw.githubusercontent.com/opencv/opencv/master/samples/dnn/face_detector/deploy.prototxt")
-# download_file("https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20170830/res10_300x300_ssd_iter_140000.caffemodel")
-
+pexels_api_key = "QfGj5czSqWpkA3F27J8V9tTw5h7Eo50sZ6rstEUJt7bbbIIQZt4Th0wq"
+CHAT_PICTURE_PROMPT = "I'll send you a list of nouns phrases, which one of them is the most visually appealing in your mind and would fit well as a picture/video  in a clip? You're answer should be **JUST** the noun!"
+PICTURE_GPT_MODEL = 'gpt-3.5-turbo'
+chat_gpt_picture_api = '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'
 
 cut_buffer = 0.15
 colors = ['white', 'white','SpringGreen']
@@ -38,7 +37,7 @@ model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
 net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
 
-def text_clip(vid,text: str, duration: int, start_time: int = 0):
+def text_clip(vid, text: str, duration: int, start_time: int = 0):
     """Return a description string on the bottom-left of the video
 
     Args:
@@ -52,48 +51,53 @@ def text_clip(vid,text: str, duration: int, start_time: int = 0):
     color = colors[ind]
     if text in censor.keys():
       text = censor[text]
-    return (TextClip(text.upper(), font="Courier-Bold", fontsize=70, color= color, stroke_color = colors_back[ind], stroke_width = 3, method = 'caption')
+    return (TextClip(text.upper(), font="Lucida-Sans-Demibold-Roman", fontsize=70, color= color, stroke_color = colors_back[ind], stroke_width = 3, method = 'caption')
             .set_duration(duration).set_position('center')
             .set_start(start_time))
 
-def add_subs(df, vid,subs,cuts_indexes, start_times):
+def add_subs_video(df, vid, start_times):
     # need to change logic to fit to the new chat gpt model
     # this code used to work with a general df for the whole video, now we have personlized df per video, more simple
 
     ret = []
     final_neg_vid = vid
-    new_subs_neg = subs
-    ind_neg = cuts_indexes[0]
     st = start_times
-    inds_in_cut = list(np.array(list(range(len(new_subs_neg))))[df.iloc[cuts_indexes[j]]['start']  - df.iloc[ind_neg]['start'] >= st])
+
     # txt_clips_pos = [text_clip(pos_vid, new_subs_pos[i][0], new_subs_pos[i][2], new_subs_pos[i][1] - df.iloc[ind_pos]['start']) for i in range(len(new_subs_pos))]
-    txt_clips_neg = [text_clip(final_neg_vid, new_subs_neg[i][0], new_subs_neg[i][2], new_subs_neg[i][1] - df.iloc[ind_neg]['start'] - st) for i in inds_in_cut]
+    df = df[df['start_times'] >= st]
+
+    txt_clips_neg = [text_clip(final_neg_vid, df.iloc[i]['text'], df.iloc[i]['end_times'] - df.iloc[i]['start_times'], df.iloc[i]['start_times'] - st) for i in range(len(df))]
 
     # pos_vid = CompositeVideoClip([pos_vid] + txt_clips_pos)
     final_neg_vid = CompositeVideoClip([final_neg_vid] + txt_clips_neg)
 
-    added_min = 0
-    for k in inds_in_cut[:-1]:
-        if new_subs_neg[k][2] + new_subs_neg[k][1] + cut_buffer < new_subs_neg[k+1][1]:
-            print(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min, new_subs_neg[k+1][1]-added_min)
-            final_neg_vid = final_neg_vid.cutout(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min  - df.iloc[ind_neg]['start'] - st, new_subs_neg[k+1][1]-added_min  - df.iloc[ind_neg]['start'] - st - cut_buffer)
-            added_min += new_subs_neg[k][2] + new_subs_neg[k][1] - new_subs_neg[k+1][1] - cut_buffer
 
+    # THE PART THAT CUTS NONE SPOKEN TIME.,,
+    # I DONT KNOW ...
 
-        ret.append(final_neg_vid)
+    # added_min = 0
+    # for k in range(len(df) - 1):
+    #     if df.iloc[k]['end'] + cut_buffer < df.iloc[k+1]['end']:
+    #
+    #         final_neg_vid = final_neg_vid.cutout(new_subs_neg[k][2] + new_subs_neg[k][1]-added_min  - df.iloc[ind_neg]['start'] - st, new_subs_neg[k+1][1]-added_min  - df.iloc[ind_neg]['start'] - st - cut_buffer)
+    #         added_min += new_subs_neg[k][2] + new_subs_neg[k][1] - new_subs_neg[k+1][1] - cut_buffer
+    #
+    #
+    #     ret.append(final_neg_vid)
 
-    return ret
+    return final_neg_vid
 
-def cut_faces(neg_vid, show_pics = False):
+def cut_faces(neg_vid, stock_video, show_pics = False): # stock_video in the format: (VIdeoFileClip object, query, final_start_time) or None if there is no need to add it
   boxes = []
   confs = []
-  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(neg_vid.iter_frames())]
-  times = np.linspace(0,neg_vid.length,len(frames))
+  # ADD fps = X to run faster
+  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(neg_vid.iter_frames(fps = 5))]
+  dur = neg_vid.duration
 
+  times = np.linspace(0,dur,len(frames))
 
   # call for recognize faces model
   for ind_0 in tqdm(list(range(len(times)))):
-    t_stamp = times[ind_0]
     frame = frames[ind_0]
 
     # resize it to have a maximum width of 400 pixels
@@ -106,7 +110,6 @@ def cut_faces(neg_vid, show_pics = False):
     net.setInput(blob)
     detections = net.forward()
 
-    all_confidence = []
     mx_confidence = 0
     boxes.append([])
     confs.append([])
@@ -128,7 +131,6 @@ def cut_faces(neg_vid, show_pics = False):
   cuts_poses = []
   last_xy = np.array([[-500,-500]])
   last_real_xy = np.array([[-500,-500]])
-  cuts_lens = []
 
   for i,bs in enumerate(boxes):
     if len(confs[i]) > 0:
@@ -185,11 +187,14 @@ def cut_faces(neg_vid, show_pics = False):
   new_vids = []
   for i in range(len(cuts_times)):
       if i == len(cuts_times) - 1:
-        sub_vid = neg_vid.subclip(cuts_times[i], neg_time[1] - neg_time[0])
+        if dur == cuts_times[i]:
+            break
+        sub_vid = neg_vid.subclip(cuts_times[i], dur)
+
       else:
         sub_vid = neg_vid.subclip(cuts_times[i], cuts_times[i+1])
 
-      if len(cuts_poses[i]) == 1:
+      if len(cuts_poses[i]) == 1 or True: #Easy fix
         sub_vid = sub_vid.resize(height=1280)
         sub_vid = sub_vid.crop(x1= min(max(0,(2275 * cuts_poses[i][0][0] - 360)), 2275 - 720), y1=0,x2=min(max((2275 * cuts_poses[i][0][0]) + 360,720), 2275),y2=1280)
         new_vids.append(sub_vid)
@@ -215,6 +220,106 @@ def cut_faces(neg_vid, show_pics = False):
                             [sub_vid1]]))
 
   # return new_vids, cuts_times[0]
-  final_neg_vid = concatenate_videoclips(new_vids)
+  if not stock_video:
+    final_neg_vid = concatenate_videoclips(new_vids)
+  else:
+    vid = concatenate_videoclips(new_vids)
+    pre_stock = vid.subclip(0, stock_video[2])
+    audio = vid.subclip(stock_video[2], stock_video[2]+stock_video[0].duration).audio
+    post_stock = vid.subclip(stock_video[2]+stock_video[0].duration)
+    stock_vid = stock_video[0].set_audio(audio)
+    final_neg_vid = concatenate_videoclips([pre_stock, stock_vid, post_stock])
   return final_neg_vid, cuts_times[0]
 
+
+def is_substring(text1, text2):
+  # Remove punctuation and convert to lowercase
+  text1_cleaned = text1.translate(str.maketrans("", "", string.punctuation)).lower()
+  text2_cleaned = text2.translate(str.maketrans("", "", string.punctuation)).lower()
+
+  # Check if one text is a substring of the other
+  answer = text1_cleaned in text2_cleaned or text2_cleaned in text1_cleaned
+  return answer
+
+
+def get_relevant_video(text, res_per_page=50):
+    return None
+    query = chat_gpt_noun_request(text)
+    pexel = Pexels(pexels_api_key)
+    video_found = False
+    page_num = 1
+    max_page_num = 10 # Random number I wrote. We actually need to check what happens if there are no more results
+    input_video_path = f"{query}.mp4"
+
+    while not video_found and page_num <= max_page_num:
+      search_videos = pexel.search_videos(query=query, orientation='', size='', color='', locale='', page=page_num, per_page=res_per_page)
+      for video in search_videos['videos']:
+        if video['height']/video['width'] == 16/9:
+          video_id = video['id']
+          video_found = True
+          break
+      page_num += 1
+    if not video_found:
+      return None # Needs to be compatible later with the handling of the info from this function
+    video_url = 'https://www.pexels.com/video/' + str(video_id) + '/download'
+    r = requests.get(video_url)
+
+    with open(f"{query}.mp4", 'wb') as outfile:
+        outfile.write(r.content)
+    try:
+      video = VideoFileClip(input_video_path)
+      # video.write_videofile(f"{query}_test.mp4")
+      # There is something wrong with the metadata of some of the videos being saved so this code recognises this, deletes the video and returns None
+      if video.h > video.w:
+        sub_clip = video.subclip(0, min(video.duration, 5))
+        final = sub_clip.resize(height=1280, width=720)
+        ret_val = (final, query)
+      else:
+        ret_val = None
+    except Exception as e:
+      print(f"Error processing video '{input_video_path}': {e}")
+      ret_val = None
+    # os.remove(input_video_path)
+    return ret_val
+
+def chat_gpt_noun_request(text):
+  blob = TextBlob(text)
+  chat_request = CHAT_PICTURE_PROMPT + '\n' + '\n'.join(blob.noun_phrases)
+  conversation = [
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": chat_request}
+        ]
+  # Make a request to the ChatGPT API
+  client = OpenAI(api_key=chat_gpt_picture_api)
+  response = client.chat.completions.create(
+      model=PICTURE_GPT_MODEL,
+      messages=conversation
+  )
+  # Extract and display the assistant's reply
+  assistant_reply = clean_str(response.choices[0].message.content)
+  # Output
+  return assistant_reply
+
+
+def get_start_times(key_words_lst, dfs):
+  target_words = [clean_str(key_words).split() if key_words else None for key_words in key_words_lst]
+  start_times = [filter_rows(target_words[i], dfs[i]) if target_words[i] else None for i in range(len(target_words))]
+  print(f"Start times are: {start_times}")
+  return start_times
+
+def filter_rows(target_words, df):
+  for i in range(len(df) - len(target_words) + 1):
+    # lst = df.iloc[i:i+len(target_words)-1]['text'].tolist()
+    window_words = df.iloc[i:i+len(target_words)]['text'].tolist()
+    window_words_clean = [clean_str(wrd) for wrd in window_words] # Sometimes empty at the end of the loop, not sure how or why that would be the case
+    if window_words_clean == target_words:
+      return df.iloc[i]['start']
+  return None
+
+def clean_str(s):
+  # Returns string with no punctuation marks in all lower case
+  return s.translate(str.maketrans('', '', string.punctuation)).lower()
+
+
+if __name__ == "__main__":
+  pass

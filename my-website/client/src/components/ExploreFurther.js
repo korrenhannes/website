@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
@@ -26,12 +27,33 @@ const BuildConnectionsSection = () => (
   <div className="section build-connections">
     <h2>Build Stronger Connections</h2>
     <p>Engage with your audience more effectively. Our tools help you understand your audience better, enabling you to create more meaningful and impactful content.</p>
+=======
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import { apiFlask } from '../api'; // Assuming this is the correct import for your Flask API
+import NavigationBar from './NavigationBar';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../styles/NavigationBar.css';
+import '../styles/ExploreFurther.css';
+
+const ContentSection = () => (
+  <div className="content-section">
+    <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+    <p className="content-description">With our innovative algorithm, you will be able to make your favorite podcasts and videos into content for your viewers with a push of a button.</p>
+    <button className="cliplt-button">Cliplt</button>
+    <div className="video-thumbnails">
+      {[...Array(5)].map((_, index) => (
+        <div key={index} className="video-thumbnail"></div>
+      ))}
+    </div>
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
   </div>
 );
 
 function ExploreFurther() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
@@ -58,19 +80,92 @@ function ExploreFurther() {
       backgroundVideoRef.current.src = backgroundVideo;
     } catch (err) {
       setError('Error fetching videos from Pexels: ' + err.message);
+=======
+  const [videos, setVideos] = useState([]);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoRef = useRef(null);
+  const navigate = useNavigate();
+  const playerRef = useRef(null);
+  const touchStartRef = useRef(0);
+
+  const fetchVideosFromGCloud = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await apiFlask.get('/signed-urls');
+      const signedUrls = response.data.signedUrls;
+      if (signedUrls && signedUrls.length > 0) {
+        setVideos(signedUrls); // Save the list of video URLs
+        setTimeout(() => {
+          if (videoRef.current && !playerRef.current) {
+            playerRef.current = videojs(videoRef.current, {
+              autoplay: true,
+              muted: true,
+              controls: true,
+              fluid: true,
+              sources: [{ src: signedUrls[currentVideoIndex], type: 'video/mp4' }]
+            });
+
+            playerRef.current.on('ended', () => {
+              // Increment the index or loop back to the start
+              const nextVideoIndex = (currentVideoIndex + 1) % signedUrls.length;
+              setCurrentVideoIndex(nextVideoIndex); // Update the state to the new index
+            });
+          }
+        }, 0);
+      } else {
+        setError('No videos found in Google Cloud Storage.');
+      }
+    } catch (err) {
+      setError(`Error fetching videos from Google Cloud: ${err.message}`);
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
+<<<<<<< HEAD
     fetchVideos();
 
+=======
+    fetchVideosFromGCloud();
+
+    return () => {
+      if (playerRef.current) {
+        playerRef.current.dispose();
+        playerRef.current = null;
+      }
+    };
+  }, [navigate]);
+
+  useEffect(() => {
+    // Whenever the currentVideoIndex changes, load the new video
+    if (videos.length > 0 && playerRef.current) {
+      playerRef.current.src({ src: videos[currentVideoIndex], type: 'video/mp4' });
+      playerRef.current.load();
+      playerRef.current.play();
+    }
+  }, [currentVideoIndex, videos]);
+
+  // Swipe event handlers
+  const handleSwipe = (direction) => {
+    // Placeholder functions - replace these with actual navigation logic
+    const navigateUp = () => navigate('/how-it-works'); // Navigate to your next page
+    const navigateDown = () => navigate('/cloud-api'); // Navigate to your previous page
+
+    if (direction === 'up') navigateUp();
+    if (direction === 'down') navigateDown();
+  };
+
+  useEffect(() => {
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e) => {
+<<<<<<< HEAD
       if (!touchStartRef.current) {
         return;
       }
@@ -80,14 +175,28 @@ function ExploreFurther() {
         navigate('/next-page'); // Change to the path of the next page
       } else if (touchStartRef.current < touchEndY - 50) {
         navigate('/how-it-works'); // Swipe up to go back to 'HowItWorks' page
+=======
+      if (!touchStartRef.current) return;
+      const touchEndY = e.touches[0].clientY;
+      if (touchStartRef.current > touchEndY + 50) {
+        handleSwipe('up');
+      } else if (touchStartRef.current < touchEndY - 50) {
+        handleSwipe('down');
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
       }
     };
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) {
+<<<<<<< HEAD
         navigate('/next-page'); // Change to the path of the next page
       } else if (e.deltaY < -100) {
         navigate('/how-it-works'); // Swipe up to go back to 'HowItWorks' page
+=======
+        handleSwipe('up');
+      } else if (e.deltaY < -100) {
+        handleSwipe('down');
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
       }
     };
 
@@ -103,6 +212,7 @@ function ExploreFurther() {
   }, []);
 
   return (
+<<<<<<< HEAD
     <div className="full-screen-container">
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
@@ -115,8 +225,24 @@ function ExploreFurther() {
       </div>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
+=======
+    <div className="explore-further-container">
+      <NavigationBar />
+      <div className="main-content">
+        <div className="video-tab-container">
+          <video ref={videoRef} className="video-js" />
+        </div>
+        <ContentSection />
+      </div>
+      {isLoading && <div className="text-center mt-3">Loading...</div>}
+      {error && <div className="text-danger text-center mt-3">{error}</div>}
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
     </div>
   );
 }
 
+<<<<<<< HEAD
 export default ExploreFurther
+=======
+export default ExploreFurther;
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76

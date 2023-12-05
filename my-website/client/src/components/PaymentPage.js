@@ -58,7 +58,11 @@ function PaymentPage() {
     <div>
       <h1>Complete Your Payment</h1>
       <p>You have selected: {plan}</p>
+<<<<<<< HEAD
       <PayPalScriptProvider options={{ "client-id": "YOUR_CLIENT_ID" }}>
+=======
+      <PayPalScriptProvider options={{ "client-id": "AVkoSETxNqk-fNzT5wZPZd-fRKOSwpoUwJzlC26D8XZJ0LcfFGP3U5LyFSzMOj9NaZg4gGvgOGWDgV0L" }}>
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
         <PayPalButtons 
           createOrder={createOrder} 
           onApprove={onApprove} 

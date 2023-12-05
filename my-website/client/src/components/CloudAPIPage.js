@@ -5,16 +5,17 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 
+
 function CloudAPIPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
   const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu'; // Replace with your Pexels API key
+  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu';
   const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
   const fetchVideos = async () => {
@@ -86,13 +87,13 @@ function CloudAPIPage() {
 
       const touchEndY = e.touches[0].clientY;
       if (touchStartRef.current > touchEndY + 50) {
-        navigate('/how-it-works');
+        navigate('/explore-further');
       }
     };
 
     const handleWheel = (e) => {
       if (e.deltaY > 100) {
-        navigate('/how-it-works');
+        navigate('/explore-further');
       }
     };
 
@@ -110,21 +111,31 @@ function CloudAPIPage() {
   }, []);
 
   const handleSearchSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Send the request to the backend
-      axios.post('http://localhost:5000/api/process-video', { link: searchQuery })
-           .then(response => {
-               console.log('Video processing started:', response.data);
-           })
-           .catch(error => {
-               console.error('Error starting video processing:', error.message);
-           });
+    if (e) e.preventDefault();
+    setIsLoading(true);
   
-      // Redirect immediately after sending the request
+    // Retrieve user ID from localStorage or another secure method
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      setError('User ID not found. Please log in again.');
+      setIsLoading(false);
+      return;
+    }
+  
+    const folderName = 'folder_check'; // Example folder name
+    try {
+      const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
+        link: searchQuery,
+        folder_name: folderName,
+        user_id: userId  // Include the user ID in the request
+      });
+      console.log('Video processing started:', response.data);
       handleRedirection();
     } catch (error) {
       console.error('Error submitting search:', error.message);
+      setError('Error processing your request. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -143,24 +154,38 @@ function CloudAPIPage() {
     }
   };
 
+  const handleLogoClick = () => {
+    handleSearchSubmit();
+  };
+
   return (
     <div className="full-screen-container">
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        <h1>Transform Your Content, Transform Your Influence</h1>
-        <form onSubmit={handleSearchSubmit}>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Enter search query"
-          />
-          <button type="submit">Search</button>
-        </form>
+        <h1>creating content has never been easier Just Clip It</h1>
+        <div className="search-bar-container">
+          <form onSubmit={handleSearchSubmit} className="search-form">
+            <div className="input-logo-container">
+              <input
+                type="text"
+                id="google-like-search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Enter search query"
+              />
+              <img
+                src="\magnifying-glass_2015241.png"
+                alt="Logo"
+                className="search-logo"
+                onClick={handleLogoClick}
+              />
+            </div>
+          </form>
+        </div>
+        {isLoading && <p>Loading...</p>}
+        {error && <p>Error: {error}</p>}
       </div>
-      {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>}
     </div>
   );
 }

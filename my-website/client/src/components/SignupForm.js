@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import api from '../api'; // Ensure this path is correct
+=======
+import { api } from '../api'; // Importing the Axios instance for Flask
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
 import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
 import FacebookLogin from '@greatsumini/react-facebook-login'; // Import FacebookLogin
 import NavigationBar from './NavigationBar';

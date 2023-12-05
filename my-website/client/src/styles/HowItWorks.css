@@ -1,5 +1,6 @@
 /* HowItWorks.css */
 
+<<<<<<< HEAD
 .full-screen-container {
     display: flex;
     flex-direction: column;
@@ -92,3 +93,87 @@
         font-size: 1em;
     }
 }
+=======
+.how-it-works-container {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333;
+    background-color: #fff; /* Set background color to white */
+    padding-top: 56px; /* Adjust if your NavigationBar is a different height */
+    padding-bottom: 2rem; /* Add some padding at the bottom */
+    text-align: center; /* Center all text */
+  }
+  
+  .container {
+    max-width: 100%; /* Allow the container to fill the width */
+    margin: auto; /* Center the container */
+    padding: 0 2rem; /* Add horizontal padding */
+  }
+  
+  .container h1 {
+    color: #4A90E2;
+    font-size: 4rem; /* Larger font size for the heading */
+    font-weight: bold; /* Make the heading bold */
+    margin-bottom: 1rem; /* Adjust bottom margin */
+  }
+  
+  .container .lead {
+    font-weight: normal; /* Set the font weight to normal */
+    color: #555; /* Slightly lighter color for the lead text */
+    margin-bottom: 3rem; /* More space below the lead text */
+    font-size: 2rem; /* Larger font size for the lead text */
+  }
+  
+  .how-does-it-work {
+    font-size: 3rem; /* Increase the font size */
+    color: #4A90E2; /* Change the color to blue */
+    margin-bottom: 3rem; /* Adjust the bottom margin if needed */
+    font-weight: bold; /* Optional: Make the text bold */
+}
+
+  
+  .row {
+    justify-content: center; /* Center the columns */
+  }
+  
+  .row .step {
+    margin: 2rem 1rem; /* Uniform margin for spacing around cards */
+    padding: 2rem; /* Padding inside the cards */
+    border: 1px solid #ccc; /* Border for the cards */
+    border-radius: 8px; /* Rounded corners for the cards */
+    background: #f9f9f9; /* Light background for each step container */
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1); /* Soft shadow for depth */
+    flex: 0 0 auto; /* Prevent cards from stretching */
+  }
+  
+  .step h3 {
+    color: #333;
+    font-size: 3rem; /* Larger font size for step titles */
+    font-weight: bold; /* Bold step titles */
+    margin: 1rem 0; /* Space around step titles */
+  }
+  
+  .step p {
+    color: #666;
+    font-size: 1.5rem; /* Larger font size for step descriptions */
+    margin: 1rem 0; /* Space around step descriptions */
+  }
+  
+  .icon {
+    width: 120px; /* Adjust icon size */
+    height: auto; /* Keep icons' aspect ratio */
+    margin-bottom: 2rem; /* Space below icons */
+  }
+  
+  @media (min-width: 992px) {
+    .container {
+      padding: 0 4rem; /* More horizontal padding on larger screens */
+    }
+  
+    .row .step {
+      margin: 2rem; /* More space between cards on larger screens */
+      padding: 2rem; /* Larger padding inside the cards */
+      width: 30%; /* Adjust width to control card size */
+    }
+  }
+  
+>>>>>>> 4353c732b80537dea39e20140b5e75195065be76
