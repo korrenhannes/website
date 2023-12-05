@@ -4,7 +4,7 @@ from download_youtube_data import YoutubeData
 from tqdm import tqdm
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
 from moviepy.editor import concatenate_videoclips, ImageClip
-from moviepy.editor import AudioFileClip, CompositeAudioClip, clips_array
+from moviepy.editor import AudioFileClip, CompositeAudioClip
 
 import imutils
 import numpy as np
