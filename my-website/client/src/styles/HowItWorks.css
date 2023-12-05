@@ -1,94 +1,77 @@
 /* HowItWorks.css */
 
-.full-screen-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start; /* Start content below the NavBar */
-    text-align: center;
-    padding-top: 60px; /* Add padding to avoid NavBar overlap */
-    padding-bottom: 30px; /* Add padding at the bottom */
-    min-height: calc(100vh - 90px); /* Full viewport height minus padding */
-}
-
-#background-video {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    min-width: 100%;
-    min-height: 100%;
-    z-index: -1;
-    opacity: 0.7;
-}
-
-.foreground-content {
-    z-index: 1;
-    color: #fff;
-    width: 90%; /* Use more horizontal space */
-    max-width: 1200px; /* Maximum width for very large screens */
-    margin: 0 auto; /* Center content */
-    padding-bottom: 30px; /* Ensure space at bottom */
-}
-
-.foreground-content h1 {
-    font-size: 5vw; /* Dynamically scales with the viewport width */
-    max-font-size: 3em; /* Set a maximum size */
-    white-space: nowrap; /* Prevents text wrap */
-    overflow: hidden; /* Hides any overflow */
-    text-overflow: ellipsis; /* Ellipsis for overflow text */
-    margin-bottom: 15px;
-}
-
-.section {
-    text-align: left; /* Align text to the left for readability */
-    margin: 20px 0;
-    padding: 15px;
-    background-color: rgba(255, 255, 255, 0.8);
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-}
-
-.section h2 {
-    font-size: 1.8em;
-    margin-bottom: 8px;
-}
-
-.section p {
-    font-size: 1.1em;
-    line-height: 1.5;
+.how-it-works-container {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #333;
-}
-
-/* Responsive design adjustments */
-@media (max-width: 768px) {
-    .foreground-content {
-        width: 95%; /* More horizontal space on smaller screens */
+    background-color: #fff; /* Set background color to white */
+    padding-top: 56px; /* Adjust if your NavigationBar is a different height */
+    padding-bottom: 2rem; /* Add some padding at the bottom */
+  }
+  
+  .container {
+    max-width: 960px; /* Adjust the container max-width to better match the design */
+  }
+  
+  .container h2 {
+    color: #4A90E2;
+    margin-bottom: 0.5rem; /* Slightly reduce the bottom margin */
+    font-size: 2.5rem; /* Increase font size for the heading */
+    font-weight: bold; /* Make the heading bold */
+  }
+  
+  .container .lead {
+    font-weight: normal; /* Set the font weight to normal */
+    color: #333; /* Set text color to a darker shade for better contrast */
+    margin-bottom: 4rem; /* Increase bottom margin for more spacing */
+    font-size: 1.25rem; /* Increase font size for the lead text */
+  }
+  
+  .text-center.how-does-it-work {
+    font-size: 1.5rem; /* Increase font size */
+    color: #555; /* Adjust color to a lighter shade */
+    margin-bottom: 3rem; /* Increase bottom margin for spacing */
+    font-weight: bold; /* Make the subheading bold */
+  }
+  
+  .row .step {
+    margin-top: 2rem; /* Increase top margin for spacing */
+    padding: 0 1rem; /* Add padding to the sides */
+  }
+  
+  .step h3 {
+    color: #333;
+    margin-top: 1rem;
+    font-size: 1.5rem; /* Increase font size for titles */
+    font-weight: bold; /* Make titles bold */
+  }
+  
+  .step p {
+    color: #666;
+    font-size: 1rem; /* Set font size for paragraph text */
+    margin-bottom: 1rem; /* Add some margin at the bottom of paragraphs */
+  }
+  
+  .icon {
+    width: 120px; /* Adjust the icon size to match the design */
+    height: auto;
+    margin-bottom: 2rem; /* Increase margin below the icons for more space */
+  }
+  
+  @media (max-width: 768px) {
+    .row .step {
+      margin-top: 1rem;
     }
-
-    .foreground-content h1 {
-        font-size: calc(100% - 2px); /* Adjust as needed */
+  
+    .icon {
+      width: 100px; /* Adjust icon size for mobile */
+      margin-bottom: 1.5rem; /* Adjust margin for mobile */
     }
-    
-    .section h2, .section p {
-        font-size: calc(100% - 2px); /* Adjust as needed */
+  
+    .container h2,
+    .text-center.how-does-it-work,
+    .step h3,
+    .step p {
+      font-size: 1rem; /* Adjust font sizes for mobile for a better fit */
     }
-    
-    .section {
-        padding: 10px;
-    }
-}
-
-/* Very small screens adjustments */
-@media (max-width: 480px) {
-    .foreground-content h1 {
-        font-size: 1.8em; /* Adjust font size */
-    }
-
-    .section h2 {
-        font-size: 1.5em;
-    }
-
-    .section p {
-        font-size: 1em;
-    }
-}
+  }
+  
