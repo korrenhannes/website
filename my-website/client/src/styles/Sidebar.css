@@ -10,7 +10,6 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
     z-index: 100; /* Adjust if necessary to ensure the sidebar is above other content */
     overflow-y: auto; /* Enable vertical scrolling */
-    scrollbar-width: none; /* For Firefox */
   }
   
 

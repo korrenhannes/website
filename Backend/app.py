@@ -77,8 +77,10 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, user_
         return False
 
 
-def process_youtube_video(link, save_folder_name, user_id):
+def process_youtube_video(link, user_id):
     base_dir = os.path.abspath(os.path.dirname(__file__))
+    # Change the save_folder_name to use the user_id
+    save_folder_name = user_id  
     dest_folder = os.path.join(base_dir, save_folder_name)
 
     if not os.path.exists(dest_folder):
@@ -93,25 +95,22 @@ def process_youtube_video(link, save_folder_name, user_id):
     for i in range(len(edited_videos.faced_subs_vids)):
         video_file_path = os.path.join(yt_data_obj.dest, "finalvideo" + "_" + str(i) + ".mp4")
         gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
-        # Pass user_id to the upload function
+        # Use the user_id as the folder name in the upload function
         upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, user_id)
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
     data = request.json
     youtube_link = data.get('link')
-    save_folder_name = data.get('folder_name')
     user_id = data.get('user_id')  # Extract user ID from the request
 
     if not youtube_link:
         return jsonify({'error': 'No YouTube link provided'}), 400
-    if not save_folder_name:
-        return jsonify({'error': 'No folder name provided'}), 400
     if not user_id:
         return jsonify({'error': 'No user ID provided'}), 400
 
     try:
-        thread = threading.Thread(target=process_youtube_video, args=(youtube_link, save_folder_name, user_id))
+        thread = threading.Thread(target=process_youtube_video, args=(youtube_link, user_id))
         thread.start()
         return jsonify({'message': 'YouTube video processing started'})
     except Exception as e:

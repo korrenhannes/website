@@ -165,7 +165,8 @@ function CloudAPIPage() {
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        <h1>creating content has never been easier Just Clip It</h1>
+        <h1>creating content has never been easier</h1>
+        <h2>just clipIt</h2>
         <div className="search-bar-container">
           <form onSubmit={handleSearchSubmit} className="search-form">
             <div className="input-logo-container">

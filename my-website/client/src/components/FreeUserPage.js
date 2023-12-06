@@ -4,7 +4,6 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 
-import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import SubtitleEditor from './SubtitleEditor';
 import HeadlineEditor from './HeadlineEditor';
