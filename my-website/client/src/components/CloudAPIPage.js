@@ -152,7 +152,7 @@ function CloudAPIPage() {
         navigate('/premium-user');
         break;
       default:
-        navigate('/free-user');
+        navigate('/cloud-api');
     }
   };
 

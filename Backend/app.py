@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file, Response
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
@@ -8,6 +8,7 @@ import datetime
 from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
+import re
 
 from download_youtube_data import YoutubeData
 from edit_youtube_video import EditedVideos
@@ -34,6 +35,45 @@ if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
     raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
 
 print(f"GOOGLE_CLOUD_KEY_FILE: {google_cloud_key_file}")
+
+# Function to stream video from Google Cloud Storage
+@app.route('/api/video-stream/<path:video_id>', methods=['GET'])
+def video_stream(video_id):
+    # Initialize Google Cloud Storage client
+    storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+    bucket_name = "clipitshorts"  # Replace with your bucket name
+    bucket = storage_client.bucket(bucket_name)
+
+    # Access the blob (video file) in the bucket
+    blob = bucket.blob(video_id)
+
+    # Check if the blob exists
+    if not blob.exists():
+        return "File not found", 404
+
+    range_header = request.headers.get('Range', None)
+
+    if range_header:
+        # Parse range header to determine which part of the file to fetch
+        match = re.search(r'bytes=(\d+)-(\d*)', range_header)
+        start, end = match.groups()
+
+        start = int(start)
+        end = blob.size if end == '' else int(end)
+
+        # Fetch the specified part of the blob
+        blob_chunk = blob.download_as_bytes(start=start, end=end)
+
+        # Construct the response with the appropriate part of the file
+        rv = Response(blob_chunk, 206, mimetype='video/mp4', content_type='video/mp4', direct_passthrough=True)
+        rv.headers.add('Content-Range', f'bytes {start}-{end}/{blob.size}')
+        rv.headers.add('Accept-Ranges', 'bytes')
+    else:
+        # If no range header, send the entire file
+        blob_chunk = blob.download_as_bytes()
+        rv = Response(blob_chunk, 200, mimetype='video/mp4', content_type='video/mp4', direct_passthrough=True)
+
+    return rv
 
 
 def generate_signed_url(bucket_name, blob_name):

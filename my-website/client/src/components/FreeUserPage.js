@@ -93,7 +93,9 @@ function FreeUserPage() {
   };
 
   const loadVideo = (videoUrl) => {
-    playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
+    // Updated to use the new video-stream endpoint for chunked streaming
+    const videoStreamUrl = `http://localhost:5000/api/video-stream/${videoUrl.split('/').pop()}`;
+    playerRef.current.src({ src: videoStreamUrl, type: 'video/mp4' });
     playerRef.current.load(); // Load the new source
     playerRef.current.play().catch(e => console.error('Error playing video:', e));
   }
@@ -108,6 +110,7 @@ function FreeUserPage() {
     setCurrentVideoIndex(nextIndex);
     loadVideo(videos[nextIndex]);
   };
+
 
   // Custom Double Tap Handler
   const handleDoubleTap = (function() {
