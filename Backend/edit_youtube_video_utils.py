@@ -128,8 +128,8 @@ def cut_faces(neg_vid, stock_video): # stock_video in the format: (VIdeoFileClip
   cuts_poses = []
   last_xy = np.array([[-500,-500]], dtype='float64')
   last_cut = np.array([[-500,-500]], dtype='float64')
-  FIXED_NUMBER = 10
-  FAR_NUMBER = 30
+  FIXED_NUMBER = 5
+  FAR_NUMBER = 20
 
   for ind, bs in enumerate(boxes):
     if len(bs) > 0:
@@ -148,18 +148,19 @@ def cut_faces(neg_vid, stock_video): # stock_video in the format: (VIdeoFileClip
                 best_fit_ind = np.argmin(np.linalg.norm(xys_sorted - last_xy[i], axis = 1))
                 last_xy[i] = xys_sorted[best_fit_ind]
 
-        for xys in xys_sorted:
-            break_loop = False
-            for i in range(len(last_xy)):
-                if (not fixed[i] and len(xys_sorted) > i) or (np.linalg.norm(last_xy[i] - xys) == 0):
-                    last_xy[i] = np.array(xys)
-                    changed = True
-                    break_loop = True
+        if sum(fixed) == 0:
+          for xys in xys_sorted:
+              break_loop = False
+              for i in range(len(last_xy)):
+                  if (not fixed[i] and len(xys_sorted) > i) or (np.linalg.norm(last_xy[i] - xys) == 0):
+                      last_xy[i] = np.array(xys)
+                      changed = True
+                      break_loop = True
 
-            if (not break_loop) and (len(last_xy) == 1):
-                last_xy = np.array(list(last_xy) + [np.array(xys)])
-                changed = True
-                fixed.append(True)
+              if (not break_loop) and (len(last_xy) == 1):
+                  last_xy = np.array(list(last_xy) + [np.array(xys)])
+                  changed = True
+                  fixed.append(True)
 
         if changed:
             if (len(last_cut) != len(last_xy)):

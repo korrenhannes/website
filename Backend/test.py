@@ -20,26 +20,7 @@
 # download_file("https://raw.githubusercontent.com/opencv/opencv/master/samples/dnn/face_detector/deploy.prototxt")
 # download_file("https://raw.githubusercontent.com/opencv/opencv_3rdparty/dnn_samples_face_detector_20170830/res10_300x300_ssd_iter_140000.caffemodel")
 
-# def group_words(words, max_char_count):
-#     groups = []
-#     current_group = []
-#     current_char_count = 0
 
-#     for word in words:
-#         word_len = len(word)
-        
-#         if current_char_count + word_len <= max_char_count:
-#             current_group.append(word)
-#             current_char_count += word_len
-#         else:
-#             groups.append(current_group)
-#             current_group = [word]
-#             current_char_count = word_len
-
-#     if current_group:
-#         groups.append(current_group)
-
-#     return groups
 
 # def words_to_pango_with_timing(text, duration=1, start_time=0):
 #     lines = [line.strip().split() for line in text.split('\n') if line.strip()]
@@ -182,6 +163,8 @@ from tqdm import tqdm
 from skimage.metrics import structural_similarity as ssim
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import imutils
+import random
+from moviepy.editor import *
 
 prototxt = 'deploy.prototxt'
 model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
@@ -217,10 +200,64 @@ def get_frame_info(frame, cut_time):
   return cut_info
 
 
+def group_words(df, max_char_count):
+    groups = []
+    current_text = ""
+    current_char_count = 0
+    start_time = None
+    end_time = None
+
+    for _, row in df.iterrows():
+        word = row['text']
+        word_len = len(word)
+
+        if current_char_count + word_len <= max_char_count:
+            if not current_text:
+                start_time = row['start']
+            current_text += " " + word if current_text else word
+            current_char_count += word_len
+            end_time = row['end']
+        else:
+            groups.append((current_text.strip(), start_time, end_time))
+            current_text = word
+            current_char_count = word_len
+            start_time = row['start']
+            end_time = row['end']
+
+    if current_text:
+        groups.append((current_text.strip(), start_time, end_time))
+
+    return groups
+
+
+# I can move this to a utils file later
+def text_clip(text: str, duration: int, start_time: int = 0):
+    """Return a description string on the bottom-left of the video
+
+    Args:
+                text (str): Text to show
+                duration (int): Duration of clip
+            start_time (int, optional): Time in video to start at (in seconds). Defaults to 0.
+    Returns:
+                moviepy.editor.TextClip: A instance of a TextClip
+    """
+    color = 'white' if random.random() < 0.9 else 'Yellow'
+    stroke_color = 'black'
+    font = "Lucida-Sans-Demibold-Roman"
+    font_size = 60
+
+    return (TextClip(text.upper(), font=font, fontsize=font_size, size=(600, None), color=color, stroke_color=stroke_color, stroke_width=3, method='caption')
+            .set_duration(duration).set_position('center')
+            .set_start(start_time))
+
+
 if __name__ == "__main__":
-  video = VideoFileClip("C://Users//along//VS Code//Shorts Project//website//downloaded_files//third_test//finalvideo_0.mp4")
-  frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(video.iter_frames())]
-  dur = video.duration
-  for i in range(len(frames)-1):
-    if is_cut(frame1=frames[i], frame2=frames[i+1]):
-      print(f"Cut on frame num: {i+1}")
+    df = pd.read_csv("C://Users//along//VS Code//Shorts Project//website//downloaded_files//second_test//Andrew Tate vs Piers Morgan  The Full Interview_tmp4.csv")
+    grouped_words = group_words(df, max_char_count=15)
+    txt_clips = [text_clip(group[0], group[2] - group[1], group[1]) for group in grouped_words]
+    text_vid = concatenate(txt_clips, method='compose')
+    vid = VideoFileClip("C://Users//along//VS Code//Shorts Project//website//downloaded_files//fourth_test//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4")
+    sub_vid = vid.subclip(0, text_vid.duration)
+    resize_vid = sub_vid.resize(height=1280)
+    final_vid = CompositeVideoClip([sub_vid] + txt_clips, size=(720, 1280))
+    final_vid.write_videofile('test_text.mp4', fps=24, codec='libx264')

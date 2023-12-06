@@ -128,7 +128,7 @@ class EditedVideos:
 
     def read_df(self, ind):
         df = self.dfs[ind]
-        text_part = ' '.join(str(df['text']))
+        text_part = ' '.join(df['text'].astype(str))
         if not USING_WHISPER:
             df['start'] = df['start'].apply(get_seconds)
             df['end'] = df['end'].apply(get_seconds) # This replaced the line of code beneath which is commented out. Still need to check that it maintains the same functionality and logic
