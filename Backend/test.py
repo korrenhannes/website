@@ -170,6 +170,8 @@ prototxt = 'deploy.prototxt'
 model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
 net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
+FONT_PATH = "C://Users//along//Downloads//Montserrat-Black//montserrat//Montserrat-Black.ttf" # Donloaded from here: https://www.ffonts.net/Montserrat-Black.font.download#google_vignette
+
 def is_cut(frame1, frame2, threshold=0.7):
     # Convert frames to grayscale
     gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -241,12 +243,11 @@ def text_clip(text: str, duration: int, start_time: int = 0):
     Returns:
                 moviepy.editor.TextClip: A instance of a TextClip
     """
-    color = 'white' if random.random() < 0.9 else 'Yellow'
+    color = 'white' if random.random() < 0.85 else 'Yellow'
     stroke_color = 'black'
-    font = "Lucida-Sans-Demibold-Roman"
-    font_size = 60
+    font_size = 70
 
-    return (TextClip(text.upper(), font=font, fontsize=font_size, size=(600, None), color=color, stroke_color=stroke_color, stroke_width=3, method='caption')
+    return (TextClip(text.upper(), font=FONT_PATH, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5 ,method='caption')
             .set_duration(duration).set_position('center')
             .set_start(start_time))
 
