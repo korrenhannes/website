@@ -44,18 +44,19 @@ function CloudAPIPage() {
   const fetchUserPaymentPlan = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, defaulting to free plan');
+      const userEmail = localStorage.getItem('userEmail'); // Retrieve userEmail from localStorage
+      if (!token || !userEmail) {
+        console.log('No token or user email found, defaulting to free plan');
         setUserPaymentPlan('free');
         return;
       }
-
-      const response = await axios.get('http://localhost:3000/api/user/payment-plan', {
+  
+      const response = await axios.get(`http://localhost:3000/api/auth/user/payment-plan?email=${userEmail}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
-
+  
       if (response && response.data && response.data.paymentPlan) {
         setUserPaymentPlan(response.data.paymentPlan);
       } else {
@@ -67,6 +68,7 @@ function CloudAPIPage() {
       setUserPaymentPlan('free');
     }
   };
+  
 
   useEffect(() => {
     fetchVideos();
