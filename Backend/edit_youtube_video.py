@@ -4,20 +4,22 @@ from download_youtube_data import YoutubeData
 from tqdm import tqdm
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
 from moviepy.editor import concatenate_videoclips, ImageClip
-from moviepy.editor import AudioFileClip, CompositeAudioClip, clips_array
+from moviepy.editor import AudioFileClip, CompositeAudioClip
 
 import imutils
 import numpy as np
 import pandas as pd
 import cv2
+import gc
 
 import os
 from openai import OpenAI
 import pickle
+import shutil
+import time
 
 from edit_youtube_video_utils import cut_faces, get_start_times, add_subs_video, get_relevant_video
 
-MY_PATH = "C:/Users/SharonH/Documents/GitHub/website"
 SAVED_NAME = "first_test"
 USING_WHISPER = True # Change if using Google Cloud's Speech API
 
@@ -26,7 +28,13 @@ USING_WHISPER = True # Change if using Google Cloud's Speech API
 
 FIRST_RES = "Of course! Please provide the text you'd like me to summarize using direct quotes, and I'll follow your instructions."
 FIRST_INPUT = "\n send me a full long list that numbers all the words in the original text I sent you"
-SECOND_INPUT = "Create a COHERENT summary of the MAIN IDEA OF THE TEXT using only **comprehensive** and **LONG** quotes from the text. WRITE the INDEX RANGE of each quotation on the LIST!"
+# SECOND_INPUT = "Create a COHERENT summary of the MAIN IDEA OF THE TEXT using only **comprehensive** and **LONG** quotes from the text. WRITE the INDEX RANGE of each quotation on the LIST! Format: (x-y)"
+# SECOND_INPUT = "This is a transcription of a section from a podcast.\nI want to make an interesting 1 minute clip using only quotations from the video. Choose the quotations for me. \nThe concatenation of them has to MAKE SENSE and BE COHERENT as a short video.\nYou don't have to include all of the subjects from the test. \nUse UP TO 5 quotes.\nwrite the EXACT INDEX RANGE of each quotation on the LIST."
+SECOND_INPUT = "Create a COHERENT SUMMERY of the MAIN IDEA OF THE TEXT using only comprehensive LONG quotes from the text.\nWRITE the INDEX RANGE of each quotation on the LIST!"
+
+TEST_FIRST_INP = "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast.\nFor that, I want you to send me the indices of the quotes from the trsnscript, which I should include in my clip.\nLet's check that you understand the format of your response: 1. Alright,\n2. listen,\n3. I\n4. gotta\n5. tell\n6. you\n7. guys\n8. about\n9. this\n10. mind-blowing\n11. conversation\n12. I\n13. had\n14. the\n15. other\n16. day.\n17. I\n18. had\n\n19. this\n20. expert\n21. on\n22. the\n23. podcast,\n24. right?\n25. And\n26. we\n27. started\n28. talking\n29. about\n30. the\n31. moon\n32. landing.\n33. Now,\n34. I\n35. know,\n36. I\n37. know,\n38. we've\n39. all\n40. heard\n41. the\n42. stories,\n43. but\n44. this\n45. one,\n46. man,\n47. it's\n48. next\n49. level."
+TEST_FIRST_RES = "(3-24), (26-33), (36-49)"
+TEST_SECOND_INP = "Great! KEEPING THE SAME FORMAT IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
 
 # BASIC_PROMPT = "delete the less relavent parts of the next text. Don't rewrite ANYTHING just delete parts. remain with 100 words\n"
 openai_api_key = "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"
@@ -42,6 +50,7 @@ def get_seconds(t):
 class EditedVideos:
     def __init__(self, youtube_data, load_gpt = False):
         self.youtube_data = youtube_data
+        self.temp_folder = self.create_temp_folder()
         if not load_gpt:
             self.text_parts = []
             self.dfs = [pd.read_csv(fn[:-4] + ".csv") for fn in self.youtube_data.filenames]
@@ -67,8 +76,19 @@ class EditedVideos:
         print("saving files!")
         self.save_vids()
 
+        # Currently not working and need to delete the temp_folder library manually
+        # self.del_temp_folder()
+
     def relevant_videos(self):
-        return [get_relevant_video(text) for text in self.text_parts]
+        return [get_relevant_video(text, self.temp_folder) for text in self.text_parts]
+    
+    def create_temp_folder(self):
+          temp_folder_name = "temp_files"
+          os.mkdir(temp_folder_name)
+          return temp_folder_name
+
+    def del_temp_folder(self):
+        shutil.rmtree(self.temp_folder)
 
     def cuts_faces(self):
         faced_vids = []
@@ -80,7 +100,6 @@ class EditedVideos:
 
         return faced_vids, new_start_times
     
-
     def add_subs(self):
         subed_faced_vids = []
         for i, vid in tqdm(enumerate(self.faced_vids)):
@@ -90,7 +109,7 @@ class EditedVideos:
     
     def save_vids(self):
         for i in range(len(self.faced_subs_vids)):
-            self.faced_subs_vids[i].write_videofile(self.youtube_data.dest + "finalvideo" + "_" + str(i) + ".mp4")
+            self.faced_subs_vids[i].write_videofile(self.youtube_data.dest + "finalvideo" + "_" + str(i) + ".mp4", fps=24, audio_codec='aac')
 
     def do_nlp(self):
         self.time_intervals = []
@@ -119,27 +138,26 @@ class EditedVideos:
         return df, text_part
 
     def call_chat_gpt(self, ind):
-        # conversation = [
-        #     {"role": "system", "content": "You are a helpful assistant."},
-        #     {"role": "user", "content": FIRST_INPUT},
-        #     {"role": "assistant", "content": FIRST_RES},
-        #     {"role": "user", "content": self.text_parts[ind]},
-
-        # ]
-        # print("\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows()))
-        # Make API request with the conversation so far
         conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": self.text_parts[ind] + FIRST_INPUT},
-            {"role": "assistant", "content": "\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows())},
-            {"role": "user", "content": SECOND_INPUT}
-
+            {"role": "user", "content": TEST_FIRST_INP},
+            {"role": "assistant", "content": TEST_FIRST_RES},
+            {"role": "user", "content": TEST_SECOND_INP + "\n" + "\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows())},
         ]
+
+        # print("\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows()))
+        # Make API request with the conversation so far
+        # conversation = [
+        #     # {"role": "system", "content": "You are a helpful assistant."},
+        #     # {"role": "user", "content": self.text_parts[ind] + FIRST_INPUT},
+        #     {"role": "user", "content": "\n".join(f"{index + 1}. {row['text']}" for index, row in self.dfs[ind].iterrows())},
+        #     {"role": "user", "content": SECOND_INPUT}
+        # ]
 
         # Make a request to the ChatGPT API
         client = OpenAI(api_key=openai_api_key)
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-4-1106-preview",
             messages=conversation
         )
 
@@ -152,8 +170,8 @@ class EditedVideos:
     def get_time_intervals(self, df, assistant_reply, ind, debugging=False):
         # lst = assistant_reply.replace("...", "").split('"') # added a different line of code to skip ver incomplete sentences that end in an ellipsis. If there's a set of answers which need this line then it needs to be reimplemented
         if not debugging:
-            regg = "\d{1,3}-\d{1,3}"
-            spans = list(dict.fromkeys(re.compile(regg).findall(assistant_reply)))
+            regg = "\d{1,3}\s*-\s*\d{1,3}"
+            spans = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))
             # change indexing from 1 - ..., to 0 - ....
             all_locs = [(int(x.split('-')[0]) - 1,int(x.split('-')[1]) - int(x.split('-')[0])) for x in spans]
 
@@ -172,9 +190,8 @@ class EditedVideos:
             all_locs = all_locs_list[ind]
         print(all_locs)
         if len(all_locs) == 0:
-            time_intervals = [(df['start_times'].iloc[0], df['end_times'].iloc[-1])]
-        else:
-            time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
+            all_locs = [(0, len(df['text']) - 1)]
+        time_intervals = [(df['start_times'].iloc[i], df['end_times'].iloc[i + j] + extra_time) for i, j in all_locs]
         # Not elegant and might need reworking but stitches time intervals if one ends and the other starts on the same instance
         # if len(time_intervals) > 1:
         #     final_time_intervals = []
@@ -216,6 +233,7 @@ class EditedVideos:
         text_part = self.text_parts[ind]
         df = self.dfs[ind]
         assistant_reply = self.call_chat_gpt(ind)
+        print(f"Chat GPT reply: {assistant_reply}")
         return self.get_time_intervals(df, assistant_reply, ind)
 
         # # Debugging time intervals
@@ -261,8 +279,8 @@ class EditedVideos:
 
 
 if __name__ == "__main__":
-  pickled_obj_loc = f"{MY_PATH}/{SAVED_NAME}/object_data.pkl"
-  youtube_obj = pd.read_pickle(pickled_obj_loc)
-  EditedVideos(youtube_obj, load_gpt=True)
+    pickled_obj_loc = f"downloaded_files//{SAVED_NAME}//object_data.pkl"
+    youtube_obj = pd.read_pickle(pickled_obj_loc)
+    EditedVideos(youtube_obj, load_gpt=True)
     
     

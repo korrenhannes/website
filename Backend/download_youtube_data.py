@@ -26,7 +26,7 @@ import os
 import shutil
 import pickle
 
-DRIVER_PATH = "C:/Users/SharonH/Desktop/chromedriver.exe"
+DRIVER_PATH = "C://Users//along//VS Code//Shorts Project//chromium//chromedriver.exe"
 api_key = 'AIzaSyDuCDLpv1XKwlv1ZLeG8WSkyEH2PwHRgkk'
 WHISPER_MODEL = "medium.en"
 
@@ -34,7 +34,7 @@ WHISPER_MODEL = "medium.en"
 class MyCustomException(Exception):
     pass
 class YoutubeData:
-    def __init__(self, link, name, n_vids=5, dest="downloaded_files/",buffer = 29):
+    def __init__(self, link, name, n_vids=5, dest="downloaded_files/",buffer = 69):
         self.buffer = buffer
         self.name = name
         self.link = link
@@ -189,7 +189,7 @@ class YoutubeData:
                 # print(f"Word:{word_data['word']}. Start: {word_data['start']}. End: {word_data['end']}")
                 # if word_data['probability'] < 0.8:
                 #         print(f"Accuracy of{word_data['word']} only {word_data['probability']}")
-                texts.append(word_data['word'][1:])
+                texts.append(word_data['word'].lstrip())
                 starts.append(word_data['start'])
                 ends.append(word_data['end'])
 

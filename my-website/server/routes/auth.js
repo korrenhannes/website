@@ -93,4 +93,21 @@ router.post('/update-plan', async (req, res) => {
   }
 });
 
+// New route to get the user's payment plan
+router.get('/user/payment-plan', async (req, res) => {
+  try {
+    const { email } = req.query; // Assuming the email is passed as a query parameter
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json({ paymentPlan: user.paymentPlan });
+  } catch (error) {
+    console.error("Error fetching user payment plan:", error);
+    res.status(400).send(error.message);
+  }
+});
+
 module.exports = router;
