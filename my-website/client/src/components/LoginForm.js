@@ -15,20 +15,20 @@ function LoginForm() {
   const [loginError, setLoginError] = useState(''); // State for handling login errors
   const navigate = useNavigate();
 
-  const storeUserDataAndNavigate = (token, userId) => {
+  const storeUserDataAndNavigate = (token, userId, email) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('userId', userId); // Storing the user ID
-    // Consider storing userId in a more secure way than localStorage
-    // localStorage.setItem('userId', userId);
+    localStorage.setItem('userId', userId);
+    localStorage.setItem('userEmail', email); // Storing the user email
     navigate('/cloud-api');
   };
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/login', { email, password });
-      storeUserDataAndNavigate(response.data.token, response.data.userId);
+      storeUserDataAndNavigate(response.data.token, response.data.userId, email);
     } catch (error) {
       console.error("Login failed:", error);
       setLoginError('Login failed. Please check your credentials.');
@@ -41,7 +41,7 @@ function LoginForm() {
       const response = await api.post('/auth/google-login', {
         token: googleData?.credential,
       });
-      storeUserDataAndNavigate(response.data.token, response.data.userId);
+      storeUserDataAndNavigate(response.data.token, response.data.userId, response.data.email);
     } catch (error) {
       console.error("Google login failed:", error);
       setLoginError('Google login failed. Please try again.');
@@ -55,7 +55,7 @@ function LoginForm() {
         accessToken: facebookData.accessToken,
         userID: facebookData.userID
       });
-      storeUserDataAndNavigate(response.data.token, response.data.userId);
+      storeUserDataAndNavigate(response.data.token, response.data.userId, response.data.email);
     } catch (error) {
       console.error("Facebook login failed:", error);
       setLoginError('Facebook login failed. Please try again.');
