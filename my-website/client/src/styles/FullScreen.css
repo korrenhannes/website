@@ -139,7 +139,7 @@
   align-items: center; /* Align items in the center vertically */
   border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
   border-radius: 24px; /* Rounded corners */
-  width: 80%; /* Increase the width of the search bar */
+  width: 100%; /* Increase the width of the search bar */
   max-width: 800px; /* Set a max-width to prevent it from getting too long */
   background-color: white; /* Ensuring the background inside the border is white */
   transition: border-color 0.3s ease; /* Smooth transition for border color */
