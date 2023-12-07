@@ -5,9 +5,6 @@ import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 
 import NavigationBar from './NavigationBar';
-import SubtitleEditor from './SubtitleEditor';
-import HeadlineEditor from './HeadlineEditor';
-import CaptionOptions from './CaptionOptions';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import '../styles/Sidebar.css';
@@ -17,17 +14,6 @@ function FreeUserPage() {
   const [error, setError] = useState(null);
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [showSubtitleEditor, setShowSubtitleEditor] = useState(false);
-  const [showHeadlineEditor, setShowHeadlineEditor] = useState(false);
-  const [showCaptionOptions, setShowCaptionOptions] = useState(false);
-  const [subtitles, setSubtitles] = useState([]);
-  const [headline, setHeadline] = useState('');
-  const [captionStyle, setCaptionStyle] = useState({
-    position: 'bottom',
-    transition: 'pop',
-    highlightColor: '#04f827'
-  });
-  const [activeComponent, setActiveComponent] = useState(null);
   const backgroundVideoRef = useRef(null);
   const socket = useRef(null);
   const playerRef = useRef(null);
