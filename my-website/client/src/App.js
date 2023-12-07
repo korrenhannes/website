@@ -16,6 +16,7 @@ import RegularUserPage from './components/RegularUserPage';
 import PremiumUserPage from './components/PremiumUserPage';
 import HowItWorks from './components/HowItWorks';
 import ExploreFurther from './components/ExploreFurther';
+import SupportPage from './components/SupportPage';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -74,6 +75,7 @@ function App() {
             <Route path="/cloud-api" element={<CloudAPIPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/explore-further" element={<ExploreFurther />} />
+            <Route path="/support" element={<SupportPage />} />
             <Route path="/offers" element={<OffersPage />} />
             <Route path="/free-user" element={<FreeUserPage />} />
             <Route path="/regular-user" element={<RegularUserPage />} />
