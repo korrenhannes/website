@@ -193,7 +193,6 @@ function FreeUserPage() {
         <div className="video-subtitles">
           {/* Add your subtitles rendering logic here */}
         </div>
-        <div className="video-headline">{headline}</div>
       </div>
 
       {/* Download Button */}
