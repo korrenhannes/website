@@ -52,14 +52,25 @@
   box-sizing: border-box; /* Include padding in width calculation */
   overflow-wrap: break-word; /* Break words that are too long */
   font-weight: bold; /* Make the font bold */
+}
 
-  /* Responsive font size */
-  @media (max-width: 768px) {
-    font-size: 3em; /* Smaller font size on smaller screens */
+.foreground-content h2 {
+  font-size: 2em; /* Adjusted font size */
+  margin-bottom: 0.5em;
+  font-weight: bold; /* Make the font bold */
+  color: #4A90E2; /* Adjusted color */
+}
+
+/* Responsive font size adjustments for h2 */
+@media (max-width: 768px) {
+  .foreground-content h2 {
+    font-size: 3em; /* Adjusted font size on smaller screens */
   }
+}
 
-  @media (max-width: 480px) {
-    font-size: 2em; /* Even smaller font size on very small screens */
+@media (max-width: 480px) {
+  .foreground-content h2 {
+    font-size: 2em; /* Adjusted font size on very small screens */
   }
 }
 
@@ -111,14 +122,16 @@
   display: flex;
   align-items: center; /* Align items vertically in the center */
   margin-top: 20px;
-  width: 80%; /* Set the width of the search form */
-  padding-left: 135px; /* Add padding to move the form to the right */
+  width: 100%; /* Set the width of the search form to full container width */
+  justify-content: center; /* Center the search form within its container */
 }
 
 .search-logo {
-  width: 24px; /* Adjust the width as needed */
-  height: 24px; /* Adjust the height as needed */
-  margin-right: 10px; /* Space between logo and search input */
+  position: absolute; /* Position the logo absolutely within the container */
+  right: 10px; /* Position the logo from the right */
+  width: 24px;
+  height: 24px;
+  cursor: pointer; /* Change the cursor to pointer to indicate it's clickable */
 }
 
 .input-logo-container {
@@ -126,22 +139,34 @@
   align-items: center; /* Align items in the center vertically */
   border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
   border-radius: 24px; /* Rounded corners */
-  width: 100%; /* Set width to take full space of the search form */
+  width: 100%; /* Increase the width of the search bar */
+  max-width: 800px; /* Set a max-width to prevent it from getting too long */
   background-color: white; /* Ensuring the background inside the border is white */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+  position: relative; /* Needed for absolute positioning of the logo */
+}
+
+.input-logo-container:hover {
+  border-color: #ccc; /* Change border color on hover */
+}
+
+.input-logo-container:hover .search-logo {
+  transform: scale(1.1); /* Scale logo on hover */
 }
 
 #google-like-search {
   flex-grow: 1; /* Allows the input to take the available space */
   width: 100%; /* Set the width to fill the container */
-  height: 44px; /* Height for a comfortable search bar */
-  padding: 0 170px;
+  height: 48px; /* Height for a comfortable search bar */
+  padding-right: 50px; /* Add padding to the right to make space for the logo */
+  padding-left: 20px; /* Add padding to the left as needed */
   font-size: 16px; /* Font size similar to Google's */
   border: none;
   border-radius: 24px; /* Rounded corners */
+  transition: box-shadow 0.3s ease; /* Smooth transition for box shadow */
 }
 
 #google-like-search:focus {
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
-  border-color: rgba(223,225,229,0);
 }

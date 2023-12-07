@@ -4,7 +4,6 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 
-import UserInfo from './UserInfo';
 import NavigationBar from './NavigationBar';
 import SubtitleEditor from './SubtitleEditor';
 import HeadlineEditor from './HeadlineEditor';
@@ -76,8 +75,18 @@ function FreeUserPage() {
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
+
+    // Retrieve userEmail from localStorage or another secure method
+    const userEmail = localStorage.getItem('userEmail'); // Replace this with your actual method of retrieving the user's email
+    if (!userEmail) {
+      setError('User email not found. Please log in again.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await apiFlask.get('/signed-urls');
+      // Update the request URL to include the userEmail as a query parameter
+      const response = await apiFlask.get(`/signed-urls?email=${encodeURIComponent(userEmail)}`);
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
@@ -90,7 +99,8 @@ function FreeUserPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+};
+
 
   const loadVideo = (videoUrl) => {
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });

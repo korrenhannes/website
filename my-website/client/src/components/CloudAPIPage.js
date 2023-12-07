@@ -56,6 +56,7 @@ function CloudAPIPage() {
           'Authorization': `Bearer ${token}`
         }
       });
+      
   
       if (response && response.data && response.data.paymentPlan) {
         setUserPaymentPlan(response.data.paymentPlan);
@@ -117,8 +118,8 @@ function CloudAPIPage() {
     setIsLoading(true);
   
     // Retrieve user ID from localStorage or another secure method
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
       setError('User ID not found. Please log in again.');
       setIsLoading(false);
       return;
@@ -129,7 +130,7 @@ function CloudAPIPage() {
       const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
         link: searchQuery,
         folder_name: folderName,
-        user_id: userId  // Include the user ID in the request
+        userEmail: userEmail  // Include the user ID in the request
       });
       console.log('Video processing started:', response.data);
       handleRedirection();
@@ -138,6 +139,8 @@ function CloudAPIPage() {
       setError('Error processing your request. Please try again.');
     } finally {
       setIsLoading(false);
+
+      
     }
   };
   
@@ -165,7 +168,8 @@ function CloudAPIPage() {
       <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
-        <h1>creating content has never been easier Just Clip It</h1>
+        <h1>creating content has never been easier</h1>
+        <h2>just clipIt</h2>
         <div className="search-bar-container">
           <form onSubmit={handleSearchSubmit} className="search-form">
             <div className="input-logo-container">
