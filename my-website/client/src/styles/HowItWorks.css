@@ -4,119 +4,120 @@
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
   background-color: #fff;
-  padding-top: 40px;
-  padding-bottom: 2rem;
+  padding-top: 70px;
+  padding-bottom: 1rem;
   text-align: left;
+  overflow: hidden;
 }
 
-/* Add this CSS to make all cards the same size */
 .card {
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #000;
+  border-radius: 8px;
+  margin: 0.3em  auto;
+  height: 90%;
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  height: 100%;
-  margin: 0.5rem; /* Adjust the margin to make it smaller */
+  padding: 1rem;
 }
 
-/* Add this CSS to style the card titles and descriptions */
 .card-title {
-  font-size: 1.5rem; /* Smaller font size for card titles */
+  font-size: 1.3rem;
   font-weight: bold;
-  margin: 0 0 0.5rem 0; /* Adjust the margin to create space below the title */
+  margin-bottom: 0.3rem;
 }
 
 .card-text {
-  font-size: 1rem; /* Smaller font size for card descriptions */
-  margin: 0 auto;
-}
-
-/* Add this CSS to add a border to the cards */
-.card {
-  border: 1px solid #000;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-  margin: 0 auto;
-}
-
-/* Add this CSS to center-align the card titles and descriptions */
-.card-body {
-  text-align: left;
+  font-size: 0.9rem;
   margin: 0 auto;
 }
 
 .container {
-  max-width: 100%;
+  max-width: 90%;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .container h1 {
   color: #4A90E2;
-  font-size: 3rem; /* Smaller font size for h1 */
+  font-size: 2.5rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .container .lead {
   font-weight: normal;
   color: #555;
-  margin-bottom: 0.2rem; /* Smaller margin */
-  font-size: 1.5rem; /* Smaller font size for lead */
+  margin-bottom: 0.1rem;
+  font-size: 1.2rem;
 }
 
 .how-does-it-work {
-  font-size: 2rem; /* Smaller font size for h2 */
+  font-size: 1.8rem;
   color: #4A90E2;
-  margin-bottom: 2rem; /* Smaller margin */
-  margin-top: 1.5rem; /* Smaller margin */
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
   font-weight: bold;
 }
 
 .row {
+  display: flex;
   justify-content: center;
-}
-
-.row .step {
-  margin: 1rem;
-  padding: 2rem;
-  background: #fff;
-  text-align: left;
-  border: 0;
-  box-shadow: none;
-  flex: 0 0 auto;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 .step h3 {
   color: #333;
-  font-size: 1.5rem; /* Smaller font size for h3 */
+  font-size: 1.3rem;
   font-weight: bold;
-  margin: 1rem 0;
+  margin: 0.5rem 0;
 }
 
 .step p {
   color: #666;
-  font-size: 1rem; /* Smaller font size for p */
-  margin: 1rem 0;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
 }
 
 .icon {
-  width: 60px; /* Smaller icon size */
+  width: 50px;
   height: auto;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .step {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .step {
+    width: 50%;
+  }
 }
 
 @media (min-width: 992px) {
   .container {
-    padding: 0 4rem;
+    padding: 0 3rem;
   }
 
-  .row .step {
-    margin: 2rem;
-    padding: 2rem;
-    width: auto;
+  .step {
+    width: 33.3333%;
   }
 }

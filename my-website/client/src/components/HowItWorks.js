@@ -56,9 +56,9 @@ const HowItWorks = () => {
   return (
     <div className="how-it-works-container">
       <NavigationBar />
-      <div className="container my-5">
+      <div className="container">
         <h1 className="text-black">It's time to <span className="text-primary">ClipIt</span>.</h1>
-        <p className="lead text-black">“Creating content has never been this easy" -  </p>
+        <p className="lead text-black">“Creating content has never been this easy" - </p>
         <p className="lead text-black">With our simple 3 step process you can transform long videos into short and exciting content.</p>
         <h2 className="how-does-it-work text-primary">How does it work?</h2>
         <div className="row justify-content-start">

@@ -1,0 +1,55 @@
+/* App.css or a dedicated stylesheet */
+
+/* General Styles */
+body {
+    font-family: 'Helvetica', sans-serif;
+    color: #FFFFFF;
+    background-color: #000000;
+  }
+  
+  .full-screen-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  
+  /* Navigation Bar Styles */
+  .navigation-bar {
+    background-color: #333;
+    padding: 10px;
+    color: white;
+  }
+  
+  /* Sidebar Styles */
+  .sidebar {
+    width: 250px;
+    background-color: #222;
+    height: 100%;
+    padding: 20px;
+  }
+  
+  .sidebar h3 {
+    color: #AAA;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar a {
+    color: #FFF;
+    text-decoration: none;
+  }
+  
+  .sidebar .category {
+    margin-bottom: 10px;
+  }
+  
+  /* Content Styles */
+  .content {
+    flex: 1;
+    padding: 20px;
+    background-color: #121212;
+  }
+  
+  .text-primary {
+    color: #4CAF50; /* Adjust the color to match the image */
+  }
+  

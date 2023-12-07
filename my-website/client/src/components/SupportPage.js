@@ -55,12 +55,24 @@ function SupportPage() {
       };
     }, []);
 
-  return (
-    <div className="full-screen-container">
-      <NavigationBar />
-      <h1 className="text-black">this is the support of <span className="text-primary">ClipIt</span>.</h1>
-    </div>
-  );
+    return (
+      <div className="full-screen-container">
+        <NavigationBar /> {/* Make sure to style this component to match the image */}
+        <div className="sidebar">
+          {/* Populate with actual links and category names */}
+          <h3>Company</h3>
+          <a href="/blog">Blog</a>
+          {/* ... other links */}
+          <h3>Best Practices</h3>
+          <a href="/how-to-videos">How to Turn Long Videos into Viral Shorts</a>
+          {/* ... other links */}
+        </div>
+        <div className="content">
+          <h1>this is the support of <span className="text-primary">ClipIt</span>.</h1>
+          {/* The rest of your content */}
+        </div>
+      </div>
+    );
 }
 
 export default SupportPage;
