@@ -57,9 +57,15 @@ def generate_signed_url(bucket_name, blob_name):
         return None
 
 
-def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, user_id):
+def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userEmail):
+    if not userEmail:
+        print("Error: User ID is None or empty.")
+        return False
+
     # Create a user-specific path in the Google Cloud Storage bucket
-    user_specific_path = f"{user_id}/{destination_blob_name}"
+    user_specific_path = f"{userEmail}/{destination_blob_name}"
+
+    print(f"Uploading to Google Cloud Storage: {user_specific_path}")
 
     if not os.path.isfile(source_file_name):
         print(f"The file {source_file_name} does not exist.")
@@ -68,7 +74,7 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, user_
     try:
         storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(user_specific_path)  # Use the user-specific path for the blob
+        blob = bucket.blob(user_specific_path)
         blob.upload_from_filename(source_file_name)
         print(f"File {source_file_name} uploaded to {user_specific_path}.")
         return True
@@ -77,10 +83,11 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, user_
         return False
 
 
-def process_youtube_video(link, user_id):
+
+def process_youtube_video(link, userEmail):
     base_dir = os.path.abspath(os.path.dirname(__file__))
-    # Change the save_folder_name to use the user_id
-    save_folder_name = user_id  
+    # Change the save_folder_name to use the userEmail
+    save_folder_name = userEmail  
     dest_folder = os.path.join(base_dir, save_folder_name)
 
     if not os.path.exists(dest_folder):
@@ -95,22 +102,24 @@ def process_youtube_video(link, user_id):
     for i in range(len(edited_videos.faced_subs_vids)):
         video_file_path = os.path.join(yt_data_obj.dest, "finalvideo" + "_" + str(i) + ".mp4")
         gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
-        # Use the user_id as the folder name in the upload function
-        upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, user_id)
+        # Use the userEmail as the folder name in the upload function
+        upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
     data = request.json
     youtube_link = data.get('link')
-    user_id = data.get('user_id')  # Extract user ID from the request
+    userEmail = data.get('userEmail')  # Extract user ID from the request
+    print(f"Received userEmail: {userEmail}")  # Add this line for debugging
+
 
     if not youtube_link:
         return jsonify({'error': 'No YouTube link provided'}), 400
-    if not user_id:
+    if not userEmail:
         return jsonify({'error': 'No user ID provided'}), 400
 
     try:
-        thread = threading.Thread(target=process_youtube_video, args=(youtube_link, user_id))
+        thread = threading.Thread(target=process_youtube_video, args=(youtube_link, userEmail))
         thread.start()
         return jsonify({'message': 'YouTube video processing started'})
     except Exception as e:

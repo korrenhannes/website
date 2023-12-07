@@ -117,8 +117,8 @@ function CloudAPIPage() {
     setIsLoading(true);
   
     // Retrieve user ID from localStorage or another secure method
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
       setError('User ID not found. Please log in again.');
       setIsLoading(false);
       return;
@@ -129,7 +129,7 @@ function CloudAPIPage() {
       const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
         link: searchQuery,
         folder_name: folderName,
-        user_id: userId  // Include the user ID in the request
+        userEmail: userEmail  // Include the user ID in the request
       });
       console.log('Video processing started:', response.data);
       handleRedirection();
