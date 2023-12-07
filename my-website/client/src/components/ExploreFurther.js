@@ -34,11 +34,20 @@ function ExploreFurther() {
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
+
+    // Retrieve userEmail from localStorage or another secure method
+    const userEmail = localStorage.getItem('userEmail'); // Replace with actual method
+    if (!userEmail) {
+      setError('User email not found. Please log in again.');
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const response = await apiFlask.get('/signed-urls');
+      const response = await apiFlask.get(`/signed-urls?email=${encodeURIComponent(userEmail)}`);
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
-        setVideos(signedUrls); // Save the list of video URLs
+        setVideos(signedUrls);
         setTimeout(() => {
           if (videoRef.current && !playerRef.current) {
             playerRef.current = videojs(videoRef.current, {
@@ -46,13 +55,12 @@ function ExploreFurther() {
               muted: true,
               controls: true,
               fluid: true,
-              sources: [{ src: signedUrls[currentVideoIndex], type: 'video/mp4' }]
+              sources: [{ src: signedUrls[0], type: 'video/mp4' }]
             });
 
             playerRef.current.on('ended', () => {
-              // Increment the index or loop back to the start
               const nextVideoIndex = (currentVideoIndex + 1) % signedUrls.length;
-              setCurrentVideoIndex(nextVideoIndex); // Update the state to the new index
+              setCurrentVideoIndex(nextVideoIndex);
             });
           }
         }, 0);
@@ -60,11 +68,12 @@ function ExploreFurther() {
         setError('No videos found in Google Cloud Storage.');
       }
     } catch (err) {
-      setError(`Error fetching videos from Google Cloud: ${err.message}`);
+      setError(`Error fetching videos: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchVideosFromGCloud();
