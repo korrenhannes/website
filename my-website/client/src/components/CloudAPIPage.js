@@ -56,6 +56,7 @@ function CloudAPIPage() {
           'Authorization': `Bearer ${token}`
         }
       });
+      
   
       if (response && response.data && response.data.paymentPlan) {
         setUserPaymentPlan(response.data.paymentPlan);
@@ -138,6 +139,8 @@ function CloudAPIPage() {
       setError('Error processing your request. Please try again.');
     } finally {
       setIsLoading(false);
+
+      
     }
   };
   

@@ -18,7 +18,7 @@ load_dotenv()
 # MongoDB setup
 mongo_uri = os.getenv('DB_URI')
 mongo_client = MongoClient(mongo_uri)
-db = mongo_client['your_database_name']
+db = mongo_client['test']
 
 app = Flask(__name__)
 
@@ -56,6 +56,18 @@ def generate_signed_url(bucket_name, blob_name):
         print(f"Failed to generate signed URL for {blob_name}: {e}")
         return None
 
+def set_upload_complete(userEmail, complete):
+    try:
+        # The upsert=True option is used to create a new document if one doesn't already exist
+        result = db.users.update_one(
+            {'email': userEmail},
+            {'$set': {'upload_complete': complete}},
+            upsert=True
+        )
+        print(f"Update result for {userEmail}: {result.matched_count} matched, {result.modified_count} modified, upserted_id: {result.upserted_id}")
+    except Exception as e:
+        print(f"An error occurred while setting upload_complete for {userEmail}: {e}")
+        raise e  # Reraising the exception will help to identify if there is an issue with the database operation
 
 def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userEmail):
     if not userEmail:
@@ -85,6 +97,7 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userE
 
 
 def process_youtube_video(link, userEmail):
+    set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
     base_dir = os.path.abspath(os.path.dirname(__file__))
     # Change the save_folder_name to use the userEmail
     save_folder_name = userEmail  
@@ -104,6 +117,7 @@ def process_youtube_video(link, userEmail):
         gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
         # Use the userEmail as the folder name in the upload function
         upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
+    set_upload_complete(userEmail, True)
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
@@ -125,14 +139,30 @@ def handle_youtube_video():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/api/signed-urls', methods=['GET'])
 def get_signed_urls():
-    bucket_name = 'clipitshorts'
-    storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-    blobs = list(storage_client.list_blobs(bucket_name))  # Convert iterator to list
+    # Extract user email from the request arguments instead of using a hardcoded value
+    email = request.args.get('email')
+    print(f"get_signed_urls called with email: {email}")  # Additional logging for debugging
+    if not email:
+        return jsonify({'error': 'User email is required'}), 400
 
-    signed_urls = [generate_signed_url(bucket_name, blob.name) for blob in blobs]
+    bucket_name = 'clipitshorts'
+    user = db.users.find_one({'email': email})
+    if not user:
+        # If the user is not found, assume no upload has started for this user
+        directory_name = 'undefined/'
+    else:
+        # Use the directory based on the user's upload status
+        directory_name = email + '/' if user.get('upload_complete', False) else 'undefined/'
+
+    storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+    blobs = list(storage_client.list_blobs(bucket_name, prefix=directory_name))
+    signed_urls = [generate_signed_url(bucket_name, blob.name) for blob in blobs if not blob.name.endswith('/')]
+
     return jsonify({'signedUrls': signed_urls})
+
 
 @app.route('/api/user/payment-plan', methods=['GET'])
 def get_user_payment_plan():
