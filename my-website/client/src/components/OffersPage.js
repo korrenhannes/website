@@ -21,7 +21,7 @@ function OffersPage() {
 
   const plans = [
     { name: 'Basic', price: 'free', quality: 'Good', title:'you get one additional video with smaller water mark' },
-    { name: 'Standard', price: '27.99', quality: 'Better', title: 'you get 10 videos to edit' },
+    { name: 'Regular', price: '27.99', quality: 'Better', title: 'you get 10 videos to edit' },
     { name: 'Premium', price: '79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
   ];
 
