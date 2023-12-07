@@ -160,9 +160,44 @@ function FreeUserPage() {
     };
   }, [currentVideoIndex, videos]);
 
-  const handleSetActiveComponent = (component) => setActiveComponent(activeComponent === component ? null : component);
-
-
+  const handleDownloadVideo = async () => {
+    if (!playerRef.current) {
+      console.error("No video player found");
+      return;
+    }
+  
+    // Get the current video URL from the player
+    const currentVideoUrl = playerRef.current.currentSrc();
+  
+    if (!currentVideoUrl) {
+      console.error("No video is currently being played");
+      return;
+    }
+  
+    try {
+      const response = await fetch(currentVideoUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const videoBlob = await response.blob();
+      const localUrl = window.URL.createObjectURL(videoBlob);
+  
+      const a = document.createElement('a');
+      a.href = localUrl;
+      a.download = currentVideoUrl.split('/').pop(); // Extract the file name from the URL
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  
+      // Release the created object URL after the download is initiated
+      window.URL.revokeObjectURL(localUrl);
+    } catch (error) {
+      console.error("Error downloading video:", error);
+    }
+  };
+  
+  
   return (
     <div className="full-screen-container">
       <NavigationBar />
@@ -170,10 +205,14 @@ function FreeUserPage() {
       <video ref={backgroundVideoRef} className="video-js" id="background-video"></video>
       <div className="foreground-content">
         <div className="video-subtitles">
-          {subtitles.find(sub => sub.startTime <= backgroundVideoRef.current.currentTime && sub.endTime >= backgroundVideoRef.current.currentTime)?.text}
+          {/* Add your subtitles rendering logic here */}
         </div>
         <div className="video-headline">{headline}</div>
       </div>
+
+      {/* Download Button */}
+      <button onClick={handleDownloadVideo} className="download-button">Download Video</button>
+
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
     </div>
