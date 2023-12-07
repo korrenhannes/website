@@ -67,6 +67,7 @@ function OffersPage() {
   };
 
   return (
+    <div className="container-fluid">
     <div className="plan-selection">
       <NavigationBar />
       <h1>Choose the plan that’s right for you</h1>
@@ -99,6 +100,7 @@ function OffersPage() {
           <button className="next-button" onClick={handleNextClick}>Next</button>
         )
       }
+    </div>
     </div>
   );
 }
