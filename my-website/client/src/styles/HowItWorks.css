@@ -1,84 +1,122 @@
 /* HowItWorks.css */
 
 .how-it-works-container {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    color: #333;
-    background-color: #fff; /* Set background color to white */
-    padding-top: 56px; /* Adjust if your NavigationBar is a different height */
-    padding-bottom: 2rem; /* Add some padding at the bottom */
-    text-align: center; /* Center all text */
-  }
-  
-  .container {
-    max-width: 100%; /* Allow the container to fill the width */
-    margin: auto; /* Center the container */
-    padding: 0 2rem; /* Add horizontal padding */
-  }
-  
-  .container h1 {
-    color: #4A90E2;
-    font-size: 4rem; /* Larger font size for the heading */
-    font-weight: bold; /* Make the heading bold */
-    margin-bottom: 1rem; /* Adjust bottom margin */
-  }
-  
-  .container .lead {
-    font-weight: normal; /* Set the font weight to normal */
-    color: #555; /* Slightly lighter color for the lead text */
-    margin-bottom: 3rem; /* More space below the lead text */
-    font-size: 2rem; /* Larger font size for the lead text */
-  }
-  
-  .how-does-it-work {
-    font-size: 3rem; /* Increase the font size */
-    color: #4A90E2; /* Change the color to blue */
-    margin-bottom: 3rem; /* Adjust the bottom margin if needed */
-    font-weight: bold; /* Optional: Make the text bold */
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  padding-top: 40px;
+  padding-bottom: 2rem;
+  text-align: left;
 }
 
-  
-  .row {
-    justify-content: center; /* Center the columns */
+/* Add this CSS to make all cards the same size */
+.card {
+  height: 100%;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  height: 100%;
+  margin: 0.5rem; /* Adjust the margin to make it smaller */
+}
+
+/* Add this CSS to style the card titles and descriptions */
+.card-title {
+  font-size: 1.5rem; /* Smaller font size for card titles */
+  font-weight: bold;
+  margin: 0 0 0.5rem 0; /* Adjust the margin to create space below the title */
+}
+
+.card-text {
+  font-size: 1rem; /* Smaller font size for card descriptions */
+  margin: 0 auto;
+}
+
+/* Add this CSS to add a border to the cards */
+.card {
+  border: 1px solid #000;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  margin: 0 auto;
+}
+
+/* Add this CSS to center-align the card titles and descriptions */
+.card-body {
+  text-align: left;
+  margin: 0 auto;
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.container h1 {
+  color: #4A90E2;
+  font-size: 3rem; /* Smaller font size for h1 */
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.container .lead {
+  font-weight: normal;
+  color: #555;
+  margin-bottom: 0.2rem; /* Smaller margin */
+  font-size: 1.5rem; /* Smaller font size for lead */
+}
+
+.how-does-it-work {
+  font-size: 2rem; /* Smaller font size for h2 */
+  color: #4A90E2;
+  margin-bottom: 2rem; /* Smaller margin */
+  margin-top: 1.5rem; /* Smaller margin */
+  font-weight: bold;
+}
+
+.row {
+  justify-content: center;
+}
+
+.row .step {
+  margin: 1rem;
+  padding: 2rem;
+  background: #fff;
+  text-align: left;
+  border: 0;
+  box-shadow: none;
+  flex: 0 0 auto;
+}
+
+.step h3 {
+  color: #333;
+  font-size: 1.5rem; /* Smaller font size for h3 */
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.step p {
+  color: #666;
+  font-size: 1rem; /* Smaller font size for p */
+  margin: 1rem 0;
+}
+
+.icon {
+  width: 60px; /* Smaller icon size */
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 4rem;
   }
-  
+
   .row .step {
-    margin: 2rem 1rem; /* Uniform margin for spacing around cards */
-    padding: 2rem; /* Padding inside the cards */
-    border: 1px solid #ccc; /* Border for the cards */
-    border-radius: 8px; /* Rounded corners for the cards */
-    background: #f9f9f9; /* Light background for each step container */
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1); /* Soft shadow for depth */
-    flex: 0 0 auto; /* Prevent cards from stretching */
+    margin: 2rem;
+    padding: 2rem;
+    width: auto;
   }
-  
-  .step h3 {
-    color: #333;
-    font-size: 3rem; /* Larger font size for step titles */
-    font-weight: bold; /* Bold step titles */
-    margin: 1rem 0; /* Space around step titles */
-  }
-  
-  .step p {
-    color: #666;
-    font-size: 1.5rem; /* Larger font size for step descriptions */
-    margin: 1rem 0; /* Space around step descriptions */
-  }
-  
-  .icon {
-    width: 120px; /* Adjust icon size */
-    height: auto; /* Keep icons' aspect ratio */
-    margin-bottom: 2rem; /* Space below icons */
-  }
-  
-  @media (min-width: 992px) {
-    .container {
-      padding: 0 4rem; /* More horizontal padding on larger screens */
-    }
-  
-    .row .step {
-      margin: 2rem; /* More space between cards on larger screens */
-      padding: 2rem; /* Larger padding inside the cards */
-      width: 30%; /* Adjust width to control card size */
-    }
-  }
-  
+}
