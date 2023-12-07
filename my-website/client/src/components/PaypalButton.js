@@ -5,7 +5,7 @@ import {
 } from "@paypal/react-paypal-js";
 
 
-const PayPalButton = ({ onSuccessfulPayment }) => {  
+const PayPalButton = ({ onSuccessfulPayment, selectedPlan, amount, userEmail}) => {  
   // Function to create an order
   const createOrder = (data, actions) => {
     return fetch(`${process.env.REACT_APP_API_URL}/paypal/create-order`, {
@@ -15,7 +15,7 @@ const PayPalButton = ({ onSuccessfulPayment }) => {
         'PayPal-Request-Id': '7b92603e-77ed-4896-8e78-5dea2050476a',
         'Authorization': 'Bearer 6V7rbVwmlM1gFZKW_8QtzWXqpcwQ6T5vhEGYNJDAAdn3paCgRpdeMdVYmWzgbKSsECednupJ3Zx5Xd-g'
       },
-      body: JSON.stringify({ amount: "100.00" }),
+      body: JSON.stringify({ amount: amount }),
     })
     .then(response => {
       console.log('response:', response);
@@ -43,6 +43,28 @@ const PayPalButton = ({ onSuccessfulPayment }) => {
   // Function to capture the order after payment
   const onApprove = (data, actions) => {
     const currentOrderID = data.orderID;  // Use the orderID from the data if available
+    const updatePlanRequest = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-plan`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: userEmail, paymentPlan: selectedPlan }),
+        });
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        const responseData = await response.json();
+        console.log('Plan updated:', responseData);
+      } catch (error) {
+        console.error('Error updating plan:', error);
+      }
+    };
+    
+
     return fetch(`${process.env.REACT_APP_API_URL}/paypal/capture-order/${currentOrderID}`, {
       method: "POST",
       headers: {
@@ -61,6 +83,7 @@ const PayPalButton = ({ onSuccessfulPayment }) => {
     .then(order => {
       // Handle successful transaction
       console.log('handle transaction', currentOrderID,'order:', order);
+      updatePlanRequest();
       if (onSuccessfulPayment) {
         onSuccessfulPayment(); // Call the passed callback
       }
@@ -80,11 +103,11 @@ const PayPalButton = ({ onSuccessfulPayment }) => {
   return (
     <PayPalScriptProvider options={{
       "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
-      currency: "USD",
+      currency: "ILS",
       intent: "capture"
     }}>
       <PayPalButtons
-        style={{"color": "blue"}}
+        style={{"color": "blue", "shape": "pill"}}
         createOrder={createOrder}
         onApprove={onApprove}
         onError={onError}

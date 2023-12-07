@@ -25,8 +25,11 @@ function SignupForm() {
     }
 
     try {
-      await api.post('/auth/signup', { email, password });
-      navigate('/offers');
+      // Example for signup
+      await api.post('/auth/signup', { email, password }).then(response => {
+        localStorage.setItem('token', response.data.token);
+        navigate('/offers');
+      });
     } catch (error) {
       if (error.response && error.response.data) {
         setError("Signup failed: " + error.response.data.message);

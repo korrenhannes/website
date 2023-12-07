@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import io from 'socket.io-client';
+import {
+  PayPalScriptProvider
+} from "@paypal/react-paypal-js";
 
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
@@ -56,6 +59,11 @@ function App() {
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
+      <PayPalScriptProvider options={{
+      "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
+      currency: "ILS",
+      intent: "capture"
+    }}>
       <Router>
         <div className="App">
           <NavigationBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
@@ -73,6 +81,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </PayPalScriptProvider>
     </GoogleOAuthProvider>
   );
 }

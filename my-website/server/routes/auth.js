@@ -41,11 +41,12 @@ router.post('/signup', async (req, res) => {
 
     const user = new User({ email, password, paymentPlan: 'free' });
     await user.save();
-
+    // Example for signup
+    const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret');
     // Log the signup action
     await new Log({ action: 'User Signup', userEmail: email }).save();
-
-    res.status(201).send('User created successfully');
+    console.log('token:', token);
+    res.status(201).send({ message: 'User created successfully', token });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(400).send(error.message);
@@ -78,15 +79,17 @@ router.post('/update-plan', async (req, res) => {
   try {
     const { email, paymentPlan } = req.body;
     const user = await User.findOne({ email });
-
+    console.log('payment plan:', paymentPlan, 'email:', email);
     if (!user) {
+      console.log('user not found');
       return res.status(404).send('User not found');
     }
 
     user.paymentPlan = paymentPlan;
     await user.save();
-
-    res.send('Payment plan updated successfully');
+    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan }).save();
+    console.log('user:', user);
+    res.json({ message: 'Payment plan updated successfully' }); // Send JSON response
   } catch (error) {
     console.error("Update plan error:", error);
     res.status(400).send(error.message);
