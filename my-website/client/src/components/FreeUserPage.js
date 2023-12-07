@@ -99,7 +99,8 @@ function FreeUserPage() {
     } finally {
       setIsLoading(false);
     }
-};
+  };
+
 
 
   const loadVideo = (videoUrl) => {
@@ -160,29 +161,12 @@ function FreeUserPage() {
   }, [currentVideoIndex, videos]);
 
   const handleSetActiveComponent = (component) => setActiveComponent(activeComponent === component ? null : component);
-  const toggleSubtitleEditor = () => setShowSubtitleEditor(!showSubtitleEditor);
-  const toggleHeadlineEditor = () => setShowHeadlineEditor(!showHeadlineEditor);
-  const toggleCaptionOptions = () => setShowCaptionOptions(!showCaptionOptions);
 
-  const getCaptionStyle = () => ({
-    color: captionStyle.highlightColor,
-    positionClass: `caption-${captionStyle.position}`,
-    transitionClass: `transition-${captionStyle.transition}`
-  });
 
   return (
     <div className="full-screen-container">
       <NavigationBar />
-      <div className="sidebar">
-        <button onClick={toggleSubtitleEditor}>Subtitles</button>
-        <button onClick={toggleHeadlineEditor}>Headline</button>
-        <button onClick={toggleCaptionOptions}>Caption Options</button>
-        <div className="sidebar-content">
-          {activeComponent === 'subtitles' && <SubtitleEditor subtitles={subtitles} setSubtitles={setSubtitles} videoRef={backgroundVideoRef} />}
-          {activeComponent === 'headline' && <HeadlineEditor headline={headline} setHeadline={setHeadline} />}
-          {activeComponent === 'captionOptions' && <CaptionOptions captionStyle={captionStyle} setCaptionStyle={setCaptionStyle} />}
-        </div>
-      </div>
+
       <video ref={backgroundVideoRef} className="video-js" id="background-video"></video>
       <div className="foreground-content">
         <div className="video-subtitles">
