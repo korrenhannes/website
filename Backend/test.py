@@ -164,13 +164,17 @@ from skimage.metrics import structural_similarity as ssim
 from moviepy.video.io.VideoFileClip import VideoFileClip
 import imutils
 import random
+import requests
 from moviepy.editor import *
 
 prototxt = 'deploy.prototxt'
 model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
 net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
+
+censor = {"fuck" : "f*ck", "shit" : "sh*t", "whore" : "wh*re", "fucking" : "f*cking", "shitting" : "sh*tting", "sex" : "s*x"}
 FONT_PATH = "C://Users//along//Downloads//Montserrat-Black//montserrat//Montserrat-Black.ttf" # Donloaded from here: https://www.ffonts.net/Montserrat-Black.font.download#google_vignette
+
 
 def is_cut(frame1, frame2, threshold=0.7):
     # Convert frames to grayscale
@@ -202,38 +206,77 @@ def get_frame_info(frame, cut_time):
   return cut_info
 
 
-def group_words(df, max_char_count):
+def group_words(df, max_char_count, one_person_times, two_people_times):
+    flip_times = sorted(set([time for times in one_person_times + two_people_times for time in times]))[1:] # Times when need to change text placement
+    one_person_on_screen = (len(one_person_times) > 0 and one_person_times[0][0] == 0) # Boolean value: True if 1 person is on screen, False if 2 people are
     groups = []
     current_text = ""
     current_char_count = 0
-    start_time = None
-    end_time = None
+    start_time = 0
+    end_time = 0
 
     for _, row in df.iterrows():
         word = row['text']
-        word_len = len(word)
 
-        if current_char_count + word_len <= max_char_count:
+        # Remove commas from the word and censors the word if necessary
+        word = word.replace(',', '')
+        if word in censor.keys():
+            word = censor[word]
+
+        word_len = len(word)
+        word_start_time = row['start']
+        word_end_time = row['end']
+        if len(flip_times) > 0 and flip_times[0] <= word_end_time and flip_times[0] > word_start_time:
+            word_end_time = flip_times[0]
+            start_time = start_time if current_text else word_start_time
+            current_text += " " + word if current_text else word
+            groups.append((current_text.strip(), start_time, word_end_time, one_person_on_screen))
+            flip_times = flip_times[1:]
+            one_person_on_screen = not one_person_on_screen # Flip boolean flag
+            current_text = ""
+            current_char_count = 0
+            start_time = word_end_time
+        
+        elif len(flip_times) > 0 and flip_times[0] <= word_start_time:
+            groups.append((current_text.strip(), start_time, end_time, one_person_on_screen)) if current_text else None
+            current_text = word
+            current_char_count = word_len
+            flip_times = flip_times[1:]
+            one_person_on_screen = not one_person_on_screen # Flip boolean flag
+            start_time = word_start_time
+            end_time = word_end_time
+        
+        elif current_char_count + word_len <= max_char_count:
             if not current_text:
-                start_time = row['start']
+                start_time = word_start_time
             current_text += " " + word if current_text else word
             current_char_count += word_len
-            end_time = row['end']
+            end_time = word_end_time
+
+            # Check for sentence-ending punctuation
+            if word[-1] in ['?', '!', '.']:
+                groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
+                current_text = ""
+                current_char_count = 0
         else:
-            groups.append((current_text.strip(), start_time, end_time))
+            groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
             current_text = word
             current_char_count = word_len
             start_time = row['start']
-            end_time = row['end']
+            end_time = word_end_time
+            # Check for sentence-ending punctuation
+            if word[-1] in ['?', '!', '.']:
+                groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
+                current_text = ""
+                current_char_count = 0
 
     if current_text:
-        groups.append((current_text.strip(), start_time, end_time))
+        groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
 
     return groups
 
 
-# I can move this to a utils file later
-def text_clip(text: str, duration: int, start_time: int = 0):
+def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_screen: bool = True):
     """Return a description string on the bottom-left of the video
 
     Args:
@@ -243,19 +286,26 @@ def text_clip(text: str, duration: int, start_time: int = 0):
     Returns:
                 moviepy.editor.TextClip: A instance of a TextClip
     """
-    color = 'white' if random.random() < 0.85 else 'Yellow'
+    color = 'white' if random.random() < 0.25 else 'Yellow'
     stroke_color = 'black'
-    font_size = 70
+    font = FONT_PATH
+    font_size = 65
+    placement = ('center', (1280 * (2/3))) if one_person_on_screen else ('center')
 
-    return (TextClip(text.upper(), font=FONT_PATH, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5 ,method='caption')
-            .set_duration(duration).set_position('center')
+    return (TextClip(text.upper(), font=font, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
+            .set_duration(duration).set_position(placement)
             .set_start(start_time))
 
 
 if __name__ == "__main__":
+    # Example usage:
+    one_person_times = [(0, 11.2), (15, 31.2), (51.2, 58)]
+    two_people_times = [(11.2, 15), (31.2, 51.2)]
+    max_char_count = 18
+
     df = pd.read_csv("C://Users//along//VS Code//Shorts Project//website//downloaded_files//second_test//Andrew Tate vs Piers Morgan  The Full Interview_tmp4.csv")
-    grouped_words = group_words(df, max_char_count=15)
-    txt_clips = [text_clip(group[0], group[2] - group[1], group[1]) for group in grouped_words]
+    grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
+    txt_clips = [text_clip(group[0], group[2] - group[1], group[1], group[3]) for group in grouped_words]
     text_vid = concatenate(txt_clips, method='compose')
     vid = VideoFileClip("C://Users//along//VS Code//Shorts Project//website//downloaded_files//fourth_test//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4")
     sub_vid = vid.subclip(0, text_vid.duration)

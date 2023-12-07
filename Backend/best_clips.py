@@ -7,6 +7,7 @@ import torch
 import torch.multiprocessing as mp
 import random
 from moviepy.editor import *
+from pytube import YouTube
 from tqdm import tqdm
 from openai import OpenAI
 import imutils
@@ -18,7 +19,7 @@ WHISPER_MODEL = "medium.en"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 openai_api_key = "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"
-FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast\n I want you to send me a starting index and an ending index (around 150-200 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT AND DOESN'T JUST CUT OFF IN THE MIDDLE OF A SENTENCE!\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
+FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast\nI want you to send me a starting index and an ending index (around 150-200 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
 FIRST_RES = "(336-524)"
 SECOND_INP = "Great! KEEPING THE SAME FORMAT IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
 
@@ -31,40 +32,78 @@ FONT_PATH = "C://Users//along//Downloads//Montserrat-Black//montserrat//Montserr
 
 
 # I can move this to a utils file later
-def group_words(df, max_char_count):
+def group_words(df, max_char_count, one_person_times, two_people_times):
+    flip_times = sorted(set([time for times in one_person_times + two_people_times for time in times]))[1:] # Times when need to change text placement
+    one_person_on_screen = (len(one_person_times) > 0 and one_person_times[0][0] == 0) # Boolean value: True if 1 person is on screen, False if 2 people are
     groups = []
     current_text = ""
     current_char_count = 0
-    start_time = None
-    end_time = None
+    start_time = 0
+    end_time = 0
 
     for _, row in df.iterrows():
         word = row['text']
-        word_len = len(word)
+
+        # Remove commas from the word and censors the word if necessary
+        word = word.replace(',', '')
         if word in censor.keys():
             word = censor[word]
 
-        if current_char_count + word_len <= max_char_count:
+        word_len = len(word)
+        word_start_time = row['start']
+        word_end_time = row['end']
+        if len(flip_times) > 0 and flip_times[0] <= word_end_time and flip_times[0] > word_start_time:
+            word_end_time = flip_times[0]
+            start_time = start_time if current_text else word_start_time
+            current_text += " " + word if current_text else word
+            groups.append((current_text.strip(), start_time, word_end_time, one_person_on_screen))
+            flip_times = flip_times[1:]
+            one_person_on_screen = not one_person_on_screen # Flip boolean flag
+            current_text = ""
+            current_char_count = 0
+            start_time = word_end_time
+        
+        elif len(flip_times) > 0 and flip_times[0] <= word_start_time:
+            groups.append((current_text.strip(), start_time, end_time, one_person_on_screen)) if current_text else None
+            current_text = word
+            current_char_count = word_len
+            flip_times = flip_times[1:]
+            one_person_on_screen = not one_person_on_screen # Flip boolean flag
+            start_time = word_start_time
+            end_time = word_end_time
+        
+        elif current_char_count + word_len <= max_char_count:
             if not current_text:
-                start_time = row['start']
+                start_time = word_start_time
             current_text += " " + word if current_text else word
             current_char_count += word_len
-            end_time = row['end']
+            end_time = word_end_time
+
+            # Check for sentence-ending punctuation
+            if word[-1] in ['?', '!', '.']:
+                groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
+                current_text = ""
+                current_char_count = 0
         else:
-            groups.append((current_text.strip(), start_time, end_time))
+            groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
             current_text = word
             current_char_count = word_len
             start_time = row['start']
-            end_time = row['end']
+            end_time = word_end_time
+            # Check for sentence-ending punctuation
+            if word[-1] in ['?', '!', '.']:
+                groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
+                current_text = ""
+                current_char_count = 0
 
     if current_text:
-        groups.append((current_text.strip(), start_time, end_time))
+        groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
 
     return groups
 
 
 # I can move this to a utils file later
-def text_clip(text: str, duration: int, start_time: int = 0):
+def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_screen: bool = True):
     """Return a description string on the bottom-left of the video
 
     Args:
@@ -74,22 +113,25 @@ def text_clip(text: str, duration: int, start_time: int = 0):
     Returns:
                 moviepy.editor.TextClip: A instance of a TextClip
     """
-    color = 'white' if random.random() < 0.85 else 'Yellow'
+    color = 'white' if random.random() < 0.25 else 'Yellow'
     stroke_color = 'black'
     font = FONT_PATH
-    font_size = 70
+    font_size = 65
+    placement = ('center', (1280 * (2/3))) if one_person_on_screen else ('center')
 
     return (TextClip(text.upper(), font=font, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
-            .set_duration(duration).set_position('center')
+            .set_duration(duration).set_position(placement)
             .set_start(start_time))
 
 
 # I can move this to a utils file later
-def add_subs_video(vid, df):
+def add_subs_video(people_times, vid, df):
+        one_person_times = people_times['1_person']
+        two_people_times = people_times['2_people']
         relevant_time_shift = df.iloc[0]['start']
-        max_char_count = 15
-        grouped_words = group_words(df, max_char_count)
-        txt_clips = [text_clip(group[0], group[2] - group[1], group[1] - relevant_time_shift) for group in grouped_words]
+        max_char_count = 18
+        grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
+        txt_clips = [text_clip(group[0], group[2] - group[1], group[1] - relevant_time_shift, group[3]) for group in grouped_words]
         audio = vid.audio
         vid = CompositeVideoClip([vid] + txt_clips, use_bgclip=True, size=(720, 1280))
         vid = vid.set_audio(audio)
@@ -141,27 +183,40 @@ def parallel_transcribe(rank, audio_segments, num_gpus, segment_time, transcript
         except Exception as e:
             print(f"Error in parallel processing: {e}")
 
+class InvalidVideoError(Exception):
+    pass
+
 class BestClips:
-    def __init__(self, video_path, run_folder_name, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
-                  final_transcript_dest="final_transcript.csv", num_of_shorts=5, load_object=False):
+    def __init__(self, video_str, run_folder_name, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
+                  final_transcript_dest="final_transcript.csv", num_of_shorts=5):
         try:
             # Set up everything for parallel processing
             self.num_gpus = torch.cuda.device_count()
-            # Check if video exists
-            if not os.path.exists(video_path):
-                raise FileNotFoundError(f"Video file not found: {video_path}")
-            
+
+            # Set run-cost at 0
+            self.total_run_cost = 0.0
+
+            # Creates run folder
             self.run_folder_name = run_folder_name
             self.create_run_folder()
+
+            # Check if video exists on device or is a youtube url
+            if os.path.exists(video_str):
+                self.video_path = video_str
+            elif self.is_valid_youtube_url(video_str):
+                self.video_path = self.download_youtube_video(video_str)
+            else:
+                raise InvalidVideoError("Invalid video URL or path")
+
             self.audio_dest = f"{self.run_folder_name}//{audio_dest}"
             self.word_transcript_dest = f"{self.run_folder_name}//{word_transcript_dest}"
             self.final_transcript_dest = f"{self.run_folder_name}//{final_transcript_dest}"
-            self.full_video_mp3, self.full_video_mp4 = self.audio_video(video_path)
-            self.full_video_mp3.write_audiofile(self.audio_dest)
-            self.audio_segments, self.segment_time = self.split_audio_to_segments()
+            self.full_video_mp3, self.full_video_mp4 = self.audio_video(self.video_path)
+            # self.full_video_mp3.write_audiofile(self.audio_dest)
+            # self.audio_segments, self.segment_time = self.split_audio_to_segments()
 
-            # Start parallel processing across GPUs
-            mp.spawn(parallel_transcribe, args=(self.audio_segments, self.num_gpus, self.segment_time, self.word_transcript_dest), nprocs=self.num_gpus)
+            # # Start parallel processing across GPUs
+            # mp.spawn(parallel_transcribe, args=(self.audio_segments, self.num_gpus, self.segment_time, self.word_transcript_dest), nprocs=self.num_gpus)
 
             word_df = pd.read_csv(self.word_transcript_dest)
             self.words_df = word_df.where(pd.notnull(word_df), 'None')
@@ -173,15 +228,19 @@ class BestClips:
 
             # Make shorts
             self.num_of_shorts = num_of_shorts
-            self.chat_reply = []
+            self.chat_reply = [None for _ in range(num_of_shorts)]
+            self.people_on_screen_times = [None for _ in range(num_of_shorts)] # A list of dictionaries (one for each short), where the keys are the amount of people on screen and the values are the times in the short
             print("Cutting Video")
             self.cut_vids = self.cut_videos()
             print("Cropping frames around faces")
             self.faced_vids = self.cut_faces_all_vids()
+            print(f"People on screen:\n{self.people_on_screen_times}")
             print("Adding Subs")
             self.shorts = self.add_subs()
-            print("Saving BestClips object and shorts!")
+            print("Saving shorts!")
             self.save_vids()     
+        except InvalidVideoError as e:
+            print(f"Error: {e}")
         except Exception as e:
             print(f"An error occurred: {e}")
 
@@ -189,6 +248,27 @@ class BestClips:
     def create_run_folder(self):
         if not os.path.exists(self.run_folder_name):
             os.mkdir(self.run_folder_name)
+            
+    
+    def is_valid_youtube_url(self, url):
+        try:
+            # Attempt to create a YouTube object
+            YouTube(url)
+            return True
+        except Exception:
+            # An exception is raised if the URL is not valid or there's an issue
+            return False
+        
+
+    def download_youtube_video(self, url):
+        print("Downloading Youtube Video")
+        youtube_video = YouTube(url)
+        video = youtube_video.streams.get_highest_resolution()
+        out_file = video.download(run_folder_name)
+        base, _ = os.path.splitext(out_file)
+        new_file = base + '.mp4'
+        os.rename(out_file, new_file)
+        return new_file
 
 
     def audio_video(self, video):
@@ -334,7 +414,7 @@ class BestClips:
             selected_rows = words_df.iloc[start_index:end_index]
             text_str_lst = "\n".join(f"{index + 1}. {row['text']}" for index, row in selected_rows.iterrows())
             start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
-            self.chat_reply.append((start_index_chat_gpt, end_index_chat_gpt))
+            self.chat_reply[short_num]= (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
             end_time_video = words_df['end'].iloc[end_index_chat_gpt]
 
@@ -342,8 +422,8 @@ class BestClips:
             cut_vids.append(cut_vid)
         return cut_vids
 
-    def call_chat_gpt(self, text_str_lst):
 
+    def call_chat_gpt(self, text_str_lst):
         conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": FIRST_INP},
@@ -360,23 +440,52 @@ class BestClips:
 
         # Extract and display the assistant's reply
         assistant_reply = response.choices[0].message.content
-        print(f"Chat GPT's response is:\n\n{assistant_reply}\n")
+        cost_of_input = response.usage.prompt_tokens * 0.01 * 0.001
+        cost_of_output = response.usage.completion_tokens * 0.03 * 0.001
+        total_cost = cost_of_output + cost_of_input
+        self.total_run_cost += total_cost
+        print(f"Chat GPT's response is:\n{assistant_reply}\n\nCost of input: ${cost_of_input}\nCost of output: ${cost_of_output}\nTotal cost: ${total_cost}\n")
 
         regg = "\d{1,6}\s*-\s*\d{1,6}"
         span = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))[0]
         cut = (int(span.split('-')[0]) - 1, int(span.split('-')[1]))
+        text_length = cut[1] - cut[0]
         final_start_index = cut[0]
-        final_end_index = cut[1]
+        final_end_index = cut[1] if (text_length > 100 and text_length < 350) else cut[0] + 150 # In case Chat GPT returned short or long range
 
-        # Output
+        # Find the nearest sentence to end on
+        current_index = final_end_index
+
+        # Iterate forward to find the next word ending a sentence
+        while current_index < min(len(self.words_df) - 1, final_start_index + 300): # We can later change the 300 words to something time-based
+            current_index += 1
+            word = self.words_df['text'].iloc[current_index]
+
+            # Check if the word ends with '?', '!', or '.'
+            if word.endswith(('?', '!', '.')):
+                return final_start_index, current_index
+
+        # If no sentence-ending word is found, iterate backward to find the closest one
+        current_index = final_end_index
+
+        while current_index > final_start_index + 100: # We can later change the 100 words to something time-based
+            current_index -= 1
+            word = self.words_df['text'].iloc[current_index]
+
+            # Check if the word ends with '?', '!', or '.'
+            if word.endswith(('?', '!', '.')):
+                return final_start_index, current_index
+
+        # No near end of sentence found... Returning original Chat GPT range
         return final_start_index, final_end_index
 
 
     def cut_faces_all_vids(self):
-        return [self.cut_faces_one_vid(vid) for vid in self.cut_vids]
+        return [self.cut_faces_one_vid(short_num, vid) for short_num, vid in enumerate(self.cut_vids)]
     
 
-    def cut_faces_one_vid(self, vid):
+    def cut_faces_one_vid(self, short_num, vid):
+        people_on_screen = {'1_person': [], '2_people': []}
         boxes = []
         confs = []
         # ADD fps = X to run faster
@@ -422,6 +531,7 @@ class BestClips:
         last_cut = np.array([[-500,-500]], dtype='float64')
         FIXED_NUMBER = 5
         FAR_NUMBER = 20
+        last_people_change_time = 0
 
         for ind, bs in enumerate(boxes):
             if len(bs) > 0:
@@ -456,15 +566,27 @@ class BestClips:
 
                 if changed:
                     if (len(last_cut) != len(last_xy)):
+                        if times[ind] != 0:
+                            if len(last_xy) == 2 and len(last_cut) == 1:        
+                                people_on_screen['2_people'].append((last_people_change_time, times[ind]))
+                                last_people_change_time = times[ind]
+                            if len(last_xy) == 1 and len(last_cut) == 2:
+                                people_on_screen['1_person'].append((last_people_change_time, times[ind]))
+                                last_people_change_time = times[ind]
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
                         cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
-
+                        
                     elif not np.array([np.min(np.linalg.norm(last_cut - last_xy_i, axis=1)) <= FAR_NUMBER for last_xy_i in last_xy]).all():
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
                         cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
+        if len(last_xy) == 1:
+            people_on_screen['1_person'].append((last_people_change_time, dur))
+        else:
+            people_on_screen['2_people'].append((last_people_change_time, dur))
         new_vids = []
+        self.people_on_screen_times[short_num] = people_on_screen
         for i in range(len(cuts_times)):
             if i == len(cuts_times) - 1:
                 if dur == cuts_times[i]:
@@ -500,23 +622,39 @@ class BestClips:
             else:
                 print("Something is wrong.")
                 print(f"The cut positions are: {cuts_poses[i]}")
-        return concatenate_videoclips(new_vids)
+        return concatenate_videoclips(new_vids) # Need to also return cuts_times[0]...
+    
+
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
+    #
             
 
     def add_subs(self):
         subbed_faced_vids = []
-        for i, video in tqdm(enumerate(self.faced_vids)):
-            relevant_df = self.words_df.iloc[self.chat_reply[i][0]:self.chat_reply[i][1]]
-            subbed_faced_vids.append(add_subs_video(vid=video, df=relevant_df))
+        for short_num, video in tqdm(enumerate(self.faced_vids)):
+            relevant_df = self.words_df.iloc[self.chat_reply[short_num][0]:self.chat_reply[short_num][1]]
+            subbed_faced_vids.append(add_subs_video(people_times=self.people_on_screen_times[short_num], vid=video, df=relevant_df))
         return subbed_faced_vids # return the videos with subs
     
 
     def save_vids(self):
         for i in range(len(self.shorts)):
-            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_{str(i)}.mp4", fps=24, audio_codec='aac')
-        
-            
+            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v3_{str(i)}.mp4", fps=24, audio_codec='aac')
+        print(f"Total run cost was: {self.total_run_cost}")
+
+         
 if __name__ == "__main__":
-    video_path = "C://Users//along//Downloads//Joe Rogan Experience #1512 - Ben Shapiro.mp4"
-    run_folder_name = 'Test_2'
-    transcription = BestClips(video_path=video_path, run_folder_name=run_folder_name)
+    video = "C://Users//along//VS Code//Shorts Project//website//Test_4//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4"
+    run_folder_name = 'Test_4'
+    transcription = BestClips(video_str=video, run_folder_name=run_folder_name)
