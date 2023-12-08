@@ -8,7 +8,7 @@ const multer = require('multer');
 const path = require('path'); // Import path module
 const { Storage } = require('@google-cloud/storage');
 const authRoutes = require('./routes/auth');
-const paypalRoutes = require('./routes/payalserver');
+const paypalRoutes = require('./routes/paypalserver');
 const passport = require('./passportSetup');
 
 const app = express();
