@@ -19,7 +19,7 @@ WHISPER_MODEL = "medium.en"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 openai_api_key = "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"
-FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast\nI want you to send me a starting index and an ending index (around 150-200 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
+FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast\nI want you to send me a starting index and an ending index (around 120-180 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
 FIRST_RES = "(336-524)"
 SECOND_INP = "Great! KEEPING THE SAME FORMAT IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
 
@@ -454,7 +454,7 @@ class BestClips:
         cut = (int(span.split('-')[0]) - 1, int(span.split('-')[1]))
         text_length = cut[1] - cut[0]
         final_start_index = cut[0]
-        final_end_index = cut[1] if (text_length > 100 and text_length < 350) else cut[0] + 150 # In case Chat GPT returned short or long range
+        final_end_index = cut[1] if (text_length > 100 and text_length < 300) else cut[0] + 150 # In case Chat GPT returned short or long range
 
         # Find the nearest sentence to end on
         current_index = final_end_index
@@ -655,7 +655,7 @@ class BestClips:
 
     def save_vids(self):
         for i in range(len(self.shorts)):
-            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v3_{str(i)}.mp4", fps=24, audio_codec='aac')
+            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v5_{str(i)}.mp4", fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
