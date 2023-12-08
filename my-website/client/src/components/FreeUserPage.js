@@ -7,13 +7,13 @@ import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
-import '../styles/Sidebar.css';
 
 function FreeUserPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const videoContainerRef = useRef(null); // Ref for the video container
   const backgroundVideoRef = useRef(null);
   const socket = useRef(null);
   const playerRef = useRef(null);
@@ -34,9 +34,9 @@ function FreeUserPage() {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
           muted: true, // Mute the video initially
-          controls: true,
-          fluid: false,
-          aspectRatio: "16:9"
+          controls: false, // Hide default controls to create custom ones
+          fluid: true, // Set to true to maintain aspect ratio
+          loop: false // Set to false if you don't want the video to loop
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();
@@ -58,12 +58,11 @@ function FreeUserPage() {
     };
   }, [backgroundVideoRef]);
 
+  // Fetch videos from Google Cloud
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
-
-    // Retrieve userEmail from localStorage or another secure method
-    const userEmail = localStorage.getItem('userEmail'); // Replace this with your actual method of retrieving the user's email
+    const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
       setError('User email not found. Please log in again.');
       setIsLoading(false);
@@ -71,7 +70,6 @@ function FreeUserPage() {
     }
 
     try {
-      // Update the request URL to include the userEmail as a query parameter
       const response = await apiFlask.get(`/signed-urls?email=${encodeURIComponent(userEmail)}`);
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
@@ -87,27 +85,24 @@ function FreeUserPage() {
     }
   };
 
-
-
   const loadVideo = (videoUrl) => {
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
-    playerRef.current.load(); // Load the new source
+    playerRef.current.load();
     playerRef.current.play().catch(e => console.error('Error playing video:', e));
-  }
+  };
 
   const loadNextVideo = () => {
     if (!videos || videos.length === 0) {
       console.error('Error: Video list is empty or not loaded');
       return;
     }
-
     const nextIndex = (currentVideoIndex + 1) % videos.length;
     setCurrentVideoIndex(nextIndex);
     loadVideo(videos[nextIndex]);
   };
 
-  // Custom Double Tap Handler
-  const handleDoubleTap = (function() {
+  // Double Tap Handler
+  const handleDoubleTap = (() => {
     let lastTap = 0;
     return function(event) {
       const currentTime = new Date().getTime();
@@ -119,9 +114,8 @@ function FreeUserPage() {
     };
   })();
 
-  // Handling the Enter key press to load the next video
   const handleKeyPress = (event) => {
-    if (event.keyCode === 13) { // keyCode 13 is the Enter key
+    if (event.keyCode === 13) {
       loadNextVideo();
     }
   };
@@ -129,11 +123,10 @@ function FreeUserPage() {
   useEffect(() => {
     const videoElement = backgroundVideoRef.current;
     if (videoElement) {
-      videoElement.addEventListener('dblclick', handleDoubleTap); // Use 'dblclick' for desktop
-      videoElement.addEventListener('touchend', handleDoubleTap); // 'touchend' for touch devices
+      videoElement.addEventListener('dblclick', handleDoubleTap);
+      videoElement.addEventListener('touchend', handleDoubleTap);
     }
 
-    // Add keypress event listener
     window.addEventListener('keydown', handleKeyPress);
 
     return () => {
@@ -141,7 +134,6 @@ function FreeUserPage() {
         videoElement.removeEventListener('dblclick', handleDoubleTap);
         videoElement.removeEventListener('touchend', handleDoubleTap);
       }
-      // Remove keypress event listener
       window.removeEventListener('keydown', handleKeyPress);
     };
   }, [currentVideoIndex, videos]);
@@ -151,48 +143,42 @@ function FreeUserPage() {
       console.error("No video player found");
       return;
     }
-  
-    // Get the current video URL from the player
     const currentVideoUrl = playerRef.current.currentSrc();
-  
     if (!currentVideoUrl) {
       console.error("No video is currently being played");
       return;
     }
-  
     try {
       const response = await fetch(currentVideoUrl);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
       const videoBlob = await response.blob();
       const localUrl = window.URL.createObjectURL(videoBlob);
-  
       const a = document.createElement('a');
       a.href = localUrl;
-      a.download = currentVideoUrl.split('/').pop(); // Extract the file name from the URL
+      a.download = currentVideoUrl.split('/').pop();
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-  
-      // Release the created object URL after the download is initiated
       window.URL.revokeObjectURL(localUrl);
     } catch (error) {
       console.error("Error downloading video:", error);
     }
   };
-  
-  
+
   return (
     <div className="full-screen-container">
       <NavigationBar />
 
-      <video ref={backgroundVideoRef} className="video-js" id="background-video"></video>
-      <div className="foreground-content">
-        <div className="video-subtitles">
-          {/* Add your subtitles rendering logic here */}
-        </div>
+      <div className="video-container" ref={videoContainerRef}>
+        <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered" id="background-video"></video>
+        {/* Add your custom controls here if needed */}
+      </div>
+
+      {/* Overlay for UI, e.g., video info, like/share/comment buttons */}
+      <div className="video-ui-overlay">
+        {/* Elements for video title, user interaction, etc. */}
       </div>
 
       {/* Download Button */}
