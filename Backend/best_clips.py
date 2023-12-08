@@ -125,10 +125,12 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
 
 
 # I can move this to a utils file later
-def add_subs_video(people_times, vid, df):
+def add_subs_video(new_start_time, people_times, vid, df):
         one_person_times = people_times['1_person']
         two_people_times = people_times['2_people']
         relevant_time_shift = df.iloc[0]['start']
+        df = df[df['start'] >= new_start_time + relevant_time_shift]
+        relevant_time_shift += new_start_time
         max_char_count = 18
         grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
         txt_clips = [text_clip(group[0], group[2] - group[1], group[1] - relevant_time_shift, group[3]) for group in grouped_words]
@@ -230,14 +232,15 @@ class BestClips:
             self.num_of_shorts = num_of_shorts
             self.chat_reply = [None for _ in range(num_of_shorts)]
             self.people_on_screen_times = [None for _ in range(num_of_shorts)] # A list of dictionaries (one for each short), where the keys are the amount of people on screen and the values are the times in the short
-            print("Cutting Video")
+            print("Cutting video\n")
             self.cut_vids = self.cut_videos()
-            print("Cropping frames around faces")
-            self.faced_vids = self.cut_faces_all_vids()
-            print(f"People on screen:\n{self.people_on_screen_times}")
-            print("Adding Subs")
+            print("Cropping frames around faces\n")
+            self.faced_vids, self.new_start_times = self.cut_faces_all_vids()
+            print(f"New start times are:\n{self.new_start_times}\n")
+            print(f"People on screen:\n{self.people_on_screen_times}\n")
+            print("Adding Subs\n")
             self.shorts = self.add_subs()
-            print("Saving shorts!")
+            print("Saving shorts!\n")
             self.save_vids()     
         except InvalidVideoError as e:
             print(f"Error: {e}")
@@ -444,7 +447,7 @@ class BestClips:
         cost_of_output = response.usage.completion_tokens * 0.03 * 0.001
         total_cost = cost_of_output + cost_of_input
         self.total_run_cost += total_cost
-        print(f"Chat GPT's response is:\n{assistant_reply}\n\nCost of input: ${cost_of_input}\nCost of output: ${cost_of_output}\nTotal cost: ${total_cost}\n")
+        print(f"Chat GPT's response is:\n{assistant_reply}\n\nCost of input: ${cost_of_input}\nCost of output: ${cost_of_output}\nTotal cost: ${total_cost}\n\n")
 
         regg = "\d{1,6}\s*-\s*\d{1,6}"
         span = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))[0]
@@ -481,7 +484,14 @@ class BestClips:
 
 
     def cut_faces_all_vids(self):
-        return [self.cut_faces_one_vid(short_num, vid) for short_num, vid in enumerate(self.cut_vids)]
+        faced_vids = []
+        new_start_times = []
+        for short_num in range(len(self.cut_vids)):
+            faced_vid, start_time = self.cut_faces_one_vid(short_num, self.cut_vids[short_num])
+            faced_vids.append(faced_vid)
+            new_start_times.append(start_time)
+
+        return faced_vids, new_start_times
     
 
     def cut_faces_one_vid(self, short_num, vid):
@@ -491,9 +501,7 @@ class BestClips:
         # ADD fps = X to run faster
         frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
         dur = vid.duration
-
-
-        times = np.linspace(0, dur, len(frames), endpoint=False)
+        times = [t for t, frame in vid.iter_frames(with_times=True)]
 
         # call for recognize faces model
         for ind_0 in tqdm(list(range(len(times)))):
@@ -520,18 +528,20 @@ class BestClips:
 
                 box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
                 (startX, startY, endX, endY) = box.astype("int")
-                if confidence > 0.4:
+                if confidence > 0.3:
                     boxes[-1].append((startX, endX, startY, endY))
                     confs[-1].append(confidence)
 
         # decide where to do the cuts
         cuts_times = []
+        cuts_times_inds = []
         cuts_poses = []
         last_xy = np.array([[-500,-500]], dtype='float64')
         last_cut = np.array([[-500,-500]], dtype='float64')
-        FIXED_NUMBER = 5
-        FAR_NUMBER = 20
+        FIXED_NUMBER = 3
+        FAR_NUMBER = 10
         last_people_change_time = 0
+        num_of_people_on_screen = 0
 
         for ind, bs in enumerate(boxes):
             if len(bs) > 0:
@@ -550,50 +560,60 @@ class BestClips:
                         best_fit_ind = np.argmin(np.linalg.norm(xys_sorted - last_xy[i], axis = 1))
                         last_xy[i] = xys_sorted[best_fit_ind]
 
-                if sum(fixed) == 0:
-                    for xys in xys_sorted:
-                        break_loop = False
-                        for i in range(len(last_xy)):
-                            if (not fixed[i] and len(xys_sorted) > i) or (np.linalg.norm(last_xy[i] - xys) == 0):
-                                last_xy[i] = np.array(xys)
-                                changed = True
-                                break_loop = True
-
-                        if (not break_loop) and (len(last_xy) == 1):
-                            last_xy = np.array(list(last_xy) + [np.array(xys)])
-                            changed = True
-                            fixed.append(True)
+                if np.sum(fixed) == 0:
+                    last_xy = xys_sorted[:2]
+                    changed = True
 
                 if changed:
+                    if num_of_people_on_screen == 0:
+                            num_of_people_on_screen = len(last_xy) if len(last_xy) < 3 else 2
                     if (len(last_cut) != len(last_xy)):
-                        if times[ind] != 0:
-                            if len(last_xy) == 2 and len(last_cut) == 1:        
-                                people_on_screen['2_people'].append((last_people_change_time, times[ind]))
-                                last_people_change_time = times[ind]
-                            if len(last_xy) == 1 and len(last_cut) == 2:
-                                people_on_screen['1_person'].append((last_people_change_time, times[ind]))
-                                last_people_change_time = times[ind]
+                        if num_of_people_on_screen == 2 and len(last_xy) == 1:        
+                            people_on_screen['2_people'].append((last_people_change_time, times[ind]))
+                            last_people_change_time = times[ind]
+                            num_of_people_on_screen = 1
+                        elif num_of_people_on_screen == 1 and len(last_xy) == 2:
+                            people_on_screen['1_person'].append((last_people_change_time, times[ind]))
+                            last_people_change_time = times[ind]
+                            num_of_people_on_screen = 2
+                        
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
+                        cuts_times_inds.append(ind)
                         cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
                         
                     elif not np.array([np.min(np.linalg.norm(last_cut - last_xy_i, axis=1)) <= FAR_NUMBER for last_xy_i in last_xy]).all():
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
+                        cuts_times_inds.append(ind)
                         cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
         if len(last_xy) == 1:
             people_on_screen['1_person'].append((last_people_change_time, dur))
         else:
             people_on_screen['2_people'].append((last_people_change_time, dur))
-        new_vids = []
         self.people_on_screen_times[short_num] = people_on_screen
+        
+        new_vids = []
+        MIN_LENGTH = 0.2
+        final_inds = [True] + list(np.diff(np.array(cuts_times)) > MIN_LENGTH)
+        cuts_times_inds = np.array(cuts_times_inds)[final_inds]
+
+        cuts_poses_final = []
+        for i in range(len(final_inds)):
+            if final_inds[i]:
+                cuts_poses_final.append(cuts_poses[i])
+
+        cuts_poses = cuts_poses_final
+
+        cuts_times = np.array(cuts_times)[final_inds]
+
         for i in range(len(cuts_times)):
             if i == len(cuts_times) - 1:
-                if dur == cuts_times[i]:
+                if dur == times[cuts_times_inds[i]]:
                     break
-                sub_vid = vid.subclip(cuts_times[i], dur)
+                sub_vid = vid.subclip(times[max(cuts_times_inds[i] - 1,0)], dur)
             else:
-                sub_vid = vid.subclip(cuts_times[i], cuts_times[i+1])
+                sub_vid = vid.subclip(times[max(cuts_times_inds[i] - 1, 0)], times[cuts_times_inds[i+1] - 1])
 
             if len(cuts_poses[i]) == 1: #Easy fix
                 sub_vid = sub_vid.resize(height=1280)
@@ -622,36 +642,21 @@ class BestClips:
             else:
                 print("Something is wrong.")
                 print(f"The cut positions are: {cuts_poses[i]}")
-        return concatenate_videoclips(new_vids) # Need to also return cuts_times[0]...
-    
-
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-    #
-            
+        return concatenate_videoclips(new_vids), times[max(0,cuts_times_inds[0] - 1)]
+              
 
     def add_subs(self):
         subbed_faced_vids = []
         for short_num, video in tqdm(enumerate(self.faced_vids)):
             relevant_df = self.words_df.iloc[self.chat_reply[short_num][0]:self.chat_reply[short_num][1]]
-            subbed_faced_vids.append(add_subs_video(people_times=self.people_on_screen_times[short_num], vid=video, df=relevant_df))
+            subbed_faced_vids.append(add_subs_video(self.new_start_times[short_num], people_times=self.people_on_screen_times[short_num], vid=video, df=relevant_df))
         return subbed_faced_vids # return the videos with subs
     
 
     def save_vids(self):
         for i in range(len(self.shorts)):
             self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v3_{str(i)}.mp4", fps=24, audio_codec='aac')
-        print(f"Total run cost was: {self.total_run_cost}")
+        print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
 if __name__ == "__main__":
