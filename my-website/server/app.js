@@ -1,5 +1,3 @@
-// app.js
-
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,9 +5,10 @@ const cors = require('cors');
 const http = require('http');
 const socketIO = require('socket.io');
 const multer = require('multer');
+const path = require('path'); // Import path module
 const { Storage } = require('@google-cloud/storage');
 const authRoutes = require('./routes/auth');
-const paypalRoutes = require('./routes/paypalserver'); // Import the PayPal router
+const paypalRoutes = require('./routes/payalserver');
 const passport = require('./passportSetup');
 
 const app = express();
@@ -17,43 +16,34 @@ const port = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 // Configure CORS for Express
+// You might need to adjust the origin for production environment
 const corsOptions = {
-  origin: "http://localhost:3001", // Replace with your client's origin
-  credentials: true, // Allow credentials (cookies, sessions, etc.)
+  origin: process.env.CORS_ORIGIN || "http://localhost:3001",
+  credentials: true,
 };
 app.use(cors(corsOptions));
 
 // Configure CORS for Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: "http://localhost:3001", // Replace with your client's origin
+    origin: process.env.CORS_ORIGIN || "http://localhost:3001",
     methods: ["GET", "POST"],
     credentials: true
   }
 });
 
+// Google Cloud Storage setup
 const storage = new Storage({ keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE });
 const bucket = storage.bucket(process.env.GOOGLE_CLOUD_BUCKET);
 const upload = multer({ dest: 'uploads/' });
 
-// Log environment variables to ensure they are loaded correctly
-console.log('Environment Variables:');
-console.log('PORT:', process.env.PORT);
-console.log('DB_URI:', process.env.DB_URI);
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
-
-// Use CORS and JSON middleware
 // Middleware setup
-
-console.log('GOOGLE_CLOUD_KEY_FILE:', process.env.GOOGLE_CLOUD_KEY_FILE);
-console.log('GOOGLE_CLOUD_BUCKET:', process.env.GOOGLE_CLOUD_BUCKET);
-
 app.use(express.json());
+app.use(passport.initialize());
 
 // Using routers
 app.use('/api/auth', authRoutes);
-app.use('/api/paypal', paypalRoutes); // Use PayPal routes under /api/paypal
-
+app.use('/api/paypal', paypalRoutes);
 // Passport initialization
 app.use(passport.initialize());
 
@@ -104,6 +94,15 @@ app.post('/upload-video', upload.single('video'), (req, res) => {
 
   blobStream.end(req.file.buffer);
 });
+
+// Serve static files from the React app in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
 
 // Start the server with socket.io
 server.listen(port, () => {
