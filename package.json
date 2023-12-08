@@ -2,8 +2,8 @@
   "name": "full-stack-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "node WEBSITE/my-website/server/app.js",
-    "heroku-postbuild": "npm install --prefix WEBSITE/my-website/server && cd WEBSITE/my-website/client && npm install && npm run build"
+    "start": "node my-website/server/app.js",
+    "heroku-postbuild": "npm install --prefix my-website/server && cd my-website/client && npm install && npm run build"
   },
   "engines": {
     "node": "14.x"
