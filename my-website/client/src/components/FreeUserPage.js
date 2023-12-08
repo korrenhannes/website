@@ -5,7 +5,7 @@ import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 
 import NavigationBar from './NavigationBar';
-import '../styles/FullScreen.css';
+import '../styles/FreeUserPage.css';
 import '../styles/NavigationBar.css';
 
 function FreeUserPage() {
