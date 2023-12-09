@@ -15,9 +15,6 @@ const passport = require('./passportSetup');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 const server = http.createServer(app);
 
 // Configure CORS for Express
@@ -110,6 +107,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Start the server with socket.io
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
