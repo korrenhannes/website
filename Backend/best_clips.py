@@ -34,7 +34,7 @@ FONT_PATH = "C://Users//along//Downloads//Montserrat-Black//montserrat//Montserr
 # I can move this to a utils file later
 def group_words(df, max_char_count, one_person_times, two_people_times):
     flip_times = sorted(set([time for times in one_person_times + two_people_times for time in times]))[1:] # Times when need to change text placement
-    one_person_on_screen = (len(one_person_times) > 0 and one_person_times[0][0] == 0) # Boolean value: True if 1 person is on screen, False if 2 people are
+    one_person_on_screen = (len(two_people_times) == 0 or (len(one_person_times) > 0 and one_person_times[0][0] < two_people_times[0][0])) # Boolean value: True if 1 person is on screen, False if 2 people are
     groups = []
     current_text = ""
     current_char_count = 0
@@ -116,7 +116,7 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
     color = 'white' if random.random() < 0.25 else 'Yellow'
     stroke_color = 'black'
     font = FONT_PATH
-    font_size = 65
+    font_size = 60
     placement = ('center', (1280 * (2/3))) if one_person_on_screen else ('center')
 
     return (TextClip(text.upper(), font=font, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
@@ -126,10 +126,10 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
 
 # I can move this to a utils file later
 def add_subs_video(new_start_time, people_times, vid, df):
-        one_person_times = people_times['1_person']
-        two_people_times = people_times['2_people']
         relevant_time_shift = df.iloc[0]['start']
         df = df[df['start'] >= new_start_time + relevant_time_shift]
+        one_person_times = [people_times['1_person'][i] + relevant_time_shift for i in range(len(people_times['1_person']))]
+        two_people_times = [people_times['2_people'][i] + relevant_time_shift for i in range(len(people_times['2_people']))]
         relevant_time_shift += new_start_time
         max_char_count = 18
         grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
@@ -237,7 +237,8 @@ class BestClips:
             print("Cropping frames around faces\n")
             self.faced_vids, self.new_start_times = self.cut_faces_all_vids()
             print(f"New start times are:\n{self.new_start_times}\n")
-            print(f"People on screen:\n{self.people_on_screen_times}\n")
+            for i in range(len(self.people_on_screen_times)):
+                print(f"People on screen. Video {i}:\n{self.people_on_screen_times[i]}\n\n")
             print("Adding Subs\n")
             self.shorts = self.add_subs()
             print("Saving shorts!\n")
@@ -414,10 +415,12 @@ class BestClips:
             cur_row = interesting_parts_df.iloc[short_num]
             start_index = max(cur_row['start_ind'] - extend_range, 0)
             end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
+            
             selected_rows = words_df.iloc[start_index:end_index]
-            text_str_lst = "\n".join(f"{index + 1}. {row['text']}" for index, row in selected_rows.iterrows())
+            text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
             start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
-            self.chat_reply[short_num]= (start_index_chat_gpt, end_index_chat_gpt)
+
+            self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
             end_time_video = words_df['end'].iloc[end_index_chat_gpt]
 
@@ -451,7 +454,7 @@ class BestClips:
 
         regg = "\d{1,6}\s*-\s*\d{1,6}"
         span = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))[0]
-        cut = (int(span.split('-')[0]) - 1, int(span.split('-')[1]))
+        cut = (int(span.split('-')[0]), int(span.split('-')[1]))
         text_length = cut[1] - cut[0]
         final_start_index = cut[0]
         final_end_index = cut[1] if (text_length > 100 and text_length < 300) else cut[0] + 150 # In case Chat GPT returned short or long range
@@ -567,16 +570,16 @@ class BestClips:
                 if changed:
                     if num_of_people_on_screen == 0:
                             num_of_people_on_screen = len(last_xy) if len(last_xy) < 3 else 2
-                    if (len(last_cut) != len(last_xy)):
-                        if num_of_people_on_screen == 2 and len(last_xy) == 1:        
-                            people_on_screen['2_people'].append((last_people_change_time, times[ind]))
-                            last_people_change_time = times[ind]
-                            num_of_people_on_screen = 1
-                        elif num_of_people_on_screen == 1 and len(last_xy) == 2:
-                            people_on_screen['1_person'].append((last_people_change_time, times[ind]))
-                            last_people_change_time = times[ind]
-                            num_of_people_on_screen = 2
-                        
+                    elif num_of_people_on_screen == 2 and len(last_xy) == 1:        
+                        people_on_screen['2_people'].append((last_people_change_time, times[ind]))
+                        last_people_change_time = times[ind]
+                    elif num_of_people_on_screen == 1 and len(last_xy) == 2:
+                        people_on_screen['1_person'].append((last_people_change_time, times[ind]))
+                        last_people_change_time = times[ind]
+
+                    num_of_people_on_screen = len(last_xy) if len(last_xy) < 3 else 2                    
+                    
+                    if (len(last_cut) != len(last_xy)):                      
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
                         cuts_times_inds.append(ind)
@@ -587,7 +590,8 @@ class BestClips:
                         cuts_times.append(times[ind])
                         cuts_times_inds.append(ind)
                         cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
-        if len(last_xy) == 1:
+
+        if num_of_people_on_screen == 1:
             people_on_screen['1_person'].append((last_people_change_time, dur))
         else:
             people_on_screen['2_people'].append((last_people_change_time, dur))
@@ -655,7 +659,7 @@ class BestClips:
 
     def save_vids(self):
         for i in range(len(self.shorts)):
-            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v5_{str(i)}.mp4", fps=24, audio_codec='aac')
+            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v9_{str(i)}.mp4", fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
