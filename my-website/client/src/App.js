@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     // Establish Socket.IO connection
-    const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3000');
+    const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'https://young-beach-38748.herokuapp.com');
     setSocket(newSocket);
 
     return () => {
