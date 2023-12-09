@@ -22,7 +22,8 @@ const allowedOrigins = [
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/cloud-api",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/login",
-  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup"
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup",
+  "http://localhost:3001"
 ];
 
 app.use(cors({
@@ -40,7 +41,7 @@ app.use(cors({
 // Configure CORS for Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: "*", // Allow all origins
+    origin: allowedOrigins, // Allow all origins
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -56,8 +57,8 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Using routers
-app.use('/auth', authRoutes);
-app.use('/paypal', paypalRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/paypal', paypalRoutes);
 
 // Passport initialization
 app.use(passport.initialize());
