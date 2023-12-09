@@ -47,8 +47,8 @@ app.use(express.json());
 app.use(passport.initialize());
 
 // Using routers
-app.use('/api/auth', authRoutes);
-app.use('/api/paypal', paypalRoutes);
+app.use('../routes/auth', authRoutes);
+app.use('../routes/paypal', paypalRoutes);
 
 // Passport initialization
 app.use(passport.initialize());
