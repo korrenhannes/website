@@ -38,13 +38,7 @@ app.use(cors(corsOptions));
 // Configure CORS for Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true
   }
