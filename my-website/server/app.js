@@ -20,7 +20,7 @@ const server = http.createServer(app);
 // Configure CORS for Express
 // You might need to adjust the origin for production environment
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "https://young-beach-38748-86ca2d3b26c9.herokuapp.com",
+  origin: process.env.CORS_ORIGIN || "https://young-beach-38748-bf9fd736b27e.herokuapp.com/",
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -28,7 +28,7 @@ app.use(cors(corsOptions));
 // Configure CORS for Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "https://young-beach-38748-86ca2d3b26c9.herokuapp.com",
+    origin: process.env.CORS_ORIGIN || "https://young-beach-38748-bf9fd736b27e.herokuapp.com/",
     methods: ["GET", "POST"],
     credentials: true
   }
