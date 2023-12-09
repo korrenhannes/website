@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node my-website/server/app.js",
-    "heroku-postbuild": "npm install --prefix my-website/server && cd my-website/client && npm install && npm run build"
+    "heroku-postbuild": "npm run build-server && npm run build-client",
+    "build-server": "cd my-website/server && npm install && npm run build",
+    "build-client": "cd my-website/client && npm install && npm run build"
   },
   "engines": {
     "node": "14.x"
