@@ -24,7 +24,7 @@ function App() {
 
   useEffect(() => {
     // Establish Socket.IO connection
-    const newSocket = io(process.env.REACT_APP_SOCKET_URL69 || 'http://localhost:3001' );
+    const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001' );
     setSocket(newSocket);
 
     return () => {
