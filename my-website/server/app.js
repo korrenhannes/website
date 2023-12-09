@@ -25,7 +25,16 @@ const allowedOrigins = [
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup"
 ];
 
-app.use(cors({ origin: '*', credentials: true }));
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 
 // Configure CORS for Socket.IO
