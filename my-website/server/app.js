@@ -7,7 +7,7 @@ const cors = require('cors');
 const http = require('http');
 const socketIO = require('socket.io');
 const multer = require('multer');
-const path = require('path'); // Import path module
+const path = require('path');
 const { Storage } = require('@google-cloud/storage');
 const authRoutes = require('./routes/auth');
 const paypalRoutes = require('./routes/paypalserver');
@@ -17,10 +17,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
+const allowedOrigins = [
+  "https://young-beach-38748.herokuapp.com",
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com"
+];
+
 // Configure CORS for Express
-// You might need to adjust the origin for production environment
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 app.use(cors(corsOptions));
@@ -28,7 +38,13 @@ app.use(cors(corsOptions));
 // Configure CORS for Socket.IO
 const io = socketIO(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -46,10 +62,10 @@ app.use(passport.initialize());
 // Using routers
 app.use('/api/auth', authRoutes);
 app.use('/api/paypal', paypalRoutes);
+
 // Passport initialization
 app.use(passport.initialize());
 
-// MongoDB connection using environment variable for URI
 // MongoDB connection
 mongoose.connect(process.env.DB_URI, {
   useNewUrlParser: true,
@@ -58,19 +74,15 @@ mongoose.connect(process.env.DB_URI, {
 }).then(() => console.log('Connected to MongoDB'))
   .catch((error) => {
     console.error('MongoDB connection error:', error);
-
-    // Exit the application if there is a connection error
-
     process.exit(1);
   });
 
-
 io.on('connection', (socket) => {
-    console.log('New client connected');
-    socket.on('disconnect', () => {
-        console.log('Client disconnected');
-    });
-    // Handle other socket events as necessary
+  console.log('New client connected');
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+  // Handle other socket events as necessary
 });
 
 // Route for video upload
