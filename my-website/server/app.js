@@ -19,7 +19,10 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://young-beach-38748.herokuapp.com",
-  "https://young-beach-38748-bf9fd736b27e.herokuapp.com"
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/cloud-api",
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/login",
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup"
 ];
 
 // Configure CORS for Express
