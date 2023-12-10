@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node my-website/server/app.js",
     "heroku-postbuild": "npm run build-server && npm run build-client",
-    "build-server": "cd my-website/server && npm install && npm run build",
+    "build-server": "cd my-website/server && npm install",
     "build-client": "cd my-website/client && npm install && npm run build"
   },
   "engines": {
