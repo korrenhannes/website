@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Axios instance for the server running on port 3000
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3000/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://backend686868k-c9c97cdcbc27.herokuapp.com/api',
   withCredentials: true
 });
 
