@@ -137,8 +137,10 @@ function CloudAPIPage() {
       return;
     }
     const updateTokens = async (email, tokens) => {
+      console.log('updating the tokens, email:', email, 'tokens:', tokens);
+
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/update-tokens`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-tokens`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -169,7 +171,9 @@ function CloudAPIPage() {
         userEmail: userEmail  // Include the user ID in the request
       });
       console.log('Video processing started:', response.data);
+      console.log('tokens before:', userTokens);
       const updatedTokens = userTokens - 1;
+      console.log('tokens after', updatedTokens);
       await updateTokens(userEmail, updatedTokens);
       handleRedirection();
     } catch (error) {

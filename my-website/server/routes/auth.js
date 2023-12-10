@@ -137,13 +137,15 @@ router.post('/update-tokens', async (req, res) => {
   try {
     const { email, tokens } = req.body;
     const user = await User.findOne({ email });
-
+    console.log('user:', user, 'used 1 token');
     if (!user) {
+      console.log('no user');
       return res.status(404).send('User not found');
     }
 
     user.tokens = tokens.toString(); // Convert to string as your schema expects a string
     await user.save();
+    console.log(user.tokens);
 
     const newToken = jwt.sign({
       userId: user._id,
