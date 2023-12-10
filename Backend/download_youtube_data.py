@@ -13,6 +13,16 @@ import re
 import requests
 from download_youtube_data_utils import parse_chapters
 
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
+
+chrome_options = Options()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN", "chromedriver")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+
+service = Service(ChromeDriverManager().install())
 
 from moviepy.editor import VideoFileClip, TextClip,CompositeVideoClip
 from moviepy.editor import concatenate_videoclips, ImageClip
@@ -61,7 +71,7 @@ class YoutubeData:
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--no-sandbox')
         chrome_options.headless = True
-        wd = webdriver.Chrome(options=chrome_options,service=service)
+        wd = webdriver.Chrome(service=service, options=chrome_options)
         wd.get(link)
         # Wait for the specific element to be present
         wait = WebDriverWait(wd, 30)  # wait for a maximum of 10 seconds
