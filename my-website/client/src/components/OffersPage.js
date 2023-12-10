@@ -6,7 +6,7 @@ import PayPalButton from './PaypalButton';
 import '../styles/PlanSelection.css'; // Assume you have a corresponding CSS file for styles
 import { jwtDecode } from 'jwt-decode';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
-
+import updatePlanRequest from './UpdatePlanService'; // Adjust the path as necessary
 
 
 
@@ -37,28 +37,7 @@ function OffersPage() {
 
   const handleNextClick = () => {
     console.log('email:',userEmail);
-    const updatePlanRequest = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-plan`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: userEmail, paymentPlan: selectedPlan }),
-        });
-    
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-    
-        const responseData = await response.json();
-        console.log('Plan updated:', responseData);
-      } catch (error) {
-        console.error('Error updating plan:', error);
-      }
-    };
-    
-    updatePlanRequest();
+    updatePlanRequest(userEmail,selectedPlan);
     navigate('/cloud-api');
   };
 
