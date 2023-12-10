@@ -7,6 +7,9 @@ const userSchema = new mongoose.Schema({
   paymentPlan: { type: String, default: 'free' },
   googleId: { type: String, required: false }, // For Google OAuth
   facebookId: { type: String, required: false }, // For Facebook OAuth
+  tokens: { type: String, default: '1' },
+  dateOfSubscription: { type: String, required: false },
+
 });
 
 // Pre-save hook to hash password before saving it to the database

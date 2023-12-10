@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
+import { jwtDecode } from 'jwt-decode';
+
 
 
 function CloudAPIPage() {
@@ -118,12 +120,46 @@ function CloudAPIPage() {
     setIsLoading(true);
   
     // Retrieve user ID from localStorage or another secure method
-    const userEmail = localStorage.getItem('userEmail');
+    const tokenData = jwtDecode(localStorage.getItem('token'));
+    const userEmail = tokenData.email;
+    const userTokens = parseInt(tokenData.tokens); // Convert string to integer
+
     if (!userEmail) {
+      console.log('User ID not found. Please log in again.');
       setError('User ID not found. Please log in again.');
       setIsLoading(false);
       return;
     }
+    if (userTokens <= 0) {
+      console.log('no more tokens, need to upgrade subscription');
+      setError('no more tokens, need to upgrade subscription');
+      setIsLoading(false);
+      return;
+    }
+    const updateTokens = async (email, tokens) => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/update-tokens`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: email, tokens: tokens }),
+        });
+    
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+    
+        const responseData = await response.json();
+    
+        if (responseData.token) {
+          localStorage.setItem('token', responseData.token);
+        }
+      } catch (error) {
+        console.error('Error updating tokens:', error.message);
+      }
+    };
+    
   
     const folderName = 'folder_check'; // Example folder name
     try {
@@ -133,6 +169,8 @@ function CloudAPIPage() {
         userEmail: userEmail  // Include the user ID in the request
       });
       console.log('Video processing started:', response.data);
+      const updatedTokens = userTokens - 1;
+      await updateTokens(userEmail, updatedTokens);
       handleRedirection();
     } catch (error) {
       console.error('Error submitting search:', error.message);

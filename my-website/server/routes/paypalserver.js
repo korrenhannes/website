@@ -30,7 +30,7 @@ router.post("/create-order", async (req, res) => {
     intent: "CAPTURE",
     purchase_units: [{
       amount: {
-        currency_code: "ILS",
+        currency_code: "USD",
         value: req.body.amount // Dynamically receive the amount
       }
     }]

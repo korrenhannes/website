@@ -3,6 +3,9 @@ import {
   PayPalScriptProvider,
   PayPalButtons,
 } from "@paypal/react-paypal-js";
+// At the top of your PayPalButton.js and OffersPage.js files
+import updatePlanRequest from './UpdatePlanService'; // Adjust the path as necessary
+
 
 
 const PayPalButton = ({ onSuccessfulPayment, selectedPlan, amount, userEmail}) => {  
@@ -43,28 +46,6 @@ const PayPalButton = ({ onSuccessfulPayment, selectedPlan, amount, userEmail}) =
   // Function to capture the order after payment
   const onApprove = (data, actions) => {
     const currentOrderID = data.orderID;  // Use the orderID from the data if available
-    const updatePlanRequest = async () => {
-      try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-plan`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email: userEmail, paymentPlan: selectedPlan }),
-        });
-    
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-    
-        const responseData = await response.json();
-        console.log('Plan updated:', responseData);
-      } catch (error) {
-        console.error('Error updating plan:', error);
-      }
-    };
-    
-
     return fetch(`${process.env.REACT_APP_API_URL}/paypal/capture-order/${currentOrderID}`, {
       method: "POST",
       headers: {
@@ -83,7 +64,7 @@ const PayPalButton = ({ onSuccessfulPayment, selectedPlan, amount, userEmail}) =
     .then(order => {
       // Handle successful transaction
       console.log('handle transaction', currentOrderID,'order:', order);
-      updatePlanRequest();
+      updatePlanRequest(userEmail,selectedPlan);
       if (onSuccessfulPayment) {
         onSuccessfulPayment(); // Call the passed callback
       }
@@ -103,7 +84,7 @@ const PayPalButton = ({ onSuccessfulPayment, selectedPlan, amount, userEmail}) =
   return (
     <PayPalScriptProvider options={{
       "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
-      currency: "ILS",
+      currency: "USD",
       intent: "capture"
     }}>
       <PayPalButtons

@@ -79,17 +79,36 @@ router.post('/update-plan', async (req, res) => {
   try {
     const { email, paymentPlan } = req.body;
     const user = await User.findOne({ email });
+    let tokens = '1';
+    let currentDate = new Date();
     console.log('payment plan:', paymentPlan, 'email:', email);
+    if (paymentPlan === 'regular' ) {
+      tokens = '10';
+    } else if (paymentPlan === 'premium'){
+      tokens='100';
+    }
     if (!user) {
       console.log('user not found');
       return res.status(404).send('User not found');
     }
-
+    console.log('tokens:', tokens, 'date:', currentDate);
     user.paymentPlan = paymentPlan;
+    user.tokens = tokens;
+    user.dateOfSubscription= currentDate;
     await user.save();
-    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan }).save();
+    const newToken = jwt.sign({
+      userId: user._id, 
+      email: user.email, 
+      tokens: tokens, 
+      dateOfSubscription: currentDate
+    }, 'your_jwt_secret');
+
+    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan, tokens: tokens,dateOfSubscription: currentDate  }).save();
     console.log('user:', user);
-    res.json({ message: 'Payment plan updated successfully' }); // Send JSON response
+    res.json({ 
+      message: 'Payment plan updated successfully', 
+      token: newToken 
+    });
   } catch (error) {
     console.error("Update plan error:", error);
     res.status(400).send(error.message);
@@ -112,5 +131,36 @@ router.get('/user/payment-plan', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+// Add this route to your existing routes in the backend
+
+router.post('/update-tokens', async (req, res) => {
+  try {
+    const { email, tokens } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.tokens = tokens.toString(); // Convert to string as your schema expects a string
+    await user.save();
+
+    const newToken = jwt.sign({
+      userId: user._id,
+      email: user.email,
+      tokens: user.tokens,
+      dateOfSubscription: user.dateOfSubscription
+    }, 'your_jwt_secret');
+
+    res.json({ 
+      message: 'Tokens updated successfully', 
+      token: newToken 
+    });
+  } catch (error) {
+    console.error("Update tokens error:", error);
+    res.status(400).send(error.message);
+  }
+});
+
 
 module.exports = router;
