@@ -18,11 +18,11 @@ const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
 const allowedOrigins = [
-  "https://young-beach-38748.herokuapp.com",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/cloud-api",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/login",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com",
   "http://localhost:3001"
 ];
 
