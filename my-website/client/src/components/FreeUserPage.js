@@ -3,6 +3,7 @@ import io from 'socket.io-client';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
+import { jwtDecode } from 'jwt-decode';
 
 import NavigationBar from './NavigationBar';
 import '../styles/FreeUserPage.css';
@@ -62,26 +63,44 @@ function FreeUserPage() {
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
-    const userEmail = localStorage.getItem('userEmail');
-    if (!userEmail) {
-      setError('User email not found. Please log in again.');
-      setIsLoading(false);
-      return;
-    }
-
+  
+    // Decode the JWT to get the user's email
+    const token = localStorage.getItem('token');
+    let userEmail;
     try {
-      const response = await apiFlask.get(`/signed-urls?email=${encodeURIComponent(userEmail)}`);
-      const signedUrls = response.data.signedUrls;
-      if (signedUrls && signedUrls.length > 0) {
-        setVideos(signedUrls);
-        loadVideo(signedUrls[0]); // Load the first video from the list
-      } else {
-        setError('No videos found in Google Cloud Storage.');
-      }
+        if (token) {
+            const decoded = jwtDecode(token);
+            userEmail = decoded.email;
+        }
+    } catch (error) {
+        console.error("Error decoding token:", error);
+    }
+  
+    if (!userEmail) {
+        setError('User email not found. Please log in again.');
+        setIsLoading(false);
+        return;
+    }
+  
+    try {
+        // Send the user's email in the header of your request
+        const response = await apiFlask.get('/signed-urls', {
+            headers: {
+                'User-Email': userEmail
+            }
+        });
+  
+        const signedUrls = response.data.signedUrls;
+        if (signedUrls && signedUrls.length > 0) {
+            setVideos(signedUrls);
+            loadVideo(signedUrls[0]); // Load the first video from the list
+        } else {
+            setError('No videos found in Google Cloud Storage.');
+        }
     } catch (err) {
-      setError(`Error fetching videos: ${err.message}`);
+        setError(`Error fetching videos: ${err.message}`);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
 

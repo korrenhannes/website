@@ -146,14 +146,16 @@ def handle_youtube_video():
 
 @app.route('/api/signed-urls', methods=['GET'])
 def get_signed_urls():
-    # Extract user email from the request arguments instead of using a hardcoded value
-    email = request.args.get('email')
+    # Extract the user email from the request headers
+    email = request.headers.get('User-Email')
     print(f"get_signed_urls called with email: {email}")  # Additional logging for debugging
+
     if not email:
         return jsonify({'error': 'User email is required'}), 400
 
     bucket_name = 'clipitshorts'
     user = db.users.find_one({'email': email})
+
     if not user:
         # If the user is not found, assume no upload has started for this user
         directory_name = 'undefined/'
@@ -161,11 +163,15 @@ def get_signed_urls():
         # Use the directory based on the user's upload status
         directory_name = email + '/' if user.get('upload_complete', False) else 'undefined/'
 
-    storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-    blobs = list(storage_client.list_blobs(bucket_name, prefix=directory_name))
-    signed_urls = [generate_signed_url(bucket_name, blob.name) for blob in blobs if not blob.name.endswith('/')]
+    try:
+        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+        blobs = list(storage_client.list_blobs(bucket_name, prefix=directory_name))
+        signed_urls = [generate_signed_url(bucket_name, blob.name) for blob in blobs if not blob.name.endswith('/')]
 
-    return jsonify({'signedUrls': signed_urls})
+        return jsonify({'signedUrls': signed_urls})
+    except GoogleCloudError as e:
+        print(f"Error in getting signed URLs: {e}")
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/api/user/payment-plan', methods=['GET'])
