@@ -166,6 +166,7 @@ import imutils
 import random
 import requests
 from moviepy.editor import *
+import jumpcutter
 
 prototxt = 'deploy.prototxt'
 model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
@@ -296,19 +297,72 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
             .set_duration(duration).set_position(placement)
             .set_start(start_time))
 
+from moviepy.editor import VideoFileClip
+import numpy as np
+
+def remove_silence(video_clip, silence_threshold=0.1):
+    # Extract audio from the video clip
+    audio_clip = video_clip.audio
+    fps_audio = 44100
+
+    # Get the raw audio data as a NumPy array
+    audio_array = np.array(audio_clip.to_soundarray(fps=fps_audio))
+
+    # Calculate the energy of each audio frame
+    energy = np.sum(np.abs(audio_array), axis=1)
+
+    # Find non-silent frames based on the energy and threshold
+    silent_frames = np.where(energy < silence_threshold)[0]
+
+    # Find the start and end times of non-silent segments
+    silent_segments = find_silent_segments(silent_frames, silence_sec=0.3, fps_audio=fps_audio)
+
+    non_silent_segments = final_segments(dur=video_clip.duration, silent_segments=silent_segments)
+
+    # Extract non-silent portions from the original video clip
+    non_silent_video = concatenate_videoclips([video_clip.subclip(start, end) for start, end in non_silent_segments])
+
+    return non_silent_video
+
+def find_silent_segments(indices, silence_sec, fps_audio):
+    ranges = []
+    start = indices[0]
+    for i in range(1, len(indices)):
+        if indices[i] - indices[i - 1] > 1:
+            end = indices[i - 1]
+            if end - start + 1 >= silence_sec*fps_audio:
+                ranges.append((start/fps_audio, end/fps_audio))
+            start = indices[i]
+    end = indices[-1]
+    if end - start + 1 >= silence_sec*fps_audio:
+        ranges.append((start/fps_audio, end/fps_audio))
+    return ranges
+
+
+def final_segments(dur, silent_segments):
+    complementary_ranges = []
+    current_start = 0
+
+    for exclude_start, exclude_end in silent_segments:
+        # Add the range before the excluded range
+        if exclude_start > current_start:
+            complementary_ranges.append((current_start, exclude_start))
+
+        # Update the current start to the end of the excluded range
+        current_start = exclude_end
+
+    # Add the range after the last excluded range
+    if current_start < dur:
+        complementary_ranges.append((current_start, dur))
+
+    return complementary_ranges
+
 
 if __name__ == "__main__":
     # Example usage:
-    one_person_times = [(0, 11.2), (15, 31.2), (51.2, 58)]
-    two_people_times = [(11.2, 15), (31.2, 51.2)]
-    max_char_count = 18
+    video_path = "C://Users//along//VS Code//Shorts Project//website//Test_4//short_v11_1.mp4"
+    video_clip = VideoFileClip(video_path)
+    non_silent_video = remove_silence(video_clip)
 
-    df = pd.read_csv("C://Users//along//VS Code//Shorts Project//website//downloaded_files//second_test//Andrew Tate vs Piers Morgan  The Full Interview_tmp4.csv")
-    grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
-    txt_clips = [text_clip(group[0], group[2] - group[1], group[1], group[3]) for group in grouped_words]
-    text_vid = concatenate(txt_clips, method='compose')
-    vid = VideoFileClip("C://Users//along//VS Code//Shorts Project//website//downloaded_files//fourth_test//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4")
-    sub_vid = vid.subclip(0, text_vid.duration)
-    resize_vid = sub_vid.resize(height=1280)
-    final_vid = CompositeVideoClip([sub_vid] + txt_clips, size=(720, 1280))
-    final_vid.write_videofile('test_text.mp4', fps=24, codec='libx264')
+    # To save the result
+    non_silent_video.write_videofile("test_output.mp4", codec="libx264", audio_codec="aac")

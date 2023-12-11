@@ -14,12 +14,14 @@ import imutils
 import cv2
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
+from retinaface import RetinaFace
+
 
 WHISPER_MODEL = "medium.en"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 openai_api_key = "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"
-FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 1 minute clip from the podcast\nI want you to send me a starting index and an ending index (around 120-180 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
+FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 30-60 second clip from the podcast.\nI want you to send me a starting index and an ending index (around 120-150 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
 FIRST_RES = "(336-524)"
 SECOND_INP = "Great! KEEPING THE SAME FORMAT IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
 
@@ -185,6 +187,41 @@ def parallel_transcribe(rank, audio_segments, num_gpus, segment_time, transcript
         except Exception as e:
             print(f"Error in parallel processing: {e}")
 
+
+def find_silent_segments(indices, silence_sec, fps_audio):
+    ranges = []
+    start = indices[0]
+    for i in range(1, len(indices)):
+        if indices[i] - indices[i - 1] > 1:
+            end = indices[i - 1]
+            if end - start + 1 >= silence_sec*fps_audio:
+                ranges.append((start/fps_audio, end/fps_audio))
+            start = indices[i]
+    end = indices[-1]
+    if end - start + 1 >= silence_sec*fps_audio:
+        ranges.append((start/fps_audio, end/fps_audio))
+    return ranges
+
+
+def final_segments(dur, silent_segments):
+    complementary_ranges = []
+    current_start = 0
+
+    for exclude_start, exclude_end in silent_segments:
+        # Add the range before the excluded range
+        if exclude_start > current_start:
+            complementary_ranges.append((current_start, exclude_start))
+
+        # Update the current start to the end of the excluded range
+        current_start = exclude_end
+
+    # Add the range after the last excluded range
+    if current_start < dur:
+        complementary_ranges.append((current_start, dur))
+
+    return complementary_ranges
+    
+
 class InvalidVideoError(Exception):
     pass
 
@@ -239,8 +276,10 @@ class BestClips:
             print(f"New start times are:\n{self.new_start_times}\n")
             for i in range(len(self.people_on_screen_times)):
                 print(f"People on screen. Video {i}:\n{self.people_on_screen_times[i]}\n\n")
-            print("Adding Subs\n")
+            print("Adding subs\n")
             self.shorts = self.add_subs()
+            print("Cutting out silent parts")
+            self.final_shorts = self.remove_silence()
             print("Saving shorts!\n")
             self.save_vids()     
         except InvalidVideoError as e:
@@ -350,9 +389,9 @@ class BestClips:
         result_df = pd.DataFrame(blocks, columns=['text', 'start', 'end', 'sentiment_analysis_score', 'start_ind', 'end_ind'])
         
         return result_df
+    
 
-
-    def find_interesting_parts(self, window_size=30): # Window size is number of blocks, so the amount of words is block_size * window_size
+    def find_interesting_parts(self, window_size=10): # Window size is number of blocks, so the amount of words is block_size * window_size
         block_df = self.block_transcript_df
         sentiment_blocks = []
         # Iterate through the DataFrame with a sliding window
@@ -409,16 +448,18 @@ class BestClips:
     def cut_videos(self):
         interesting_parts_df = self.final_transcript_df
         words_df = self.words_df
-        extend_range = 50 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
+        extend_range = 15 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
         cut_vids = []
         for short_num in range(self.num_of_shorts):
             cur_row = interesting_parts_df.iloc[short_num]
             start_index = max(cur_row['start_ind'] - extend_range, 0)
             end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
             
-            selected_rows = words_df.iloc[start_index:end_index]
-            text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
-            start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+            # selected_rows = words_df.iloc[start_index:end_index]
+            # text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
+            # start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+
+            start_index_chat_gpt, end_index_chat_gpt = start_index, end_index
 
             self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
@@ -505,6 +546,7 @@ class BestClips:
         frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
         dur = vid.duration
         times = [t for t, frame in vid.iter_frames(with_times=True)]
+        # retina_face_model = RetinaFace.build_model()
 
         # call for recognize faces model
         for ind_0 in tqdm(list(range(len(times)))):
@@ -514,7 +556,6 @@ class BestClips:
             image = imutils.resize(frame, width=400)
             (h, w) = image.shape[:2]
 
-            # resize it to have a maximum width of 400 pixels
             blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
 
             net.setInput(blob)
@@ -535,14 +576,22 @@ class BestClips:
                     boxes[-1].append((startX, endX, startY, endY))
                     confs[-1].append(confidence)
 
+            # # If no faces are found, use better face detection algorithm
+            # if boxes[-1] == []:
+            #     resp = RetinaFace.detect_faces(image, threshold=0.9, model=retina_face_model, allow_upscaling=False)
+            #     if not isinstance(resp, tuple):
+            #         boxes[-1] = [face['facial_area'] for face in resp.values()][:2]
+            #         confs[-1] = [face['score'] for face in resp.values()][:2]
+
         # decide where to do the cuts
         cuts_times = []
         cuts_times_inds = []
         cuts_poses = []
         last_xy = np.array([[-500,-500]], dtype='float64')
         last_cut = np.array([[-500,-500]], dtype='float64')
-        FIXED_NUMBER = 3
-        FAR_NUMBER = 10
+        FIXED_NUMBER = 5
+        FAR_NUMBER = 15
+        MIN_DISTANCE = 10
         last_people_change_time = 0
         num_of_people_on_screen = 0
 
@@ -552,7 +601,15 @@ class BestClips:
 
                 bs_sorted = [x for _, x in sorted(zip(confs[ind], bs), key=lambda pair: pair[0])]
                 xys_sorted = np.array([[(b[1] + b[0]) / 2, (b[3] + b[2]) / 2] for b in bs_sorted])
-                fixed = [np.min(np.linalg.norm(xys_sorted - last_xy_i, axis = 1)) <= FIXED_NUMBER for last_xy_i in last_xy]
+                
+                # Check if there are duplicate points
+                filtered_xys = []
+                for i in range(len(xys_sorted)):
+                    if not any(np.linalg.norm(xys_sorted[i] - filtered_point, axis=-1) <= MIN_DISTANCE for filtered_point in filtered_xys):
+                        # Include the point if it's far enough from all previously filtered points
+                        filtered_xys.append(xys_sorted[i])
+
+                fixed = [np.min(np.linalg.norm(filtered_xys - last_xy_i, axis=-1)) <= FIXED_NUMBER for last_xy_i in last_xy]
 
                 if sum(fixed) == 0:
                     last_xy = np.array([[-500,-500]], dtype='float64')
@@ -560,11 +617,11 @@ class BestClips:
 
                 for i in range(len(fixed)):
                     if fixed[i]:
-                        best_fit_ind = np.argmin(np.linalg.norm(xys_sorted - last_xy[i], axis = 1))
-                        last_xy[i] = xys_sorted[best_fit_ind]
+                        best_fit_ind = np.argmin(np.linalg.norm(filtered_xys - last_xy[i], axis = 1))
+                        last_xy[i] = filtered_xys[best_fit_ind]
 
                 if np.sum(fixed) == 0:
-                    last_xy = xys_sorted[:2]
+                    last_xy = filtered_xys[:2]
                     changed = True
 
                 if changed:
@@ -657,13 +714,42 @@ class BestClips:
         return subbed_faced_vids # return the videos with subs
     
 
+    def remove_silence(self, silence_threshold=0.1):
+        final_shorts = []
+        for video_clip in self.shorts:
+            # Extract audio from the video clip
+            audio_clip = video_clip.audio
+            fps_audio = 44100
+
+            # Get the raw audio data as a NumPy array
+            audio_array = np.array(audio_clip.to_soundarray(fps=fps_audio))
+
+            # Calculate the energy of each audio frame
+            energy = np.sum(np.abs(audio_array), axis=1)
+
+            # Find non-silent frames based on the energy and threshold
+            silent_frames = np.where(energy < silence_threshold)[0]
+
+            # Find the start and end times of non-silent segments
+            silent_segments = find_silent_segments(silent_frames, silence_sec=0.3, fps_audio=fps_audio)
+
+            non_silent_segments = final_segments(dur=video_clip.duration, silent_segments=silent_segments)
+
+            # Extract non-silent portions from the original video clip
+            non_silent_video = concatenate_videoclips([video_clip.subclip(start, end) for start, end in non_silent_segments])
+
+            final_shorts.append(non_silent_video)
+
+        return final_shorts
+
+
     def save_vids(self):
-        for i in range(len(self.shorts)):
-            self.shorts[i].write_videofile(f"{self.run_folder_name}//short_v9_{str(i)}.mp4", fps=24, audio_codec='aac')
+        for i in range(len(self.final_shorts)):
+            self.final_shorts[i].write_videofile(f"{self.run_folder_name}//short_v1_{str(i)}.mp4", fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
 if __name__ == "__main__":
-    video = "C://Users//along//VS Code//Shorts Project//website//Test_4//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4"
-    run_folder_name = 'Test_4'
+    video = "C://Users//along//VS Code//Shorts Project//website//Test_5//An Unfiltered Conversation with MrBeast.mp4"
+    run_folder_name = 'Test_5'
     transcription = BestClips(video_str=video, run_folder_name=run_folder_name)
