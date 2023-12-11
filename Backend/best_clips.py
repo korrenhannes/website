@@ -32,7 +32,7 @@ net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 censor = {"fuck" : "f*ck", "shit" : "sh*t", "whore" : "wh*re", "fucking" : "f*cking", "shitting" : "sh*tting", "sex" : "s*x"}
 FONT_PATH = "Montserrat-Black.ttf"
 
-FACE_MODEL_CONFIDENCE_THRESH = 0.3
+FACE_MODEL_CONFIDENCE_THRESH = 0.5
 MIN_AREA_RATIO_FACES = 4
 FPS_USED = None
 
@@ -229,13 +229,14 @@ class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, run_folder_name, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
+    def __init__(self, video_str, run_folder_name, use_gpt=False, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
                   final_transcript_dest="final_transcript.csv", num_of_shorts=5):
         try:
             # Set up everything for parallel processing
             self.num_gpus = torch.cuda.device_count()
 
             # Set run-cost at 0
+            self.use_gpt = use_gpt
             self.total_run_cost = 0.0
 
             # Creates run folder
@@ -310,7 +311,7 @@ class BestClips:
         print("Downloading Youtube Video")
         youtube_video = YouTube(url)
         video = youtube_video.streams.get_highest_resolution()
-        out_file = video.download(self.run_folder_name)
+        out_file = video.download(self.run_folder_name, timeout=60)
         base, _ = os.path.splitext(out_file)
         new_file = base + '.mp4'
         os.rename(out_file, new_file)
@@ -394,7 +395,8 @@ class BestClips:
         return result_df
     
 
-    def find_interesting_parts(self, window_size=25): # Window size is number of blocks, so the amount of words is block_size * window_size
+    def find_interesting_parts(self): # Window size is number of blocks, so the amount of words is block_size * window_size
+        window_size = 25 if self.use_gpt else 10 # When not using Chat GPT and debugging makes shorter videos
         block_df = self.block_transcript_df
         sentiment_blocks = []
         # Iterate through the DataFrame with a sliding window
@@ -451,16 +453,21 @@ class BestClips:
     def cut_videos(self):
         interesting_parts_df = self.final_transcript_df
         words_df = self.words_df
-        extend_range = 50 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
+        extend_range = 50 if self.use_gpt else 0 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
         cut_vids = []
         for short_num in range(self.num_of_shorts):
             cur_row = interesting_parts_df.iloc[short_num]
             start_index = max(cur_row['start_ind'] - extend_range, 0)
             end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
+
+
+            if self.use_gpt:
+                selected_rows = words_df.iloc[start_index:end_index]
+                text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
+                start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
             
-            selected_rows = words_df.iloc[start_index:end_index]
-            text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
-            start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+            else:
+                start_index_chat_gpt, end_index_chat_gpt = start_index, end_index
 
             self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
@@ -627,8 +634,8 @@ class BestClips:
         cuts_poses = []
         last_xy = np.array([[-500,-500]], dtype='float64')
         last_cut = np.array([[-500,-500]], dtype='float64')
-        FIXED_NUMBER = 0.02
-        FAR_NUMBER = 0.075
+        FIXED_NUMBER = 0.06
+        FAR_NUMBER = 0.06
         MIN_DISTANCE = 0.01
         last_people_change_time = 0
         num_of_people_on_screen = 0
@@ -755,7 +762,7 @@ class BestClips:
         return subbed_faced_vids # return the videos with subs
     
 
-    def remove_silence(self, silence_threshold=0.1):
+    def remove_silence(self, silence_threshold=0.05):
         final_shorts = []
         for video_clip in self.shorts:
             # Extract audio from the video clip
@@ -772,7 +779,7 @@ class BestClips:
             silent_frames = np.where(energy < silence_threshold)[0]
 
             # Find the start and end times of non-silent segments
-            silent_segments = find_silent_segments(silent_frames, silence_sec=0.3, fps_audio=fps_audio)
+            silent_segments = find_silent_segments(silent_frames, silence_sec=0.2, fps_audio=fps_audio)
 
             non_silent_segments = final_segments(dur=video_clip.duration, silent_segments=silent_segments)
 
@@ -792,7 +799,8 @@ class BestClips:
 
          
 if __name__ == "__main__":
-    # Insert video path to .mp4 file or youtube url link
-    video = ""
-    run_folder_name = 'New_Test'
-    transcription = BestClips(video_str=video, run_folder_name=run_folder_name)
+    # # Insert video path to .mp4 file or youtube url link
+    # video = ""
+    # run_folder_name = 'New_Test'
+    # best_clips = BestClips(video_str=video, run_folder_name=run_folder_name, use_gpt=False)
+    pass

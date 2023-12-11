@@ -103,9 +103,7 @@ def process_youtube_video(link, userEmail):
         save_folder_name = userEmail  # Use userEmail for the folder name
 
         # Pass save_folder_name to BestClips constructor
-        print(os.getcwd())
-        print(base_dir)
-        best_clips = BestClips(link, save_folder_name)
+        best_clips = BestClips(link, save_folder_name, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         if hasattr(best_clips, 'final_shorts'):  # Check if final_shorts attribute exists
             gcloud_bucket_name = "clipitshorts"
