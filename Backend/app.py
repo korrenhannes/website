@@ -9,8 +9,7 @@ from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
 
-from download_youtube_data import YoutubeData
-from edit_youtube_video import EditedVideos
+from best_clips import BestClips
 
 # Load environment variables
 load_dotenv()
@@ -98,26 +97,31 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userE
 
 def process_youtube_video(link, userEmail):
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
-    base_dir = os.path.abspath(os.path.dirname(__file__))
-    # Change the save_folder_name to use the userEmail
-    save_folder_name = userEmail  
-    dest_folder = os.path.join(base_dir, save_folder_name)
+    
+    try:
+        base_dir = os.path.abspath(os.path.dirname(__file__))
+        save_folder_name = userEmail  # Use userEmail for the folder name
 
-    if not os.path.exists(dest_folder):
-        os.makedirs(dest_folder)
+        # Pass save_folder_name to BestClips constructor
+        print(os.getcwd())
+        print(base_dir)
+        best_clips = BestClips(link, save_folder_name)
+        
+        if hasattr(best_clips, 'final_shorts'):  # Check if final_shorts attribute exists
+            gcloud_bucket_name = "clipitshorts"
+            for i in range(len(best_clips.final_shorts)):
+                video_file_path = os.path.join(save_folder_name, f"short_{str(i)}.mp4")
+                gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
+                upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
+            set_upload_complete(userEmail, True)
+        else:
+            print("Error: final_shorts not found in BestClips object.")
+            # Handle the case where final_shorts is not available
+            # You might want to set a flag or send a notification
+    except Exception as e:
+        print(f"An error occurred in process_youtube_video: {e}")
+        # Handle any other exceptions here
 
-    yt_data_obj = YoutubeData(link, save_folder_name, dest=dest_folder)
-    yt_data_obj.save_object()
-
-    edited_videos = EditedVideos(yt_data_obj, load_gpt=False)
-
-    gcloud_bucket_name = "clipitshorts"
-    for i in range(len(edited_videos.faced_subs_vids)):
-        video_file_path = os.path.join(yt_data_obj.dest, "finalvideo" + "_" + str(i) + ".mp4")
-        gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
-        # Use the userEmail as the folder name in the upload function
-        upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
-    set_upload_complete(userEmail, True)
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
