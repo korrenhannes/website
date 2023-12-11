@@ -34,7 +34,8 @@ router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email });
-
+    //  for guest signup :add checking to this if, if email  contain @ and password != guest (that means this is not a guest):
+    // this way i will send an existing user error only if this is not a guest
     if (existingUser) {
       return res.status(400).send('Email already in use');
     }

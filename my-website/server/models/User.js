@@ -8,8 +8,8 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, required: false }, // For Google OAuth
   facebookId: { type: String, required: false }, // For Facebook OAuth
   tokens: { type: String, default: '1' },
-  dateOfSubscription: { type: String, required: false },
-
+  dateOfSubscription: { type: Date, required: false },
+  dayOfSubscription: { type: Number, required: false },
 });
 
 // Pre-save hook to hash password before saving it to the database
