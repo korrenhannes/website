@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
 // });
 
 // Cron job to reset tokens
-cron.schedule('0 0 * * *', async () => {
+cron.schedule('*/2 * * * *', async () => {
   console.log('Running a daily check for token renewal');
   const usersToUpdate = await User.find({ dateOfSubscription: { $type: 'string' } });
 
