@@ -30,7 +30,7 @@ model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
 net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
 censor = {"fuck" : "f*ck", "shit" : "sh*t", "whore" : "wh*re", "fucking" : "f*cking", "shitting" : "sh*tting", "sex" : "s*x"}
-FONT_PATH = "Montserrat-Black.ttf" # Donloaded from here: https://www.ffonts.net/Montserrat-Black.font.download#google_vignette
+FONT_PATH = "Montserrat-Black.ttf"
 
 
 # I can move this to a utils file later
