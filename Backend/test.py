@@ -174,7 +174,7 @@ net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 
 
 censor = {"fuck" : "f*ck", "shit" : "sh*t", "whore" : "wh*re", "fucking" : "f*cking", "shitting" : "sh*tting", "sex" : "s*x"}
-FONT_PATH = "C://Users//along//Downloads//Montserrat-Black//montserrat//Montserrat-Black.ttf" # Donloaded from here: https://www.ffonts.net/Montserrat-Black.font.download#google_vignette
+FONT_PATH = "Montserrat-Black.ttf" # Donloaded from here: https://www.ffonts.net/Montserrat-Black.font.download#google_vignette
 
 
 def is_cut(frame1, frame2, threshold=0.7):
@@ -360,9 +360,15 @@ def final_segments(dur, silent_segments):
 
 if __name__ == "__main__":
     # Example usage:
-    video_path = "C://Users//along//VS Code//Shorts Project//website//Test_4//short_v11_1.mp4"
+    video_path = "C://Users//along//VS Code//Shorts Project//website//Test_4//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4"
+    df = pd.read_csv("C://Users//along//VS Code//Shorts Project//website//downloaded_files//second_test//Andrew Tate vs Piers Morgan  The Full Interview_tmp0.csv")
     video_clip = VideoFileClip(video_path)
-    non_silent_video = remove_silence(video_clip)
+    video_clip.subclip(0, 20)
+    max_char_count = 18
+    one_person_times = [(0, 20)]
+    two_people_times = []
+    grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
+    txt_clips = [text_clip(group[0], group[2] - group[1], group[1], group[3]) for group in grouped_words]
+    vid = CompositeVideoClip([video_clip] + txt_clips, use_bgclip=True, size=(720, 1280))
+    vid.write_videofile("test_text_git.mp4", fps=24, audio_codec='aac')
 
-    # To save the result
-    non_silent_video.write_videofile("test_output.mp4", codec="libx264", audio_codec="aac")

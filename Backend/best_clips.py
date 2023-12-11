@@ -17,7 +17,7 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from retinaface import RetinaFace
 
 
-WHISPER_MODEL = "medium.en"
+WHISPER_MODEL = "tiny.en"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 openai_api_key = "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"
@@ -32,6 +32,9 @@ net = cv2.dnn.readNetFromCaffe(prototxt, model_face)
 censor = {"fuck" : "f*ck", "shit" : "sh*t", "whore" : "wh*re", "fucking" : "f*cking", "shitting" : "sh*tting", "sex" : "s*x"}
 FONT_PATH = "Montserrat-Black.ttf"
 
+FACE_MODEL_CONFIDENCE_THRESH = 0.3
+MIN_AREA_RATIO_FACES = 4
+FPS_USED = 100
 
 # I can move this to a utils file later
 def group_words(df, max_char_count, one_person_times, two_people_times):
@@ -247,15 +250,15 @@ class BestClips:
             else:
                 raise InvalidVideoError("Invalid video URL or path")
 
-            self.audio_dest = f"{self.run_folder_name}//{audio_dest}"
-            self.word_transcript_dest = f"{self.run_folder_name}//{word_transcript_dest}"
-            self.final_transcript_dest = f"{self.run_folder_name}//{final_transcript_dest}"
+            self.audio_dest = os.path.join(self.run_folder_name, audio_dest)
+            self.word_transcript_dest = os.path.join(self.run_folder_name, word_transcript_dest)
+            self.final_transcript_dest = os.path.join(self.run_folder_name, final_transcript_dest)
             self.full_video_mp3, self.full_video_mp4 = self.audio_video(self.video_path)
-            # self.full_video_mp3.write_audiofile(self.audio_dest)
-            # self.audio_segments, self.segment_time = self.split_audio_to_segments()
+            self.full_video_mp3.write_audiofile(self.audio_dest)
+            self.audio_segments, self.segment_time = self.split_audio_to_segments()
 
-            # # Start parallel processing across GPUs
-            # mp.spawn(parallel_transcribe, args=(self.audio_segments, self.num_gpus, self.segment_time, self.word_transcript_dest), nprocs=self.num_gpus)
+            # Start parallel processing across GPUs
+            mp.spawn(parallel_transcribe, args=(self.audio_segments, max(1, self.num_gpus), self.segment_time, self.word_transcript_dest), nprocs= max(1, self.num_gpus))
 
             word_df = pd.read_csv(self.word_transcript_dest)
             self.words_df = word_df.where(pd.notnull(word_df), 'None')
@@ -307,7 +310,7 @@ class BestClips:
         print("Downloading Youtube Video")
         youtube_video = YouTube(url)
         video = youtube_video.streams.get_highest_resolution()
-        out_file = video.download(run_folder_name)
+        out_file = video.download(self.run_folder_name)
         base, _ = os.path.splitext(out_file)
         new_file = base + '.mp4'
         os.rename(out_file, new_file)
@@ -391,7 +394,7 @@ class BestClips:
         return result_df
     
 
-    def find_interesting_parts(self, window_size=25): # Window size is number of blocks, so the amount of words is block_size * window_size
+    def find_interesting_parts(self, window_size=10): # Window size is number of blocks, so the amount of words is block_size * window_size
         block_df = self.block_transcript_df
         sentiment_blocks = []
         # Iterate through the DataFrame with a sliding window
@@ -448,16 +451,18 @@ class BestClips:
     def cut_videos(self):
         interesting_parts_df = self.final_transcript_df
         words_df = self.words_df
-        extend_range = 50 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
+        extend_range = 5 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
         cut_vids = []
         for short_num in range(self.num_of_shorts):
             cur_row = interesting_parts_df.iloc[short_num]
             start_index = max(cur_row['start_ind'] - extend_range, 0)
             end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
             
-            selected_rows = words_df.iloc[start_index:end_index]
-            text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
-            start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+            # selected_rows = words_df.iloc[start_index:end_index]
+            # text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
+            # start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+
+            start_index_chat_gpt, end_index_chat_gpt = start_index, end_index
 
             self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
@@ -541,10 +546,13 @@ class BestClips:
         boxes = []
         confs = []
         # ADD fps = X to run faster
+        vid = vid.set_fps(FPS_USED)
         frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
         dur = vid.duration
         times = [t for t, frame in vid.iter_frames(with_times=True)]
-        # retina_face_model = RetinaFace.build_model()
+        retina_face_model = RetinaFace.build_model()
+        ind_of_model = []
+
 
         # call for recognize faces model
         for ind_0 in tqdm(list(range(len(times)))):
@@ -553,9 +561,7 @@ class BestClips:
             # resize it to have a maximum width of 400 pixels
             image = imutils.resize(frame, width=400)
             (h, w) = image.shape[:2]
-
             blob = cv2.dnn.blobFromImage(cv2.resize(image, (300, 300)), 1.0, (300, 300), (104.0, 177.0, 123.0))
-
             net.setInput(blob)
             detections = net.forward()
 
@@ -563,23 +569,59 @@ class BestClips:
             boxes.append([])
             confs.append([])
 
-            for i in range(0, detections.shape[2]):
-                # extract the confidence (i.e., probability) associated with the prediction
-                confidence = detections[0, 0, i, 2]
-                mx_confidence = max(mx_confidence, confidence)
+            iter_confs = [detections[0, 0, j, 2] for j in range(0, detections.shape[2])]
+            faces_indexes_sorted_by_conf = np.argsort(iter_confs)[::-1]
 
-                box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
-                (startX, startY, endX, endY) = box.astype("int")
-                if confidence > 0.3:
-                    boxes[-1].append((startX, endX, startY, endY))
-                    confs[-1].append(confidence)
+            if max(iter_confs) > FACE_MODEL_CONFIDENCE_THRESH:
+                for i in faces_indexes_sorted_by_conf:
+                    # extract the confidence (i.e., probability) associated with the prediction
+                    confidence = detections[0, 0, i, 2]
+                    mx_confidence = max(mx_confidence, confidence)
 
-            # # If no faces are found, use better face detection algorithm
-            # if boxes[-1] == []:
-            #     resp = RetinaFace.detect_faces(image, threshold=0.9, model=retina_face_model, allow_upscaling=False)
-            #     if not isinstance(resp, tuple):
-            #         boxes[-1] = [face['facial_area'] for face in resp.values()][:2]
-            #         confs[-1] = [face['score'] for face in resp.values()][:2]
+                    box = detections[0, 0, i, 3:7] * np.array([w, h, w, h])
+                    (startX, startY, endX, endY) = box.astype("int")
+
+                    # Check if theirs a face nearby or larger faces
+                    good_size = True
+
+                    for face in boxes[-1]:
+                        prev_area = (face[1] - face[0]) * (face[3] - face[2])
+                        curr_area = (endX - startX) * (endY - startY)
+
+                        if prev_area > curr_area * MIN_AREA_RATIO_FACES:
+                            good_size = False
+
+                    if (confidence > FACE_MODEL_CONFIDENCE_THRESH) and good_size:
+                        boxes[-1].append((startX / 400, endX / 400, startY / 225, endY / 225))
+                        confs[-1].append(confidence)
+
+            else:
+                resp = RetinaFace.detect_faces(image, threshold=0.9, model=retina_face_model, allow_upscaling=False)
+                if not isinstance(resp, tuple):
+                    iter_boxes = [(face['facial_area'][0], face['facial_area'][1], face['facial_area'][2], face['facial_area'][3]) for face in resp.values()]
+                    iter_confs = [face['score'] for face in resp.values()]
+                    faces_indexes_sorted_by_conf = np.argsort(iter_confs)[::-1]
+
+                    for i in faces_indexes_sorted_by_conf:
+                        # extract the confidence (i.e., probability) associated with the prediction
+                        confidence = iter_confs[i]
+                        mx_confidence = max(mx_confidence, confidence)
+                        (startX, startY, endX, endY) = iter_boxes[i]
+
+                        # Check if theirs a face nearby or larger faces
+                        good_size = True
+
+                        for face in boxes[-1]:
+                            prev_area = (face[1] - face[0]) * (face[3] - face[2])
+                            curr_area = (endX - startX) * (endY - startY)
+
+                            if prev_area > curr_area * MIN_AREA_RATIO_FACES:
+                                good_size = False
+
+                        if good_size:
+                            boxes[-1].append((startX / 400, endX / 400, startY / 225, endY / 225))
+                            confs[-1].append(confidence)
+
 
         # decide where to do the cuts
         cuts_times = []
@@ -587,9 +629,9 @@ class BestClips:
         cuts_poses = []
         last_xy = np.array([[-500,-500]], dtype='float64')
         last_cut = np.array([[-500,-500]], dtype='float64')
-        FIXED_NUMBER = 5
-        FAR_NUMBER = 15
-        MIN_DISTANCE = 10
+        FIXED_NUMBER = 0.02
+        FAR_NUMBER = 0.075
+        MIN_DISTANCE = 0.01
         last_people_change_time = 0
         num_of_people_on_screen = 0
 
@@ -638,13 +680,13 @@ class BestClips:
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
                         cuts_times_inds.append(ind)
-                        cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
+                        cuts_poses.append([(last_xy[jk][0], last_xy[jk][1]) for jk in range(len(last_xy))])
                         
                     elif not np.array([np.min(np.linalg.norm(last_cut - last_xy_i, axis=1)) <= FAR_NUMBER for last_xy_i in last_xy]).all():
                         last_cut = last_xy.copy()
                         cuts_times.append(times[ind])
                         cuts_times_inds.append(ind)
-                        cuts_poses.append([(last_xy[jk][0] / 400, last_xy[jk][1] / 400) for jk in range(len(last_xy))])
+                        cuts_poses.append([(last_xy[jk][0], last_xy[jk][1]) for jk in range(len(last_xy))])
 
         if num_of_people_on_screen == 1:
             people_on_screen['1_person'].append((last_people_change_time, dur))
@@ -665,6 +707,7 @@ class BestClips:
         cuts_poses = cuts_poses_final
 
         cuts_times = np.array(cuts_times)[final_inds]
+        
 
         for i in range(len(cuts_times)):
             if i == len(cuts_times) - 1:
@@ -681,12 +724,14 @@ class BestClips:
 
             elif len(cuts_poses[i]) == 2:
                 sub_vid1 = sub_vid.resize(height=1280)
+
                 sub_vid1 = sub_vid1.crop(x1=min(max(0, (2275 * cuts_poses[i][0][0] - 360)), 2275 - 720),
                                         y1=min(max(0, (1280 * cuts_poses[i][0][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
                                         x2=min(max((2275 * cuts_poses[i][0][0]) + 360, 720), 2275),
                                         y2=min(max((1280 * cuts_poses[i][0][1]) + int(1280 / 4), int(1280 / 2)), 1280))
 
                 sub_vid2 = sub_vid.resize(height=1280)
+
                 sub_vid2 = sub_vid2.crop(x1=min(max(0, (2275 * cuts_poses[i][1][0] - 360)), 2275 - 720),
                                         y1=min(max(0, (1280 * cuts_poses[i][1][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
                                         x2=min(max((2275 * cuts_poses[i][1][0]) + 360, 720), 2275),
@@ -743,12 +788,13 @@ class BestClips:
 
     def save_vids(self):
         for i in range(len(self.final_shorts)):
-            self.final_shorts[i].write_videofile(f"{self.run_folder_name}//short_{str(i)}.mp4", fps=24, audio_codec='aac')
+            output_file_path = os.path.join(self.run_folder_name, f"short_{str(i)}.mp4")
+            self.final_shorts[i].write_videofile(output_file_path, fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
 if __name__ == "__main__":
     # Insert video path to .mp4 file or youtube url link
-    video = ""
-    run_folder_name = 'Test_5'
+    video = "C://Users//along//VS Code//Shorts Project//website//Test_4//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4"
+    run_folder_name = 'Test_4'
     transcription = BestClips(video_str=video, run_folder_name=run_folder_name)
