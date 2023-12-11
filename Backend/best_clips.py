@@ -391,7 +391,7 @@ class BestClips:
         return result_df
     
 
-    def find_interesting_parts(self, window_size=10): # Window size is number of blocks, so the amount of words is block_size * window_size
+    def find_interesting_parts(self, window_size=25): # Window size is number of blocks, so the amount of words is block_size * window_size
         block_df = self.block_transcript_df
         sentiment_blocks = []
         # Iterate through the DataFrame with a sliding window
@@ -448,18 +448,16 @@ class BestClips:
     def cut_videos(self):
         interesting_parts_df = self.final_transcript_df
         words_df = self.words_df
-        extend_range = 15 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
+        extend_range = 50 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
         cut_vids = []
         for short_num in range(self.num_of_shorts):
             cur_row = interesting_parts_df.iloc[short_num]
             start_index = max(cur_row['start_ind'] - extend_range, 0)
             end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
             
-            # selected_rows = words_df.iloc[start_index:end_index]
-            # text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
-            # start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
-
-            start_index_chat_gpt, end_index_chat_gpt = start_index, end_index
+            selected_rows = words_df.iloc[start_index:end_index]
+            text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
+            start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
 
             self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
             start_time_video = words_df['start'].iloc[start_index_chat_gpt]
@@ -745,11 +743,12 @@ class BestClips:
 
     def save_vids(self):
         for i in range(len(self.final_shorts)):
-            self.final_shorts[i].write_videofile(f"{self.run_folder_name}//short_v1_{str(i)}.mp4", fps=24, audio_codec='aac')
+            self.final_shorts[i].write_videofile(f"{self.run_folder_name}//short_{str(i)}.mp4", fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
 if __name__ == "__main__":
-    video = "C://Users//along//VS Code//Shorts Project//website//Test_5//An Unfiltered Conversation with MrBeast.mp4"
+    # Insert video path to .mp4 file or youtube url link
+    video = ""
     run_folder_name = 'Test_5'
     transcription = BestClips(video_str=video, run_folder_name=run_folder_name)
