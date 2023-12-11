@@ -149,7 +149,7 @@ function CloudAPIPage() {
    let userTokens = localStorage.getItem('guestToken');
  
    // Check if the token is a string and not empty
-   if (typeof token === 'string' && token !== '') {
+   if (typeof token !== 'string' && token !== '') {
      tokenData = jwtDecode(token);
      userEmail = tokenData.email;
      userTokens = parseInt(tokenData.tokens);
