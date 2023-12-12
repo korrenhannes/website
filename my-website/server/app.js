@@ -26,7 +26,9 @@ const allowedOrigins = [
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/login",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com",
-  "http://localhost:3001"
+  "http://localhost:3001",
+  "www.cliplt.com",
+  "http://www.cliplt.com"
 ];
 
 app.use(cors({
