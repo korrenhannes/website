@@ -147,9 +147,9 @@ function CloudAPIPage() {
    let tokenData = '';
    let userEmail = await getUniqueComputerId();
    let userTokens = localStorage.getItem('guestToken');
- 
+   console.log('token', token, 'type:', typeof token);
    // Check if the token is a string and not empty
-   if (typeof token !== 'string' && token !== '') {
+   if (typeof token === 'string' && token !== '') {
      tokenData = jwtDecode(token);
      userEmail = tokenData.email;
      userTokens = parseInt(tokenData.tokens);
@@ -224,10 +224,10 @@ function CloudAPIPage() {
   const handleRedirection = () => {
     switch(userPaymentPlan) {
       case 'regular':
-        navigate('/regular-user');
+        navigate('/free-user');
         break;
       case 'premium':
-        navigate('/premium-user');
+        navigate('/free-user');
         break;
       default:
         navigate('/free-user');
