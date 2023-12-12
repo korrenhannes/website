@@ -94,7 +94,6 @@ def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userE
         return False
 
 
-
 def process_youtube_video(link, userEmail):
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
     
@@ -105,17 +104,13 @@ def process_youtube_video(link, userEmail):
         # Pass save_folder_name to BestClips constructor
         best_clips = BestClips(link, save_folder_name, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
         
-        if hasattr(best_clips, 'final_shorts'):  # Check if final_shorts attribute exists
-            gcloud_bucket_name = "clipitshorts"
-            for i in range(len(best_clips.final_shorts)):
-                video_file_path = os.path.join(save_folder_name, f"short_{str(i)}.mp4")
-                gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
-                upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
-            set_upload_complete(userEmail, True)
-        else:
-            print("Error: final_shorts not found in BestClips object.")
-            # Handle the case where final_shorts is not available
-            # You might want to set a flag or send a notification
+        gcloud_bucket_name = "clipitshorts"
+        for i in range(len(best_clips.final_shorts)):
+            video_file_path = os.path.join(save_folder_name, f"short_{str(i)}.mp4")
+            gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
+            upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
+        set_upload_complete(userEmail, True)
+        
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
         # Handle any other exceptions here

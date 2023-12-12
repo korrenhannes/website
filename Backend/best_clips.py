@@ -311,7 +311,7 @@ class BestClips:
         print("Downloading Youtube Video")
         youtube_video = YouTube(url)
         video = youtube_video.streams.get_highest_resolution()
-        out_file = video.download(self.run_folder_name, timeout=60)
+        out_file = video.download(self.run_folder_name)
         base, _ = os.path.splitext(out_file)
         new_file = base + '.mp4'
         os.rename(out_file, new_file)
