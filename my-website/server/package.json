@@ -19,6 +19,7 @@
         "jwt-decode": "^4.0.0",
         "mongoose": "^5.12.3",
         "multer": "^1.4.5-lts.1",
+        "node-cron": "^3.0.3",
         "node-fetch": "^3.3.2",
         "passport": "^0.6.0",
         "passport-facebook": "^3.0.0",

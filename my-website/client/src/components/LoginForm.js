@@ -18,7 +18,7 @@ function LoginForm() {
   const storeUserDataAndNavigate = (token, userId, email) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userId', userId);
-    localStorage.setItem('userEmail', email); // Storing the user email
+    localStorage.setItem('email', email); // Storing the user email
     navigate('/cloud-api');
   };
   
@@ -97,7 +97,7 @@ function LoginForm() {
             Don’t have an account? <Link to="/signup">Signup</Link>
           </div>
         </form>
-        <div className="social-login">
+        <div className="social-login" hidden='True'>
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => {

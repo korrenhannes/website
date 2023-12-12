@@ -34,7 +34,8 @@ router.post('/signup', async (req, res) => {
   try {
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email });
-
+    //  for guest signup :add checking to this if, if email  contain @ and password != guest (that means this is not a guest):
+    // this way i will send an existing user error only if this is not a guest
     if (existingUser) {
       return res.status(400).send('Email already in use');
     }
@@ -62,7 +63,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).send('Invalid credentials');
     }
 
-    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret');
+    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, 'your_jwt_secret');
 
     // Log the login action
     await new Log({ action: 'User Login', userEmail: email }).save();

@@ -3,55 +3,57 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5em 2em;
-  background-color: #ffffff; /* Changed to white */
-  position: fixed; /* Fixed position to stick to the top */
+  background-color: #ffffff;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%; /* Full width */
-  z-index: 1000; /* High z-index to stay on top */
+  width: 100%;
+  z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .nav-logo img {
-  height: 40px; /* Adjust size as needed */
+  height: 40px;
 }
 
-.nav-links a {
+.nav-links a, .countdown {
   margin: 0 1em;
   text-decoration: none;
-  color: #333; /* Adjust text color as needed */
+  color: #333;
 }
 
-.nav-links a:hover {
-  text-decoration: underline;
-  color: #555; /* Slightly darker shade on hover */
-}
-
-.no-underline {
+.nav-actions a, .nav-actions button {
   text-decoration: none;
-}
-
-.nav-actions .nav-login {
-  text-decoration: none;
-  color: #333; /* Adjust text color as needed */
+  color: #333;
   margin-right: 1em;
-}
-
-.nav-actions .nav-login:hover {
-  color: #555; /* Slightly darker shade on hover */
+  padding: 0.5em 1em;
+  border-radius: 20px;
 }
 
 .nav-actions .nav-signup {
-  padding: 0.5em 1em;
-  background-color: #3897f0; /* Default button color */
+  background-color: #3897f0;
   color: white;
   border: none;
-  border-radius: 20px;
   cursor: pointer;
 }
 
 .nav-actions .nav-signup:hover {
-  background-color: #2878b5; /* Darker shade on hover */
+  background-color: #2878b5;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.hamburger div {
+  background-color: #333;
+  height: 3px;
+  width: 30px;
+  margin: 5px 0;
+  border-radius: 3px;
+  transition: all 0.3s ease;
 }
 
 .logo-button {
@@ -61,11 +63,88 @@
 }
 
 .logo-button img {
-  height: 40px; /* Adjust to your logo size */
+  height: 40px; /* Adjust for mobile as necessary */
 }
 
+.nav-actions .nav-login {
+  text-decoration: none;
+  color: #333;
+  margin-right: 1em;
+}
+
+.nav-actions .nav-login:hover {
+  color: #555;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.hamburger div {
+  background-color: #333;
+  height: 3px;
+  width: 30px;
+  margin: 5px 0;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+/* Small screens: Align items and adjust sizes as requested */
+/* ...existing styles... */
+
+/* Hide the login and join us buttons on mobile */
 @media (max-width: 768px) {
-  .nav-links a:not(:first-child):not(:last-child) {
-      display: none;
+  .nav-actions a {
+    display: none;
+  }
+  .countdown{
+    position: center;
+  }
+
+  .hamburger {
+    display: block;
+  }
+  .nav-links {
+    display: none;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-links.active {
+    align-items:end;
+    justify-items: center;
+    display: flex;
+    flex-direction: column;
+    position:fixed;
+    top: 50px; /* Adjust based on your nav bar height */
+    right: 0;
+    margin-top: 16px;
+    margin-right: 2%;
+    background-color: #ffffff;
+    width: 34%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 0.5em 1em;
+    box-sizing: border-box; /* To include padding in width */
+  }
+
+  /* Restyle the logo for mobile */
+  .nav-logo img {
+    height: 30px; /* Smaller logo on mobile */
+    position: relative;
+  }
+
+  /* Adjust nav-bar padding and layout */
+  .navigation-bar {
+    padding: 0.5em 1em;
+    justify-content: space-between;
+  }
+
+  /* Adjust the position of the hamburger icon */
+  .hamburger {
+    position: center;
+    right: 1em;
+    top: 0.5em;
   }
 }

@@ -5,6 +5,7 @@ import NavigationBar from './NavigationBar';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
+import Fingerprint2 from 'fingerprintjs2';
 
 
 
@@ -46,7 +47,7 @@ function CloudAPIPage() {
   const fetchUserPaymentPlan = async () => {
     try {
       const token = localStorage.getItem('token');
-      const userEmail = localStorage.getItem('userEmail'); // Retrieve userEmail from localStorage
+      const userEmail = localStorage.getItem('email'); // Retrieve userEmail from localStorage
       if (!token || !userEmail) {
         console.log('No token or user email found, defaulting to free plan');
         setUserPaymentPlan('free');
@@ -118,12 +119,47 @@ function CloudAPIPage() {
   const handleSearchSubmit = async (e) => {
     if (e) e.preventDefault();
     setIsLoading(true);
+    const getUniqueComputerId = async () => {
+      // Check if the unique identifier is already stored in local storage
+      let uniqueId = localStorage.getItem('uniqueComputerId');
+    
+      if (!uniqueId) {
+        // Generate a browser fingerprint
+        const components = await Fingerprint2.getPromise();
+        const values = components.map((component) => component.value);
+        uniqueId = Fingerprint2.x64hash128(values.join(''), 31);
+    
+        // Store the unique identifier in local storage
+        localStorage.setItem('uniqueComputerId', uniqueId);
+        if (!localStorage.getItem('guestToken')){
+          localStorage.setItem('guestToken', 1)
+        }
+        console.log('comp id:', localStorage.getItem('uniqueComputerId'), 'guest token:', localStorage.getItem('guestToken'));
+      }
+    
+      return uniqueId;
+    };
+    
   
-    // Retrieve user ID from localStorage or another secure method
-    const tokenData = jwtDecode(localStorage.getItem('token'));
-    const userEmail = tokenData.email;
-    const userTokens = parseInt(tokenData.tokens); // Convert string to integer
-
+   // Retrieve the token from localStorage
+   const token = localStorage.getItem('token');
+  
+   let tokenData = '';
+   let userEmail = await getUniqueComputerId();
+   let userTokens = localStorage.getItem('guestToken');
+   console.log('token', token, 'type:', typeof token);
+   // Check if the token is a string and not empty
+   if (typeof token === 'string' && token !== '') {
+    console.log('token not empty');
+     tokenData = jwtDecode(token);
+     console.log('token data:', tokenData);
+     userEmail = tokenData.email;
+     userTokens = parseInt(tokenData.tokens);
+     console.log('user email:', userEmail, 'user tokens:', userTokens);
+   }
+ 
+    
+    console.log('button pressed, details:', userEmail, userTokens);
     if (!userEmail) {
       console.log('User ID not found. Please log in again.');
       setError('User ID not found. Please log in again.');
@@ -191,10 +227,10 @@ function CloudAPIPage() {
   const handleRedirection = () => {
     switch(userPaymentPlan) {
       case 'regular':
-        navigate('/regular-user');
+        navigate('/free-user');
         break;
       case 'premium':
-        navigate('/premium-user');
+        navigate('/free-user');
         break;
       default:
         navigate('/free-user');

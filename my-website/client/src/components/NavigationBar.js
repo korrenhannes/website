@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Countdown = () => {
+const Countdown = ({ timeLeft }) => {
+  const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+  const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+  const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+
+  return (
+    <span className="countdown">
+      {`${days}d ${hours}h ${minutes}m ${seconds}s`}
+    </span>
+  );
+};
+
+const NavigationBar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [timeLeft, setTimeLeft] = useState(0);
 
   const getRandomDuration = () => {
@@ -25,21 +42,19 @@ const Countdown = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
-  const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-  const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
-  const seconds = Math.floor((timeLeft % (60 * 1000)) / 1000);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
 
-  return (
-    <span className="countdown">
-      {`${days}d ${hours}h ${minutes}m ${seconds}s`}
-    </span>
-  );
-};
+    window.addEventListener('resize', handleResize);
 
-const NavigationBar = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const navigate = useNavigate();
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(prev => !prev);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -48,11 +63,10 @@ const NavigationBar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userId'); // Removing the user ID
+    localStorage.removeItem('userId');
 
     setIsLoggedIn(false);
     navigate('/cloud-api');
-
   };
 
   const navigateToCloudAPI = () => {
@@ -63,21 +77,30 @@ const NavigationBar = () => {
     <nav className="navigation-bar">
       <div className="nav-logo">
         <button onClick={navigateToCloudAPI} className="logo-button">
-          <img src="/Untitled.png" alt="Logo" />
+          <img src="/Untitled.png" alt="ClipIt Logo" />
         </button>
       </div>
-      <div className="nav-links">
-        {/* Updated this line */}
-        <Link to="/offers">Products <Countdown /></Link>
-        <Link to="/how-it-works" className="how-it-works">Why us</Link>
-        <a href="/safety" className="hide-on-small">partner with us</a>
+      {isMobile && (
+        <div className="countdown-mobile">
+          <Countdown timeLeft={timeLeft} />
+        </div>
+      )} 
+      <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
+        <Link to="/offers">Products</Link>
+        {!isMobile && <Countdown timeLeft={timeLeft} />}
+        <Link to="/how-it-works">Why us</Link>
+        <a href="/safety">Partner with us</a>
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">
         {!isLoggedIn && <a href="/login" className="nav-login">Log in</a>}
-        {!isLoggedIn
-          ? <Link to="/signup" className="nav-signup no-underline">Join us!</Link>
-          : <button onClick={handleLogout} className="nav-signup no-underline">Logout</button>}
+        {!isLoggedIn ? <Link to="/signup" className="nav-signup">Join us!</Link>
+          : <button onClick={handleLogout} className="nav-signup">Logout</button>}
+        <button className="hamburger" onClick={toggleMobileMenu}>
+          <div></div>
+          <div></div>
+          <div></div>
+        </button>
       </div>
     </nav>
   );
