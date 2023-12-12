@@ -15,6 +15,7 @@ function FreeUserPage() {
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [userEmail, setUserEmail] = useState('');
+  const [userVideosLoaded, setUserVideosLoaded] = useState(false);
   const videoContainerRef = useRef(null); // Ref for the video container
   const backgroundVideoRef = useRef(null);
   const socket = useRef(null);
@@ -35,16 +36,15 @@ function FreeUserPage() {
       if (backgroundVideoRef.current && !playerRef.current) {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
-          muted: true, // Mute the video initially
-          controls: false, // Hide default controls to create custom ones
-          fluid: true, // Set to true to maintain aspect ratio
-          loop: false // Set to false if you don't want the video to loop
+          muted: true,
+          controls: false,
+          fluid: true,
+          loop: false
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();
         });
 
-        // Add event listener for video end
         playerRef.current.on('ended', () => {
           loadNextVideo();
         });
@@ -53,28 +53,26 @@ function FreeUserPage() {
 
     return () => {
       if (playerRef.current) {
-        playerRef.current.off('ended'); // Remove the event listener for video end
+        playerRef.current.off('ended');
         playerRef.current.dispose();
         playerRef.current = null;
       }
     };
   }, [backgroundVideoRef]);
 
-  // Fetch videos from Google Cloud
   const fetchVideosFromGCloud = async (fetchFromUndefined = false) => {
     setIsLoading(true);
     setError(null);
   
     let emailToUse = fetchFromUndefined ? 'undefined' : userEmail;
   
-    // Decode the JWT to get the user's email if not already set and not fetching from undefined
     if (!emailToUse && !fetchFromUndefined) {
       const token = localStorage.getItem('token');
       try {
         if (token) {
           const decoded = jwtDecode(token);
           emailToUse = decoded.email;
-          setUserEmail(decoded.email); // Store the user email in state
+          setUserEmail(decoded.email);
         }
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -91,7 +89,6 @@ function FreeUserPage() {
     }
   
     try {
-      // Send the email to use in the header of your request
       const response = await apiFlask.get('/signed-urls', {
         headers: {
           'User-Email': emailToUse
@@ -101,9 +98,9 @@ function FreeUserPage() {
       const signedUrls = response.data.signedUrls;
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
-        loadVideo(signedUrls[0]); // Load the first video from the list
+        loadVideo(signedUrls[0]);
+        setUserVideosLoaded(!fetchFromUndefined);
       } else if (!fetchFromUndefined) {
-        // No videos found for the user, try fetching from undefined
         fetchVideosFromGCloud(true);
       } else {
         setError('No videos found in Google Cloud Storage.');
@@ -115,12 +112,22 @@ function FreeUserPage() {
     }
   };
   
-  
   const loadVideo = (videoUrl) => {
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
-    playerRef.current.play().catch(e => console.error('Error playing video:', e));
+    const playPromise = playerRef.current.play();
+  
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        // Automatic playback started successfully.
+      }).catch(error => {
+        console.error('Error attempting to play video:', error);
+        // Handle the error for autoplay restrictions.
+        // For example, show a play button to the user to start playback manually.
+      });
+    }
   };
+  
 
   const loadNextVideo = async () => {
     if (!videos || videos.length === 0) {
@@ -131,30 +138,21 @@ function FreeUserPage() {
     let nextIndex = currentVideoIndex + 1;
   
     if (nextIndex >= videos.length) {
-      // At the end of the list, attempt to fetch more videos
-      try {
-        await fetchVideosFromGCloud();
-        // Re-fetching the user's email from state to ensure it's up-to-date
-        const updatedVideos = await fetchVideos(); // Assume fetchVideos() fetches the latest videos array
-        if (updatedVideos.length > currentVideoIndex + 1) {
-          // If new videos were added, update the index and load the video
-          nextIndex = currentVideoIndex + 1;
-          setVideos(updatedVideos); // Update the videos state with the new videos
-        } else {
-          console.log('No more videos to load for the user');
-          return; // Exit if no more videos were loaded
-        }
-      } catch (error) {
-        console.error('Error fetching more videos:', error);
-        return; // Exit on error
+      await fetchVideosFromGCloud();
+      const updatedVideos = await fetchVideos();
+      if (updatedVideos.length > currentVideoIndex + 1) {
+        nextIndex = currentVideoIndex + 1;
+        setVideos(updatedVideos);
+      } else {
+        console.log('No more videos to load for the user');
+        return;
       }
     }
   
     setCurrentVideoIndex(nextIndex);
     loadVideo(videos[nextIndex]);
   };
-  
-  // New function to fetch the latest videos array
+
   const fetchVideos = async () => {
     const response = await apiFlask.get('/signed-urls', {
       headers: {
@@ -163,25 +161,14 @@ function FreeUserPage() {
     });
     return response.data.signedUrls || [];
   };
-  
-  
-  
-  // Double Tap Handler
-  const handleDoubleTap = (() => {
-    let lastTap = 0;
-    return function(event) {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 500 && tapLength > 0) {
-        loadNextVideo();
-      }
-      lastTap = currentTime;
-    };
-  })();
 
   const handleKeyPress = (event) => {
     if (event.keyCode === 13) {
-      loadNextVideo();
+      if (!userVideosLoaded) {
+        fetchVideosFromGCloud(true);
+      } else {
+        loadNextVideo();
+      }
     }
   };
 
@@ -201,7 +188,7 @@ function FreeUserPage() {
       }
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [currentVideoIndex, videos]);
+  }, [currentVideoIndex, videos, userVideosLoaded]);
 
   const handleDownloadVideo = async () => {
     if (!playerRef.current) {
@@ -232,21 +219,31 @@ function FreeUserPage() {
     }
   };
 
+  // Double Tap Handler
+  const handleDoubleTap = (() => {
+    let lastTap = 0;
+    return function(event) {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      if (tapLength < 500 && tapLength > 0) {
+        loadNextVideo();
+      }
+      lastTap = currentTime;
+    };
+  })();
+
   return (
     <div className="full-screen-container">
       <NavigationBar />
 
       <div className="video-container" ref={videoContainerRef}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered" id="background-video"></video>
-        {/* Add your custom controls here if needed */}
       </div>
 
-      {/* Overlay for UI, e.g., video info, like/share/comment buttons */}
       <div className="video-ui-overlay">
         {/* Elements for video title, user interaction, etc. */}
       </div>
 
-      {/* Download Button */}
       <button onClick={handleDownloadVideo} className="download-button">Download Video</button>
 
       {isLoading && <p>Loading...</p>}
