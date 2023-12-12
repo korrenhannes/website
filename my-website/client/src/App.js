@@ -17,6 +17,8 @@ import PremiumUserPage from './components/PremiumUserPage';
 import HowItWorks from './components/HowItWorks';
 import ExploreFurther from './components/ExploreFurther';
 import SupportPage from './components/SupportPage';
+import ForgotPasswordForm from './components/ForgotPassword';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -72,6 +74,7 @@ function App() {
             <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
             <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
             <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
+            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
             <Route path="/cloud-api" element={<CloudAPIPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/explore-further" element={<ExploreFurther />} />
