@@ -97,7 +97,7 @@ function LoginForm() {
             Don’t have an account? <Link to="/signup">Signup</Link>
           </div>
         </form>
-        <div className="social-login">
+        <div className="social-login" hidden='True'>
           <GoogleLogin
             onSuccess={handleGoogleLogin}
             onError={() => {

@@ -40,6 +40,12 @@ const Countdown = () => {
 const NavigationBar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+
+  // Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setShowMobileMenu(prev => !prev);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -63,21 +69,26 @@ const NavigationBar = () => {
     <nav className="navigation-bar">
       <div className="nav-logo">
         <button onClick={navigateToCloudAPI} className="logo-button">
-          <img src="/Untitled.png" alt="Logo" />
+          <img src="/Untitled.png" alt="ClipIt Logo" /> {/* Correct the logo path as necessary */}
         </button>
       </div>
-      <div className="nav-links">
-        {/* Updated this line */}
-        <Link to="/offers">Products <Countdown /></Link>
-        <Link to="/how-it-works" className="how-it-works">Why us</Link>
-        <a href="/safety" className="hide-on-small">partner with us</a>
+      <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
+        {/* These links will be shown/hidden when the hamburger icon is clicked */}
+        <Link to="/offers">Products</Link>
+        { !showMobileMenu && <Countdown /> } {/* This line adds the conditional rendering */}
+        <Link to="/how-it-works">Why us</Link>
+        <a href="/safety">Partner with us</a>
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">
         {!isLoggedIn && <a href="/login" className="nav-login">Log in</a>}
-        {!isLoggedIn
-          ? <Link to="/signup" className="nav-signup no-underline">Join us!</Link>
-          : <button onClick={handleLogout} className="nav-signup no-underline">Logout</button>}
+        {!isLoggedIn ? <Link to="/signup" className="nav-signup">Join us!</Link>
+          : <button onClick={handleLogout} className="nav-signup">Logout</button>}
+        <button className="hamburger" onClick={toggleMobileMenu}>
+          <div></div>
+          <div></div>
+          <div></div>
+        </button>
       </div>
     </nav>
   );
