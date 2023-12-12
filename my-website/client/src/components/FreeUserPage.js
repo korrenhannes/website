@@ -14,6 +14,7 @@ function FreeUserPage() {
   const [error, setError] = useState(null);
   const [videos, setVideos] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [userEmail, setUserEmail] = useState('');
   const videoContainerRef = useRef(null); // Ref for the video container
   const backgroundVideoRef = useRef(null);
   const socket = useRef(null);
@@ -60,66 +61,111 @@ function FreeUserPage() {
   }, [backgroundVideoRef]);
 
   // Fetch videos from Google Cloud
-  const fetchVideosFromGCloud = async () => {
+  const fetchVideosFromGCloud = async (fetchFromUndefined = false) => {
     setIsLoading(true);
     setError(null);
   
-    // Decode the JWT to get the user's email
-    const token = localStorage.getItem('token');
-    let userEmail;
-    try {
-        if (token) {
-            const decoded = jwtDecode(token);
-            userEmail = decoded.email;
-        }
-    } catch (error) {
-        console.error("Error decoding token:", error);
-    }
+    let emailToUse = fetchFromUndefined ? 'undefined' : userEmail;
   
-    if (!userEmail) {
-        setError('User email not found. Please log in again.');
+    // Decode the JWT to get the user's email if not already set and not fetching from undefined
+    if (!emailToUse && !fetchFromUndefined) {
+      const token = localStorage.getItem('token');
+      try {
+        if (token) {
+          const decoded = jwtDecode(token);
+          emailToUse = decoded.email;
+          setUserEmail(decoded.email); // Store the user email in state
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setError('Authentication error. Please log in again.');
         setIsLoading(false);
         return;
+      }
+    }
+  
+    if (!emailToUse) {
+      setError('User email not found. Please log in again.');
+      setIsLoading(false);
+      return;
     }
   
     try {
-        // Send the user's email in the header of your request
-        const response = await apiFlask.get('/signed-urls', {
-            headers: {
-                'User-Email': userEmail
-            }
-        });
-  
-        const signedUrls = response.data.signedUrls;
-        if (signedUrls && signedUrls.length > 0) {
-            setVideos(signedUrls);
-            loadVideo(signedUrls[0]); // Load the first video from the list
-        } else {
-            setError('No videos found in Google Cloud Storage.');
+      // Send the email to use in the header of your request
+      const response = await apiFlask.get('/signed-urls', {
+        headers: {
+          'User-Email': emailToUse
         }
+      });
+  
+      const signedUrls = response.data.signedUrls;
+      if (signedUrls && signedUrls.length > 0) {
+        setVideos(signedUrls);
+        loadVideo(signedUrls[0]); // Load the first video from the list
+      } else if (!fetchFromUndefined) {
+        // No videos found for the user, try fetching from undefined
+        fetchVideosFromGCloud(true);
+      } else {
+        setError('No videos found in Google Cloud Storage.');
+      }
     } catch (err) {
-        setError(`Error fetching videos: ${err.message}`);
+      setError(`Error fetching videos: ${err.message}`);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
-
+  
+  
   const loadVideo = (videoUrl) => {
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
     playerRef.current.play().catch(e => console.error('Error playing video:', e));
   };
 
-  const loadNextVideo = () => {
+  const loadNextVideo = async () => {
     if (!videos || videos.length === 0) {
       console.error('Error: Video list is empty or not loaded');
       return;
     }
-    const nextIndex = (currentVideoIndex + 1) % videos.length;
+  
+    let nextIndex = currentVideoIndex + 1;
+  
+    if (nextIndex >= videos.length) {
+      // At the end of the list, attempt to fetch more videos
+      try {
+        await fetchVideosFromGCloud();
+        // Re-fetching the user's email from state to ensure it's up-to-date
+        const updatedVideos = await fetchVideos(); // Assume fetchVideos() fetches the latest videos array
+        if (updatedVideos.length > currentVideoIndex + 1) {
+          // If new videos were added, update the index and load the video
+          nextIndex = currentVideoIndex + 1;
+          setVideos(updatedVideos); // Update the videos state with the new videos
+        } else {
+          console.log('No more videos to load for the user');
+          return; // Exit if no more videos were loaded
+        }
+      } catch (error) {
+        console.error('Error fetching more videos:', error);
+        return; // Exit on error
+      }
+    }
+  
     setCurrentVideoIndex(nextIndex);
     loadVideo(videos[nextIndex]);
   };
-
+  
+  // New function to fetch the latest videos array
+  const fetchVideos = async () => {
+    const response = await apiFlask.get('/signed-urls', {
+      headers: {
+        'User-Email': userEmail || 'undefined'
+      }
+    });
+    return response.data.signedUrls || [];
+  };
+  
+  
+  
   // Double Tap Handler
   const handleDoubleTap = (() => {
     let lastTap = 0;

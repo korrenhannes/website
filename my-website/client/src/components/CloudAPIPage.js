@@ -47,7 +47,7 @@ function CloudAPIPage() {
   const fetchUserPaymentPlan = async () => {
     try {
       const token = localStorage.getItem('token');
-      const userEmail = localStorage.getItem('userEmail'); // Retrieve userEmail from localStorage
+      const userEmail = localStorage.getItem('email'); // Retrieve userEmail from localStorage
       if (!token || !userEmail) {
         console.log('No token or user email found, defaulting to free plan');
         setUserPaymentPlan('free');
@@ -150,9 +150,12 @@ function CloudAPIPage() {
    console.log('token', token, 'type:', typeof token);
    // Check if the token is a string and not empty
    if (typeof token === 'string' && token !== '') {
+    console.log('token not empty');
      tokenData = jwtDecode(token);
+     console.log('token data:', tokenData);
      userEmail = tokenData.email;
      userTokens = parseInt(tokenData.tokens);
+     console.log('user email:', userEmail, 'user tokens:', userTokens);
    }
  
     

@@ -45,7 +45,7 @@ router.post('/signup', async (req, res) => {
     // Example for signup
     const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret');
     // Log the signup action
-    await new Log({ action: 'User Signup', userEmail: email }).save();
+    await new Log({ action: 'User Signup', email: email }).save();
     console.log('token:', token);
     res.status(201).send({ message: 'User created successfully', token });
   } catch (error) {
@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).send('Invalid credentials');
     }
 
-    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret');
+    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, 'your_jwt_secret');
 
     // Log the login action
     await new Log({ action: 'User Login', userEmail: email }).save();
@@ -104,7 +104,7 @@ router.post('/update-plan', async (req, res) => {
       dateOfSubscription: currentDate
     }, 'your_jwt_secret');
 
-    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan, tokens: tokens,dateOfSubscription: currentDate  }).save();
+    await new Log({ action: 'Update Payment Plan', email: email, paymentPlan: paymentPlan, tokens: tokens,dateOfSubscription: currentDate  }).save();
     console.log('user:', user);
     res.json({ 
       message: 'Payment plan updated successfully', 
