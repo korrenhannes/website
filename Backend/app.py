@@ -98,16 +98,15 @@ def process_youtube_video(link, userEmail):
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
     
     try:
-        base_dir = os.path.abspath(os.path.dirname(__file__))
-        save_folder_name = userEmail  # Use userEmail for the folder name
+        username = userEmail  # Use userEmail for the folder name
 
         # Pass save_folder_name to BestClips constructor
-        best_clips = BestClips(link, save_folder_name, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(link, username, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         gcloud_bucket_name = "clipitshorts"
         for i in range(len(best_clips.final_shorts)):
-            video_file_path = os.path.join(save_folder_name, f"short_{str(i)}.mp4")
-            gcloud_destination_name = os.path.join(save_folder_name, os.path.basename(video_file_path))
+            video_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.mp4")
+            gcloud_destination_name = os.path.join(username, os.path.basename(video_file_path))
             upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
         set_upload_complete(userEmail, True)
         

@@ -6,6 +6,7 @@ import re
 import torch
 import torch.multiprocessing as mp
 import random
+from datetime import datetime
 from moviepy.editor import *
 from pytube import YouTube
 from tqdm import tqdm
@@ -229,7 +230,7 @@ class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, run_folder_name, use_gpt=False, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
+    def __init__(self, video_str, username, use_gpt=False, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
                   final_transcript_dest="final_transcript.csv", num_of_shorts=5):
         try:
             # Set up everything for parallel processing
@@ -239,9 +240,13 @@ class BestClips:
             self.use_gpt = use_gpt
             self.total_run_cost = 0.0
 
-            # Creates run folder
-            self.run_folder_name = run_folder_name
-            self.create_run_folder()
+            # Creates relevant folders
+            date_time = datetime.now()
+            date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
+            self.user_folder_name = username
+            self.run_path = os.path.join(self.user_folder_name, date_time_str)
+            self.create_run_folder() # Creates user folder if it doesn't exist and current run folder
+
 
             # Check if video exists on device or is a youtube url
             if os.path.exists(video_str):
@@ -251,9 +256,9 @@ class BestClips:
             else:
                 raise InvalidVideoError("Invalid video URL or path")
 
-            self.audio_dest = os.path.join(self.run_folder_name, audio_dest)
-            self.word_transcript_dest = os.path.join(self.run_folder_name, word_transcript_dest)
-            self.final_transcript_dest = os.path.join(self.run_folder_name, final_transcript_dest)
+            self.audio_dest = os.path.join(self.run_path, audio_dest)
+            self.word_transcript_dest = os.path.join(self.run_path, word_transcript_dest)
+            self.final_transcript_dest = os.path.join(self.run_path, final_transcript_dest)
             self.full_video_mp3, self.full_video_mp4 = self.audio_video(self.video_path)
             self.full_video_mp3.write_audiofile(self.audio_dest)
             self.audio_segments, self.segment_time = self.split_audio_to_segments()
@@ -293,9 +298,8 @@ class BestClips:
 
 
     def create_run_folder(self):
-        if not os.path.exists(self.run_folder_name):
-            os.mkdir(self.run_folder_name)
-            
+        os.makedirs(self.run_path, exist_ok=True)
+
     
     def is_valid_youtube_url(self, url):
         try:
@@ -311,7 +315,7 @@ class BestClips:
         print("Downloading Youtube Video")
         youtube_video = YouTube(url)
         video = youtube_video.streams.get_highest_resolution()
-        out_file = video.download(self.run_folder_name)
+        out_file = video.download(self.run_path)
         base, _ = os.path.splitext(out_file)
         new_file = base + '.mp4'
         os.rename(out_file, new_file)
@@ -793,7 +797,7 @@ class BestClips:
 
     def save_vids(self):
         for i in range(len(self.final_shorts)):
-            output_file_path = os.path.join(self.run_folder_name, f"short_{str(i)}.mp4")
+            output_file_path = os.path.join(self.run_path, f"short_{str(i)}.mp4")
             self.final_shorts[i].write_videofile(output_file_path, fps=24, audio_codec='aac')
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
@@ -801,6 +805,6 @@ class BestClips:
 if __name__ == "__main__":
     # # Insert video path to .mp4 file or youtube url link
     # video = ""
-    # run_folder_name = 'New_Test'
-    # best_clips = BestClips(video_str=video, run_folder_name=run_folder_name, use_gpt=False)
+    # username = "My User"
+    # best_clips = BestClips(video_str=video, username=username, use_gpt=False)
     pass
