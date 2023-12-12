@@ -68,29 +68,28 @@ def set_upload_complete(userEmail, complete):
         print(f"An error occurred while setting upload_complete for {userEmail}: {e}")
         raise e  # Reraising the exception will help to identify if there is an issue with the database operation
 
-def upload_to_gcloud(bucket_name, source_file_name, destination_blob_name, userEmail):
+def upload_to_gcloud(bucket, source_file_name, destination_blob_name, userEmail):
     if not userEmail:
         print("Error: User ID is None or empty.")
         return False
-
-    # Create a user-specific path in the Google Cloud Storage bucket
-    user_specific_path = f"{userEmail}/{destination_blob_name}"
-
-    print(f"Uploading to Google Cloud Storage: {user_specific_path}")
+    
+    user_prev_runs_path = f"{userEmail}/PreviousRuns/{destination_blob_name}"
+    user_cur_run_path = f"{userEmail}/CurrentRun/{destination_blob_name}"
 
     if not os.path.isfile(source_file_name):
         print(f"The file {source_file_name} does not exist.")
         return False
 
     try:
-        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-        bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(user_specific_path)
-        blob.upload_from_filename(source_file_name)
-        print(f"File {source_file_name} uploaded to {user_specific_path}.")
+        blob_prev = bucket.blob(user_prev_runs_path)
+        blob_prev.upload_from_filename(source_file_name)
+        blob_cur = bucket.blob(user_cur_run_path)
+        blob_cur.upload_from_filename(source_file_name)
+
+        print(f"File {source_file_name} uploaded to {user_cur_run_path} and {user_prev_runs_path}.")
         return True
     except Exception as e:
-        print(f"Failed to upload {source_file_name} to {user_specific_path}: {e}")
+        print(f"Failed to upload {source_file_name} to {user_cur_run_path} and {user_prev_runs_path}: {e}")
         return False
 
 
@@ -104,10 +103,16 @@ def process_youtube_video(link, userEmail):
         best_clips = BestClips(link, username, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         gcloud_bucket_name = "clipitshorts"
+        # Delete all of the files in user_cur_run_path if they exist
+        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+        bucket = storage_client.bucket(gcloud_bucket_name)
+        blobs = bucket.list_blobs(prefix=f"{userEmail}/CurrentRun/")
+        for blob in blobs:
+            blob.delete()
         for i in range(len(best_clips.final_shorts)):
             video_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.mp4")
-            gcloud_destination_name = os.path.join(username, os.path.basename(video_file_path))
-            upload_to_gcloud(gcloud_bucket_name, video_file_path, gcloud_destination_name, userEmail)
+            gcloud_destination_name = f"{best_clips.date_time_str}__{os.path.basename(video_file_path)}"
+            upload_to_gcloud(bucket, video_file_path, gcloud_destination_name, userEmail)
         set_upload_complete(userEmail, True)
         
     except Exception as e:

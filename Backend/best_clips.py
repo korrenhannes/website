@@ -242,9 +242,9 @@ class BestClips:
 
             # Creates relevant folders
             date_time = datetime.now()
-            date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
+            self.date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
             self.user_folder_name = username
-            self.run_path = os.path.join(self.user_folder_name, date_time_str)
+            self.run_path = os.path.join(self.user_folder_name, self.date_time_str)
             self.create_run_folder() # Creates user folder if it doesn't exist and current run folder
 
 
