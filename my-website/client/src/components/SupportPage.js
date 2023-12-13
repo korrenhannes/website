@@ -5,8 +5,6 @@ import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
-import SubtitleEditor from './SubtitleEditor';
-import HeadlineEditor from './HeadlineEditor';
 import CaptionOptions from './CaptionOptions';
 import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';

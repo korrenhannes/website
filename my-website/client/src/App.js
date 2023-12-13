@@ -18,6 +18,8 @@ import HowItWorks from './components/HowItWorks';
 import ExploreFurther from './components/ExploreFurther';
 import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
+import PartnerWithUsPage from './components/PartnerWithUs';
+
 
 
 function App() {
@@ -83,6 +85,7 @@ function App() {
             <Route path="/free-user" element={<FreeUserPage />} />
             <Route path="/regular-user" element={<RegularUserPage />} />
             <Route path="/premium-user" element={<PremiumUserPage />} />
+            <Route path="/partner" element={<PartnerWithUsPage />} />
           </Routes>
         </div>
       </Router>

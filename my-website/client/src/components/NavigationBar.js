@@ -89,7 +89,7 @@ const NavigationBar = () => {
         <Link to="/offers">Products</Link>
         {!isMobile && <Countdown timeLeft={timeLeft} />}
         <Link to="/how-it-works">Why us</Link>
-        <a href="/safety">Partner with us</a>
+        <a href="/partner">Partner with us</a>
         <a href="/support">Support</a>
       </div>
       <div className="nav-actions">

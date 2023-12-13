@@ -17,9 +17,25 @@ api.postForgotPassword = async (email) => {
   return await api.post('/auth/forgot-password', { email });
 };
 
-// Add a function to handle the reset password request
+// Function to handle reset password request
 api.postResetPassword = async (token, password) => {
   return await api.post('/auth/reset-password', { token, password });
 };
+
+// Function to register as an affiliate
+api.registerAffiliate = async ({ email, password }) => {
+  return await api.post('/affiliate/register', { email, password });
+};
+
+// Function for affiliate login
+api.loginAffiliate = async ({ email, password }) => {
+  return await api.post('/affiliate/login', { email, password });
+};
+
+// Function to fetch affiliate data
+api.getAffiliateData = async () => {
+  return await api.get('/affiliate/data'); // Adjust the endpoint as needed
+};
+
 
 export { api, apiFlask };
