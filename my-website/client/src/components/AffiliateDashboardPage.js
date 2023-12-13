@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
-import '../styles/LoginForm.css'; // CSS for styling the affiliate dashboard
-import { api } from '../api';
+import '../styles/AffiliateDashboard.css'; // CSS for styling the affiliate dashboard
 
 function AffiliateDashboardPage() {
   const [affiliateData, setAffiliateData] = useState({
@@ -29,17 +28,17 @@ function AffiliateDashboardPage() {
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div className="loading">Loading...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="error">Error: {error}</div>;
   }
 
   return (
     <div className="affiliate-dashboard">
       <NavigationBar />
-      <h1>Affiliate Dashboard</h1>
+      <h1 className="dashboard-header">Affiliate Dashboard</h1>
       <div className="dashboard-content">
         <div className="statistics">
           <div className="stat-item">
@@ -53,15 +52,17 @@ function AffiliateDashboardPage() {
         </div>
         <div className="referred-users">
           <h2>Referred Users</h2>
-          {affiliateData.referredUsers.length > 0 ? (
-            <ul>
-              {affiliateData.referredUsers.map((user, index) => (
-                <li key={index}>{user.email} - Referred on: {new Date(user.referredDate).toLocaleDateString()}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>No referred users yet.</p>
-          )}
+          <ul>
+            {affiliateData.referredUsers.length > 0 ? (
+              affiliateData.referredUsers.map((user, index) => (
+                <li key={index}>
+                  {user.email} - Referred on: {new Date(user.referredDate).toLocaleDateString()}
+                </li>
+              ))
+            ) : (
+              <p>No referred users yet.</p>
+            )}
+          </ul>
         </div>
       </div>
     </div>

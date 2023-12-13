@@ -19,6 +19,7 @@ import ExploreFurther from './components/ExploreFurther';
 import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
+import AffiliateDashboardPage from './components/AffiliateDashboardPage';
 
 
 
@@ -109,6 +110,7 @@ function App() {
             <Route path="/regular-user" element={<RegularUserPage />} />
             <Route path="/premium-user" element={<PremiumUserPage />} />
             <Route path="/partner" element={<PartnerWithUsPage />} />
+            <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
           </Routes>
         </div>
       </Router>

@@ -13,8 +13,12 @@ function PartnerWithUsPage() {
 
   const handleRegister = async () => {
     try {
-      await api.registerAffiliate({ email, password });
-      navigate('/affiliate-dashboard');
+      const response = await api.registerAffiliate({ email, password });
+      if (response.status === 201) { // Assuming 201 is the success status code for registration
+        navigate('/affiliate-dashboard');
+      } else {
+        setError('Registration failed. Please try again.');
+      }
     } catch (error) {
       console.error('Registration error:', error);
       setError('Registration error. Please try again.');
@@ -23,8 +27,12 @@ function PartnerWithUsPage() {
 
   const handleLogin = async () => {
     try {
-      await api.loginAffiliate({ email, password });
-      navigate('/affiliate-dashboard');
+      const response = await api.loginAffiliate({ email, password });
+      if (response.status === 200) { // Assuming 200 is the success status code for login
+        navigate('/affiliate-dashboard');
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } catch (error) {
       console.error('Login error:', error);
       setError('Login error. Please try again.');
