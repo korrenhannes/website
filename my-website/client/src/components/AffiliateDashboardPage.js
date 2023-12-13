@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NavigationBar from './NavigationBar'; // Import the navigation bar component
 import '../styles/AffiliateDashboard.css'; // CSS for styling the affiliate dashboard
+import { api } from '../api';
 
 function AffiliateDashboardPage() {
   const [affiliateData, setAffiliateData] = useState({
