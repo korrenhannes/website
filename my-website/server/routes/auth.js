@@ -3,8 +3,46 @@ const passport = require('passport');
 const User = require('../models/User');
 const Log = require('../models/logModel'); // Import the Log model
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto'); // Node.js module for generating a secure token
+const sendEmail = require('../utils/sendEmail'); // Import a utility function to send emails
+
 
 const router = express.Router();
+
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // Optionally, do not reveal that the email is not registered for security reasons
+      return res.status(200).send('If the email is registered, we have sent a password reset link.');
+    }
+
+    // Generate a reset token and its expiration time
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
+
+    await user.save();
+
+    // Construct the reset link (adjust the URL to your frontend's reset password page)
+    const resetUrl = `http://localhost:3001/reset-password/${resetToken}`;
+
+    // Send an email with this link (implement the `sendEmail` function based on your email service)
+    await sendEmail({
+      to: user.email,
+      subject: 'Password Reset',
+      text: `You are receiving this email because you (or someone else) have requested the reset of a password. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`
+    });
+
+    res.status(200).send('If the email is registered, we have sent a password reset link.');
+  } catch (error) {
+    console.error("Error in forgot password route:", error);
+    res.status(500).send('Error sending password reset email.');
+  }
+});
+
 
 // Google Auth Route
 router.get('/google',

@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String, required: false }, // For Google OAuth
   facebookId: { type: String, required: false }, // For Facebook OAuth
   tokens: { type: String, default: '1' },
+  resetPasswordToken: { type: String, required: false },
+  resetPasswordExpires: { type: Date, required: false },
   dateOfSubscription: { type: Date, required: false },
   dayOfSubscription: { type: Number, required: false },
 });
