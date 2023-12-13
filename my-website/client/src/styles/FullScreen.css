@@ -63,14 +63,20 @@
 
 /* Responsive font size adjustments for h2 */
 @media (max-width: 768px) {
-  .foreground-content h2 {
-    font-size: 3em; /* Adjusted font size on smaller screens */
+
+  .foreground-content h1 {
+    font-size: 2em; /* Adjusted font size on smaller screens */
   }
+  .foreground-content h2{
+    font-size: 1.5em; /* Adjusted font size on smaller screens */
+
+  }
+  
 }
 
 @media (max-width: 480px) {
   .foreground-content h2 {
-    font-size: 2em; /* Adjusted font size on very small screens */
+    font-size: 1em; /* Adjusted font size on very small screens */
   }
 }
 
