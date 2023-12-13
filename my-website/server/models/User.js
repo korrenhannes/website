@@ -15,23 +15,29 @@ const userSchema = new mongoose.Schema({
   isAffiliate: { type: Boolean, default: false },
   affiliateCode: { type: String, unique: true, sparse: true },
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  // Additional affiliate-specific fields can be added here
 });
 
-// Pre-save hook to hash password before saving it to the database
+// Pre-save hook to hash password
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password') || this.googleId || this.facebookId) {
-    return next(); // Skip hashing if password isn't changed or if it's a social login
+    return next(); // Skip if password isn't changed or it's a social login
   }
   this.password = await bcrypt.hash(this.password, 12);
   next();
 });
 
-// Method to compare provided password with the hashed password in the database
+// Method to compare provided password with hashed password
 userSchema.methods.comparePassword = async function(candidatePassword) {
   if (!this.password) {
-    return false; // Return false if there's no password (social login case)
+    return false; // No password (social login case)
   }
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    console.error('Error comparing password:', error);
+    return false;
+  }
 };
 
 module.exports = mongoose.model('User', userSchema);

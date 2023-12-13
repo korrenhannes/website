@@ -50,6 +50,7 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
 });
 
 // Affiliate Registration Route
+// Affiliate Registration Route
 router.post('/affiliate/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -58,10 +59,10 @@ router.post('/affiliate/register', async (req, res) => {
       return res.status(400).send('Email already in use');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Directly create the user, password will be hashed in pre-save hook
     user = new User({
       email,
-      password: hashedPassword,
+      password,
       isAffiliate: true,
       affiliateCode: crypto.randomBytes(20).toString('hex')
     });
@@ -73,6 +74,7 @@ router.post('/affiliate/register', async (req, res) => {
     res.status(500).send('Error registering affiliate');
   }
 });
+
 
 // Affiliate Login Route
 router.post('/affiliate/login', async (req, res) => {
@@ -116,11 +118,22 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user) {
       return res.status(401).send('Invalid credentials');
     }
 
-    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, 'your_jwt_secret');
+    // Updated error handling for password comparison
+    try {
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).send('Invalid credentials');
+      }
+    } catch (error) {
+      console.error("Error comparing password:", error);
+      return res.status(500).send('An error occurred');
+    }
+
+    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, process.env.JWT_SECRET);
     await new Log({ action: 'User Login', userEmail: email }).save();
     res.send({ token });
   } catch (error) {
@@ -128,6 +141,7 @@ router.post('/login', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+
 
 // Update User's Payment Plan
 router.post('/update-plan', async (req, res) => {
