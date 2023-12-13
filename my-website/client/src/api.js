@@ -24,17 +24,17 @@ api.postResetPassword = async (token, password) => {
 
 // Function to register as an affiliate
 api.registerAffiliate = async ({ email, password }) => {
-  return await api.post('/affiliate/register', { email, password });
+  return await api.post('/auth/register', { email, password });
 };
 
 // Function for affiliate login
 api.loginAffiliate = async ({ email, password }) => {
-  return await api.post('/affiliate/login', { email, password });
+  return await api.post('/auth/logina', { email, password });
 };
 
 // Function to fetch affiliate data
 api.getAffiliateData = async () => {
-  return await api.get('/affiliate/data'); // Adjust the endpoint as needed
+  return await api.get('/auth/data'); // Adjust the endpoint as needed
 };
 
 

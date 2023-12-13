@@ -51,7 +51,7 @@ router.get('/facebook/callback', passport.authenticate('facebook', { failureRedi
 
 // Affiliate Registration Route
 // Affiliate Registration Route
-router.post('/affiliate/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
     let user = await User.findOne({ email });
@@ -77,7 +77,7 @@ router.post('/affiliate/register', async (req, res) => {
 
 
 // Affiliate Login Route
-router.post('/affiliate/login', async (req, res) => {
+router.post('/logina', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email, isAffiliate: true });
