@@ -54,7 +54,6 @@ function SupportPage() {
 
     return (
       <div className="full-screen-container">
-        <NavigationBar /> {/* Make sure to style this component to match the image */}
         <div className="sidebar">
           {/* Populate with actual links and category names */}
           <h3>Company</h3>

@@ -76,20 +76,7 @@
   color: #555;
 }
 
-.hamburger {
-  display: none;
-  cursor: pointer;
-  z-index: 1001;
-}
 
-.hamburger div {
-  background-color: #333;
-  height: 3px;
-  width: 30px;
-  margin: 5px 0;
-  border-radius: 3px;
-  transition: all 0.3s ease;
-}
 
 /* Small screens: Align items and adjust sizes as requested */
 /* ...existing styles... */
@@ -122,11 +109,16 @@
     margin-top: 16px;
     margin-right: 2%;
     background-color: #ffffff;
-    width: 34%;
+    width: 37%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 1em 1em;
     box-sizing: border-box; /* To include padding in width */
   }
+  .nav-links.active .nav-signup{
+
+    color: #3897f0;
+    border: none;
+    cursor: pointer;  }
 
   /* Restyle the logo for mobile */
   .nav-logo img {

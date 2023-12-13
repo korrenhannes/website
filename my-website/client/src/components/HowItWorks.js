@@ -55,7 +55,6 @@ const HowItWorks = () => {
   }, []);
   return (
     <div className="how-it-works-container">
-      <NavigationBar />
       <div className="container">
         <h1 className="text-black">It's time to <span className="text-primary">ClipIt</span>.</h1>
         <p className="lead text-black">“Creating content has never been this easy" - </p>

@@ -63,7 +63,6 @@ function SignupForm() {
 
   return (
     <div className="main-container">
-      <NavigationBar />
       <div className="card">
         <h2 className="text-center">Signup</h2>
         <form onSubmit={handleSubmit}>
@@ -85,7 +84,7 @@ function SignupForm() {
             Already have an account? <Link to="/login">Login</Link>
           </div>
         </form>
-        <div className="social-login">
+        <div className="social-login" hidden= "True">
           <GoogleLogin
             onSuccess={handleGoogleSignup}
             onError={() => console.log("Google signup failed")}

@@ -64,7 +64,6 @@ function LoginForm() {
   
   return (
     <div className="main-container">
-      <NavigationBar />
       <div className="card">
         <h2 className="text-center">Login</h2>
         {loginError && <div className="alert alert-danger">{loginError}</div>}
