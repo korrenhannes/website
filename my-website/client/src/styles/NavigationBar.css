@@ -127,6 +127,11 @@
     padding: 1em 1em;
     box-sizing: border-box; /* To include padding in width */
   }
+  .nav-links.active .nav-signup{
+
+    color: #3897f0;
+    border: none;
+    cursor: pointer;  }
 
   /* Restyle the logo for mobile */
   .nav-logo img {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
+
 const Countdown = ({ timeLeft }) => {
   const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
   const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
@@ -72,6 +73,19 @@ const NavigationBar = () => {
   const navigateToCloudAPI = () => {
     navigate('/cloud-api');
   };
+  const renderAuthLinks = () => {
+    if (!isLoggedIn) {
+      return (
+        <>
+          <a href="/login" className="nav-login">Log in</a>
+          <Link to="/signup" className="nav-signup">Join us!</Link>
+        </>
+      );
+    } else {
+      return <button onClick={handleLogout} className="nav-signup">Logout</button>;
+    }
+  };
+
 
   return (
     <nav className="navigation-bar">
@@ -88,14 +102,13 @@ const NavigationBar = () => {
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
         <Link to="/offers">Products</Link>
         {!isMobile && <Countdown timeLeft={timeLeft} />}
-        <Link to="/how-it-works">Why us</Link>
+        <Link to="/how-it-works">Why us</Link> 
         <a href="/safety">Partner with us</a>
         <a href="/support">Support</a>
+        {isMobile && renderAuthLinks()}
       </div>
       <div className="nav-actions">
-        {!isLoggedIn && <a href="/login" className="nav-login">Log in</a>}
-        {!isLoggedIn ? <Link to="/signup" className="nav-signup">Join us!</Link>
-          : <button onClick={handleLogout} className="nav-signup">Logout</button>}
+        {!isMobile && renderAuthLinks()}
         <button className="hamburger" onClick={toggleMobileMenu}>
           <div></div>
           <div></div>
