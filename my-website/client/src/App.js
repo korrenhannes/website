@@ -94,6 +94,7 @@ function App() {
     }}>
       <Router>
         <div className="App">
+          <NavigationBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
           <NavigationBar timeLeft={timeLeft} /> {/* Pass timeLeft to NavigationBar */}
           <Routes>
             <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
