@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 const Countdown = ({ timeLeft }) => {
+  if (typeof timeLeft !== "number" || isNaN(timeLeft)) {
+    return <span className="countdown">Loading...</span>;
+  }
   const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
   const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
@@ -15,33 +18,33 @@ const Countdown = ({ timeLeft }) => {
   );
 };
 
-const NavigationBar = () => {
+const NavigationBar = ({ timeLeft }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [timeLeft, setTimeLeft] = useState(0);
+  //const [timeLeft, setTimeLeft] = useState(0);
+  console.log("timeLeft in NavigationBar:", timeLeft); 
+  // const getRandomDuration = () => {
+  //   const minDays = 3;
+  //   const maxDays = 10;
+  //   return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
+  // };
 
-  const getRandomDuration = () => {
-    const minDays = 3;
-    const maxDays = 10;
-    return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
-  };
+  // useEffect(() => {
+  //   setTimeLeft(getRandomDuration() * 24 * 60 * 60 * 1000);
 
-  useEffect(() => {
-    setTimeLeft(getRandomDuration() * 24 * 60 * 60 * 1000);
+  //   const interval = setInterval(() => {
+  //     setTimeLeft((prevTime) => {
+  //       if (prevTime <= 1000) {
+  //         return getRandomDuration() * 24 * 60 * 60 * 1000;
+  //       }
+  //       return prevTime - 1000;
+  //     });
+  //   }, 1000);
 
-    const interval = setInterval(() => {
-      setTimeLeft((prevTime) => {
-        if (prevTime <= 1000) {
-          return getRandomDuration() * 24 * 60 * 60 * 1000;
-        }
-        return prevTime - 1000;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,7 +80,7 @@ const NavigationBar = () => {
     if (!isLoggedIn) {
       return (
         <>
-          <a href="/login" className="nav-login">Log in</a>
+          <Link to="/login" className="nav-login">Log in</Link>
           <Link to="/signup" className="nav-signup">Join us!</Link>
         </>
       );

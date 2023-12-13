@@ -59,6 +59,29 @@ function App() {
   };
 
   const googleClientId = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your actual client ID
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  // Timer logic
+ const getRandomDuration = () => {
+    const minDays = 3;
+    const maxDays = 10;
+    return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
+  };
+
+  useEffect(() => {
+    setTimeLeft(getRandomDuration() * 24 * 60 * 60 * 1000);
+
+    const interval = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 1000) {
+          return getRandomDuration() * 24 * 60 * 60 * 1000;
+        }
+        return prevTime - 1000;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
@@ -69,7 +92,7 @@ function App() {
     }}>
       <Router>
         <div className="App">
-          <NavigationBar isLoggedIn={isLoggedIn} handleLogout={handleLogout} />
+          <NavigationBar timeLeft={timeLeft} /> {/* Pass timeLeft to NavigationBar */}
           <Routes>
             <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
             <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />

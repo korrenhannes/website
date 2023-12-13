@@ -3,6 +3,7 @@
   
   /* Ensures the content is centered */
   .main-container {
+    position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
