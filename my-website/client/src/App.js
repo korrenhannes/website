@@ -51,11 +51,11 @@ function App() {
     // Handle signup success (similar to login, if applicable)
   };
 
-  const handleLogout = () => {
+  const handleLogoutSuccess = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    // Disconnect Socket.IO when the user logs out
     if (socket) socket.disconnect();
+    console.log('logging out');
   };
 
   const googleClientId = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your actual client ID
@@ -92,7 +92,7 @@ function App() {
     }}>
       <Router>
         <div className="App">
-          <NavigationBar timeLeft={timeLeft} /> {/* Pass timeLeft to NavigationBar */}
+          <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} /> {/* Pass timeLeft to NavigationBar */}
           <Routes>
             <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
             <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />

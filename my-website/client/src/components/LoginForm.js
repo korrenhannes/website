@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api'; // Importing the Axios instance for Flask
-import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 import '../styles/LoginForm.css'; // Import the new CSS styles
 
@@ -9,18 +8,18 @@ import '../styles/LoginForm.css'; // Import the new CSS styles
 import { GoogleLogin, googleLogout } from '@react-oauth/google';
 import FacebookLogin from '@greatsumini/react-facebook-login';
 
-function LoginForm() {
+function LoginForm({ onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(''); // State for handling login errors
   const navigate = useNavigate();
 
-  const storeUserDataAndNavigate = (token, userId, email) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('email', email); // Storing the user email
-    navigate('/cloud-api');
-  };
+  // const storeUserDataAndNavigate = (token, userId, email) => {
+  //   localStorage.setItem('token', token);
+  //   localStorage.setItem('userId', userId);
+  //   localStorage.setItem('email', email); // Storing the user email
+  //   navigate('/cloud-api');
+  // };
   
 
   const handleSubmit = async (event) => {
@@ -28,7 +27,8 @@ function LoginForm() {
     setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/login', { email, password });
-      storeUserDataAndNavigate(response.data.token, response.data.userId, email);
+      onLoginSuccess(response.data);
+      navigate('/cloud-api');
     } catch (error) {
       console.error("Login failed:", error);
       setLoginError('Login failed. Please check your credentials.');
@@ -41,7 +41,8 @@ function LoginForm() {
       const response = await api.post('/auth/google-login', {
         token: googleData?.credential,
       });
-      storeUserDataAndNavigate(response.data.token, response.data.userId, response.data.email);
+      onLoginSuccess(response.data);
+      navigate('/cloud-api');
     } catch (error) {
       console.error("Google login failed:", error);
       setLoginError('Google login failed. Please try again.');
@@ -55,7 +56,8 @@ function LoginForm() {
         accessToken: facebookData.accessToken,
         userID: facebookData.userID
       });
-      storeUserDataAndNavigate(response.data.token, response.data.userId, response.data.email);
+      onLoginSuccess(response.data);
+      navigate('/cloud-api');
     } catch (error) {
       console.error("Facebook login failed:", error);
       setLoginError('Facebook login failed. Please try again.');

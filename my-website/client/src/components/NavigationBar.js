@@ -18,13 +18,12 @@ const Countdown = ({ timeLeft }) => {
   );
 };
 
-const NavigationBar = ({ timeLeft }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
+  //const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   //const [timeLeft, setTimeLeft] = useState(0);
-  console.log("timeLeft in NavigationBar:", timeLeft); 
   // const getRandomDuration = () => {
   //   const minDays = 3;
   //   const maxDays = 10;
@@ -60,35 +59,29 @@ const NavigationBar = ({ timeLeft }) => {
     setShowMobileMenu(prev => !prev);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
+  // useEffect(() => {
+  //   const token = localStorage.getItem('token');
+  //   setIsLoggedIn(!!token);
+  // }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-
-    setIsLoggedIn(false);
-    navigate('/cloud-api');
+    onLogoutSuccess();
+    navigate('/login');
   };
 
   const navigateToCloudAPI = () => {
     navigate('/cloud-api');
   };
   const renderAuthLinks = () => {
-    if (!isLoggedIn) {
-      return (
+    return isLoggedIn
+      ? <button onClick={handleLogout} className="nav-signup">Logout</button>
+      : (
         <>
           <Link to="/login" className="nav-login">Log in</Link>
           <Link to="/signup" className="nav-signup">Join us!</Link>
         </>
       );
-    } else {
-      return <button onClick={handleLogout} className="nav-signup">Logout</button>;
-    }
   };
-
 
   return (
     <nav className="navigation-bar">
