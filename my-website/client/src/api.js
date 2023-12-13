@@ -12,4 +12,14 @@ const apiFlask = axios.create({
   withCredentials: true
 });
 
+// Function to handle forgot password request
+api.postForgotPassword = async (email) => {
+  return await api.post('/auth/forgot-password', { email });
+};
+
+// Add a function to handle the reset password request
+api.postResetPassword = async (token, password) => {
+  return await api.post('/auth/reset-password', { token, password });
+};
+
 export { api, apiFlask };

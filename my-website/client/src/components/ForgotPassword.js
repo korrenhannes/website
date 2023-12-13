@@ -13,19 +13,36 @@ function ForgotPasswordForm() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError('');
+    setError('');  // Reset any previous errors
     setMessage('');
-
+  
     try {
-      // Here you would call your backend API to handle the password reset
-      const response = await api.post('/auth/forgot-password', { email });
-      setMessage(response.data.message); // Message like 'Check your email for the reset link'
-      setTimeout(() => navigate('/login'), 5000); // Redirect to login after 5 seconds
+      // Call the API function for forgot password
+      const response = await api.postForgotPassword(email);
+      
+      // Set a success message upon successful API call
+      setMessage(response.data.message); // Example message: 'Check your email for the reset link'
+  
+      // Optionally, navigate the user to the login page or other relevant page
+      // setTimeout(() => navigate('/login'), 5000); // Redirect to login after 5 seconds
+  
     } catch (error) {
+      // Handle errors such as network issues or response errors
+      if (error.response) {
+        // Backend responded with an error status code
+        setError(error.response.data.message || 'Failed to send password reset email.');
+      } else if (error.request) {
+        // The request was made but no response was received
+        setError('No response from server. Please try again later.');
+      } else {
+        // Something happened in setting up the request that triggered an error
+        setError('Error: ' + error.message);
+      }
+  
       console.error("Forgot password error:", error);
-      setError(error.response.data.message || 'Failed to send password reset email.');
     }
   };
+  
 
   return (
     <div className="main-container">
