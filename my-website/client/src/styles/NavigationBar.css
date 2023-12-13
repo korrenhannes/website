@@ -113,10 +113,9 @@
   }
 
   .nav-links.active {
-    align-items:end;
     justify-items: center;
     display: flex;
-    flex-direction: column;
+    flex-direction:column;
     position:fixed;
     top: 50px; /* Adjust based on your nav bar height */
     right: 0;
@@ -125,7 +124,7 @@
     background-color: #ffffff;
     width: 34%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    padding: 0.5em 1em;
+    padding: 1em 1em;
     box-sizing: border-box; /* To include padding in width */
   }
 

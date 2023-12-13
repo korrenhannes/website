@@ -243,7 +243,6 @@ function CloudAPIPage() {
 
   return (
     <div className="full-screen-container">
-      <NavigationBar />
       <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
       <div className="foreground-content">
         <h1>creating content has never been easier</h1>

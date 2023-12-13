@@ -23,7 +23,7 @@
   position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.3); /* Slightly lighter overlay */
+  background: rgba(9, 9, 9, 0.3); /* Slightly lighter overlay */
   z-index: 1; /* Above the background video */
 }
 
@@ -38,7 +38,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   box-sizing: border-box;
 }
 
@@ -69,14 +69,24 @@
   }
   .foreground-content h2{
     font-size: 1.5em; /* Adjusted font size on smaller screens */
-
+  }
+  .foreground-content {
+    justify-content:flex-start; /* Align items to the start of the container */
+    padding-top: 35%; /* Add some padding at the top to position content higher */
   }
   
 }
 
 @media (max-width: 480px) {
-  .foreground-content h2 {
-    font-size: 1em; /* Adjusted font size on very small screens */
+  .foreground-content {
+    justify-content:flex-start; /* Align items to the start of the container */
+    padding-top: 30%; /* Add some padding at the top to position content higher */
+  }
+  .foreground-content h1 {
+    font-size: 1.5em; /* Adjusted font size on smaller screens */
+  }
+  .foreground-content h2{
+    font-size: 1em; /* Adjusted font size on smaller screens */
   }
 }
 
