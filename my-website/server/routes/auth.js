@@ -118,23 +118,16 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) {
+
+    if (!user || !(await user.comparePassword(password))) {
       return res.status(401).send('Invalid credentials');
     }
 
-    // Updated error handling for password comparison
-    try {
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        return res.status(401).send('Invalid credentials');
-      }
-    } catch (error) {
-      console.error("Error comparing password:", error);
-      return res.status(500).send('An error occurred');
-    }
+    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, 'your_jwt_secret');
 
-    const token = jwt.sign({ userId: user._id, email: email, tokens: user.tokens}, process.env.JWT_SECRET);
+    // Log the login action
     await new Log({ action: 'User Login', userEmail: email }).save();
+
     res.send({ token });
   } catch (error) {
     console.error("Login error:", error);
