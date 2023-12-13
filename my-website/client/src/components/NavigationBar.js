@@ -70,23 +70,21 @@ const NavigationBar = ({ timeLeft }) => {
     localStorage.removeItem('userId');
 
     setIsLoggedIn(false);
-    navigate('/cloud-api');
+    navigate('/cloud-api'); // Navigate to home or any other route after logout
   };
 
   const navigateToCloudAPI = () => {
     navigate('/cloud-api');
   };
   const renderAuthLinks = () => {
-    if (!isLoggedIn) {
-      return (
-        <>
-          <Link to="/login" className="nav-login">Log in</Link>
-          <Link to="/signup" className="nav-signup">Join us!</Link>
-        </>
-      );
-    } else {
-      return <button onClick={handleLogout} className="nav-signup">Logout</button>;
-    }
+    return isLoggedIn ? (
+      <button onClick={handleLogout} className="nav-signup">Logout</button>
+    ) : (
+      <>
+        <Link to="/login" className="nav-login">Log in</Link>
+        <Link to="/signup" className="nav-signup">Join us!</Link>
+      </>
+    );
   };
 
 
