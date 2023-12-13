@@ -18,13 +18,14 @@ from nltk.sentiment import SentimentIntensityAnalyzer
 from retinaface import RetinaFace
 
 
-WHISPER_MODEL = "tiny.en"
+WHISPER_MODEL_FULL_TRANSCRIPT = "tiny.en"
+WHISPER_MODEL_INTERESTING_PARTS = "medium.en"
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 openai_api_key = "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"
 FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 30-60 second clip from the podcast.\nI want you to send me a starting index and an ending index (around 120-150 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
-FIRST_RES = "(336-524)"
-SECOND_INP = "Great! KEEPING THE SAME FORMAT IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
+FIRST_RES = "(17-153)"
+SECOND_INP = "Great! **KEEPING THE SAME FORMAT** IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
 
 prototxt = 'deploy.prototxt'
 model_face = 'res10_300x300_ssd_iter_140000.caffemodel'
@@ -56,8 +57,8 @@ def group_words(df, max_char_count, one_person_times, two_people_times):
             word = censor[word]
 
         word_len = len(word)
-        word_start_time = row['start']
-        word_end_time = row['end']
+        word_start_time = row['abs_start']
+        word_end_time = row['abs_end']
         if len(flip_times) > 0 and flip_times[0] <= word_end_time and flip_times[0] > word_start_time:
             word_end_time = flip_times[0]
             start_time = start_time if current_text else word_start_time
@@ -94,7 +95,7 @@ def group_words(df, max_char_count, one_person_times, two_people_times):
             groups.append((current_text.strip(), start_time, end_time, one_person_on_screen))
             current_text = word
             current_char_count = word_len
-            start_time = row['start']
+            start_time = row['abs_start']
             end_time = word_end_time
             # Check for sentence-ending punctuation
             if word[-1] in ['?', '!', '.']:
@@ -132,8 +133,8 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
 
 # I can move this to a utils file later
 def add_subs_video(new_start_time, people_times, vid, df):
-        relevant_time_shift = df.iloc[0]['start']
-        df = df[df['start'] >= new_start_time + relevant_time_shift]
+        relevant_time_shift = df.iloc[0]['abs_start']
+        df = df[df['abs_start'] >= new_start_time + relevant_time_shift]
         one_person_times = [people_times['1_person'][i] + relevant_time_shift for i in range(len(people_times['1_person']))]
         two_people_times = [people_times['2_people'][i] + relevant_time_shift for i in range(len(people_times['2_people']))]
         relevant_time_shift += new_start_time
@@ -155,7 +156,7 @@ def transcribe(segment_num, audio_clip, segment_time):
             ends = []
 
             # Whisper STT
-            model = whisper.load_model(WHISPER_MODEL, device=DEVICE)
+            model = whisper.load_model(WHISPER_MODEL_FULL_TRANSCRIPT, device=DEVICE)
             result = model.transcribe(audio_clip, word_timestamps=True)
 
             for segment in result['segments']:
@@ -230,14 +231,16 @@ class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, username, use_gpt=False, audio_dest='audio.mp3', word_transcript_dest="word_transcript.csv",
-                  final_transcript_dest="final_transcript.csv", num_of_shorts=5):
+    def __init__(self, video_str, username, use_gpt=False, audio_dest='audio.mp3', full_word_transcript_dest="full_word_transcript.csv",
+                  interesting_word_transcript_dest="interesting_transcript.csv", num_of_shorts=5):
         try:
+            self.num_of_shorts = num_of_shorts
             # Set up everything for parallel processing
             self.num_gpus = torch.cuda.device_count()
-
+            
             # Set run-cost at 0
             self.use_gpt = use_gpt
+            self.unedited_clip_time = 100 if self.use_gpt else 20 # Length of unedited short
             self.total_run_cost = 0.0
 
             # Creates relevant folders
@@ -257,27 +260,29 @@ class BestClips:
                 raise InvalidVideoError("Invalid video URL or path")
 
             self.audio_dest = os.path.join(self.run_path, audio_dest)
-            self.word_transcript_dest = os.path.join(self.run_path, word_transcript_dest)
-            self.final_transcript_dest = os.path.join(self.run_path, final_transcript_dest)
-            self.full_video_mp3, self.full_video_mp4 = self.audio_video(self.video_path)
-            self.full_video_mp3.write_audiofile(self.audio_dest)
+            self.full_word_transcript_dest = os.path.join(self.run_path, full_word_transcript_dest)
+            self.full_audio, self.full_video = self.audio_video(self.video_path)
+            self.full_audio.write_audiofile(self.audio_dest)
             self.audio_segments, self.segment_time = self.split_audio_to_segments()
 
             # Start parallel processing across GPUs
-            mp.spawn(parallel_transcribe, args=(self.audio_segments, max(1, self.num_gpus), self.segment_time, self.word_transcript_dest), nprocs= max(1, self.num_gpus))
+            mp.spawn(parallel_transcribe, args=(self.audio_segments, max(1, self.num_gpus), self.segment_time, self.full_word_transcript_dest), nprocs= max(1, self.num_gpus))
 
-            word_df = pd.read_csv(self.word_transcript_dest)
-            self.words_df = word_df.where(pd.notnull(word_df), 'None')
+            full_words_df_tiny = pd.read_csv(self.full_word_transcript_dest)
+            self.full_words_df_tiny = full_words_df_tiny.where(pd.notnull(full_words_df_tiny), 'None')
 
-            self.block_transcript_df = self.make_block_df()
+            self.sentence_df = self.make_sentence_df()
+            self.interesting_times = self.find_interesting_times() # Returns a list of times in the original video which constitute the interesting parts
 
-            self.final_transcript_df = self.find_interesting_parts()
-            self.final_transcript_df.to_csv(self.final_transcript_dest)
+            self.interesting_parts_audio = [self.full_audio.subclip(self.interesting_times[short_num][0], self.interesting_times[short_num][1]) for short_num in range(self.num_of_shorts)]
+
+            self.interesting_parts_dfs = self.transcribe_interesting_parts()
+            for i in range(len(self.interesting_parts_dfs)):
+                self.interesting_parts_dfs[i].to_csv(os.path.join(self.user_folder_name, f"test_transcript_{i}.csv"))
 
             # Make shorts
-            self.num_of_shorts = num_of_shorts
-            self.chat_reply = [None for _ in range(num_of_shorts)]
-            self.people_on_screen_times = [None for _ in range(num_of_shorts)] # A list of dictionaries (one for each short), where the keys are the amount of people on screen and the values are the times in the short
+            self.chat_reply = [None for _ in range(self.num_of_shorts)]
+            self.people_on_screen_times = [None for _ in range(self.num_of_shorts)] # A list of dictionaries (one for each short), where the keys are the amount of people on screen and the values are the times in the short
             print("Cutting video\n")
             self.cut_vids = self.cut_videos()
             print("Cropping frames around faces\n")
@@ -288,7 +293,7 @@ class BestClips:
             print("Adding subs\n")
             self.shorts = self.add_subs()
             print("Cutting out silent parts")
-            self.final_shorts = self.remove_silence()
+            self.final_shorts, self.json_transcription = self.remove_silence()
             print("Saving shorts!\n")
             self.save_vids()     
         except InvalidVideoError as e:
@@ -349,14 +354,14 @@ class BestClips:
             raise RuntimeError(f"Error splitting audio into segments: {e}")
         
     
-    def make_block_df(self, block_size=10):
+    def make_sentence_df(self, block_size=10):
         nltk.download('vader_lexicon')
         sia = SentimentIntensityAnalyzer()
 
         blocks = []
         
-        for i in range(0, len(self.words_df), block_size):
-            block = self.words_df.iloc[i:i + block_size]
+        for i in range(0, len(self.full_words_df_tiny), block_size):
+            block = self.full_words_df_tiny.iloc[i:i + block_size]
             text = ' '.join(block['text'])
             start = block['start'].min()
             end = block['end'].max()
@@ -374,15 +379,15 @@ class BestClips:
             })
 
         # Process any remaining rows that are not covered by the sliding window
-        rem_words = len(self.words_df) % block_size
+        rem_words = len(self.full_words_df_tiny) % block_size
         if rem_words > block_size // 2:
-            remaining_rows = self.words_df.iloc[-rem_words:]
+            remaining_rows = self.full_words_df_tiny.iloc[-rem_words:]
             remaining_text = ' '.join(remaining_rows['text'])
             remaining_sentiment_score = (sia.polarity_scores(remaining_text)['compound']) ** 2
             remaining_start = remaining_rows['start'].min()
             remaining_end = remaining_rows['end'].max()
-            remaining_start_ind = len(self.words_df) - rem_words
-            remaining_end_ind = len(self.words_df) - 1
+            remaining_start_ind = len(self.full_words_df_tiny) - rem_words
+            remaining_end_ind = len(self.full_words_df_tiny) - 1
         
             blocks.append({
                 'text': remaining_text,
@@ -399,13 +404,13 @@ class BestClips:
         return result_df
     
 
-    def find_interesting_parts(self): # Window size is number of blocks, so the amount of words is block_size * window_size
-        window_size = 25 if self.use_gpt else 10 # When not using Chat GPT and debugging makes shorter videos
-        block_df = self.block_transcript_df
+    def find_interesting_times(self): # Window size is number of blocks, so the amount of words is block_size * window_size
+        window_size = 35
+        sentence_df = self.sentence_df
         sentiment_blocks = []
         # Iterate through the DataFrame with a sliding window
-        for i in range(0, len(block_df), window_size):
-            block = block_df.iloc[i:i + window_size]
+        for i in range(0, len(sentence_df), window_size):
+            block = sentence_df.iloc[i:i + window_size]
 
             # Calculate the sum of sentiment_analysis_scores for the block
             block_sum = block['sentiment_analysis_score'].sum()
@@ -428,9 +433,9 @@ class BestClips:
             })
 
         # Process any remaining rows that are not covered by the sliding window
-        rem_blocks = len(block_df) % window_size
+        rem_blocks = len(sentence_df) % window_size
         if rem_blocks > window_size // 2:
-            remaining_rows = block_df.iloc[-rem_blocks:]
+            remaining_rows = sentence_df.iloc[-rem_blocks:]
             remaining_sum = remaining_rows['sentiment_analysis_score'].sum() * (window_size / rem_blocks)
             remaining_text = ' '.join(remaining_rows['text'])
             remaining_start = remaining_rows['start'].min()
@@ -451,38 +456,77 @@ class BestClips:
         result_df = pd.DataFrame(sentiment_blocks, columns=['text', 'start', 'end', 'start_ind', 'end_ind', 'sentiment_sum'])
         result_df = result_df.sort_values(by='sentiment_sum', ascending=False)
 
-        return result_df
+        extend_sec = self.unedited_clip_time / 2 # How many seconds are we taking on each side of the interesting parts before transcribing and sending the prompt to ChatGPT
+        interesting_times = []
+        for short_num in range(self.num_of_shorts):
+            cur_row = result_df.iloc[short_num]
+            mid_time = (cur_row['end'] + cur_row['start']) / 2
+            interesting_times.append((max((mid_time - extend_sec), 0), min((mid_time + extend_sec), self.full_words_df_tiny['end'].iloc[-1])))
+        return interesting_times
     
 
+    def transcribe_interesting_parts(self):
+        try:
+            interesting_parts_dfs = []
+            whisper_freq = 16000
+            model = whisper.load_model(WHISPER_MODEL_INTERESTING_PARTS, device=DEVICE)
+            print("Transcribing interesting part using Whisper's 'medium.en' model")
+            for short_num in tqdm(range(len(self.interesting_parts_audio))):
+                audio_dest = os.path.join(self.user_folder_name, f"audio_{short_num}.mp3")
+                self.interesting_parts_audio[short_num].write_audiofile(audio_dest)
+                audio_clip = whisper.audio.load_audio(audio_dest, sr=whisper_freq)
+                time_shift = self.interesting_times[short_num][0]
+                texts = []
+                rel_starts = []
+                rel_ends = []
+                abs_starts = []
+                abs_ends = []
+
+                result = model.transcribe(audio_clip, word_timestamps=True)
+                for segment in result['segments']:
+                    segment_word_data = segment['words']
+                    for word_data in segment_word_data:
+                        texts.append(word_data['word'].lstrip())
+                        rel_starts.append(word_data['start'])
+                        rel_ends.append(word_data['end'])
+                        abs_starts.append(float(word_data['start'] + time_shift))
+                        abs_ends.append(float(word_data['end'] + time_shift))
+
+                column_names = ["text", "rel_start", "rel_end", "abs_start", "abs_end"]
+                df = pd.DataFrame(np.array([texts, rel_starts, rel_ends, abs_starts, abs_ends]).transpose(), columns=column_names)
+
+                # Convert numeric columns to numeric type
+                for col in column_names[1:]:  # Skip the first column 'text'
+                    df[col] = pd.to_numeric(df[col], errors='coerce')
+
+                interesting_parts_dfs.append(df)
+            return interesting_parts_dfs
+        except Exception as e:
+            raise RuntimeError(f"Error transcribing audio segment: {e}")
+       
+
     def cut_videos(self):
-        interesting_parts_df = self.final_transcript_df
-        words_df = self.words_df
-        extend_range = 50 if self.use_gpt else 0 # How many words are we adding on each side of the interesting parts before sending the prompt to ChatGPT
         cut_vids = []
         for short_num in range(self.num_of_shorts):
-            cur_row = interesting_parts_df.iloc[short_num]
-            start_index = max(cur_row['start_ind'] - extend_range, 0)
-            end_index = min(cur_row['end_ind'] + extend_range, len(words_df) - 1)
-
+            df = self.interesting_parts_dfs[short_num]
 
             if self.use_gpt:
-                selected_rows = words_df.iloc[start_index:end_index]
-                text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in selected_rows.iterrows())
-                start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst)
+                text_str_lst = "\n".join(f"{index}. {row['text']}" for index, row in df.iterrows())
+                start_index_chat_gpt, end_index_chat_gpt = self.call_chat_gpt(text_str_lst, df)
             
             else:
-                start_index_chat_gpt, end_index_chat_gpt = start_index, end_index
+                start_index_chat_gpt, end_index_chat_gpt = 0, len(df) - 1
 
             self.chat_reply[short_num] = (start_index_chat_gpt, end_index_chat_gpt)
-            start_time_video = words_df['start'].iloc[start_index_chat_gpt]
-            end_time_video = words_df['end'].iloc[end_index_chat_gpt]
+            start_time_video = df['abs_start'].iloc[start_index_chat_gpt]
+            end_time_video = df['abs_end'].iloc[end_index_chat_gpt]
 
-            cut_vid = self.full_video_mp4.subclip(start_time_video, end_time_video)
+            cut_vid = self.full_video.subclip(start_time_video, end_time_video)
             cut_vids.append(cut_vid)
         return cut_vids
 
 
-    def call_chat_gpt(self, text_str_lst):
+    def call_chat_gpt(self, text_str_lst, df):
         conversation = [
             {"role": "system", "content": "You are a helpful assistant."},
             {"role": "user", "content": FIRST_INP},
@@ -516,9 +560,9 @@ class BestClips:
         current_index = final_end_index
 
         # Iterate forward to find the next word ending a sentence
-        while current_index < min(len(self.words_df) - 1, final_start_index + 300): # We can later change the 300 words to something time-based
+        while current_index < min(len(df) - 1, final_start_index + 250): # We can later change the 250 words to something time-based
             current_index += 1
-            word = self.words_df['text'].iloc[current_index]
+            word = df['text'].iloc[current_index]
 
             # Check if the word ends with '?', '!', or '.'
             if word.endswith(('?', '!', '.')):
@@ -529,7 +573,7 @@ class BestClips:
 
         while current_index > final_start_index + 100: # We can later change the 100 words to something time-based
             current_index -= 1
-            word = self.words_df['text'].iloc[current_index]
+            word = df['text'].iloc[current_index]
 
             # Check if the word ends with '?', '!', or '.'
             if word.endswith(('?', '!', '.')):
@@ -605,7 +649,7 @@ class BestClips:
                         confs[-1].append(confidence)
 
             else:
-                resp = RetinaFace.detect_faces(image, threshold=0.9, model=retina_face_model, allow_upscaling=False)
+                resp = RetinaFace.detect_faces(image, threshold=0.95, model=retina_face_model, allow_upscaling=False)
                 if not isinstance(resp, tuple):
                     iter_boxes = [(face['facial_area'][0], face['facial_area'][1], face['facial_area'][2], face['facial_area'][3]) for face in resp.values()]
                     iter_confs = [face['score'] for face in resp.values()]
@@ -674,9 +718,7 @@ class BestClips:
                     changed = True
 
                 if changed:
-                    if num_of_people_on_screen == 0:
-                            num_of_people_on_screen = len(last_xy) if len(last_xy) < 3 else 2
-                    elif num_of_people_on_screen == 2 and len(last_xy) == 1:        
+                    if num_of_people_on_screen == 2 and len(last_xy) == 1:        
                         people_on_screen['2_people'].append((last_people_change_time, times[ind]))
                         last_people_change_time = times[ind]
                     elif num_of_people_on_screen == 1 and len(last_xy) == 2:
@@ -728,7 +770,7 @@ class BestClips:
 
             if len(cuts_poses[i]) == 1: #Easy fix
                 sub_vid = sub_vid.resize(height=1280)
-                sub_vid = sub_vid.crop(x1= min(max(0,(2275 * cuts_poses[i][0][0] - 360)), 2275 - 720), y1=0,x2=min(max((2275 * cuts_poses[i][0][0]) + 360,720), 2275),y2=1280)
+                sub_vid = sub_vid.crop(x1=min(max(0,(2275 * cuts_poses[i][0][0] - 360)), 2275 - 720), y1=0,x2=min(max((2275 * cuts_poses[i][0][0]) + 360, 720), 2275),y2=1280)
                 new_vids.append(sub_vid)
 
             elif len(cuts_poses[i]) == 2:
@@ -761,16 +803,27 @@ class BestClips:
     def add_subs(self):
         subbed_faced_vids = []
         for short_num, video in tqdm(enumerate(self.faced_vids)):
-            relevant_df = self.words_df.iloc[self.chat_reply[short_num][0]:self.chat_reply[short_num][1]]
+            relevant_df = self.interesting_parts_dfs[short_num].iloc[self.chat_reply[short_num][0]:self.chat_reply[short_num][1]]
             subbed_faced_vids.append(add_subs_video(self.new_start_times[short_num], people_times=self.people_on_screen_times[short_num], vid=video, df=relevant_df))
         return subbed_faced_vids # return the videos with subs
     
 
     def remove_silence(self, silence_threshold=0.05):
         final_shorts = []
-        for video_clip in self.shorts:
+        json_transcriptions = []
+        for short_num in range(len(self.shorts)):
+            new_start_time = self.new_start_times[short_num]
+            video_clip = self.shorts[short_num]
+            columns_to_copy = ["text", "rel_start", "rel_end"]
+            start_row, end_row = self.chat_reply[short_num]
+            text_df = self.interesting_parts_dfs[short_num].iloc[start_row:end_row + 1][columns_to_copy].copy()
+            shift = text_df['rel_start'].iloc[0] + new_start_time
+            text_df['rel_start'] -= shift
+            text_df['rel_end'] -= shift
+                        
+            text_df = text_df[text_df['rel_start'] >= 0]
             # Extract audio from the video clip
-            audio_clip = video_clip.audio
+            audio_clip = video_clip.audio.subclip(0, video_clip.duration)
             fps_audio = 44100
 
             # Get the raw audio data as a NumPy array
@@ -783,7 +836,20 @@ class BestClips:
             silent_frames = np.where(energy < silence_threshold)[0]
 
             # Find the start and end times of non-silent segments
-            silent_segments = find_silent_segments(silent_frames, silence_sec=0.2, fps_audio=fps_audio)
+            silent_segments = find_silent_segments(silent_frames, silence_sec=0.25, fps_audio=fps_audio)
+
+            for start, end in silent_segments:
+                # Identify rows where 'rel_start' or 'rel_end' fall after the silent segment
+                mask_after = (text_df['rel_start'] >= start) | (text_df['rel_end'] >= start)
+
+                # Update 'rel_start' and 'rel_end' for the selected rows
+                text_df.loc[mask_after, 'rel_start'] -= (end - start)
+                text_df.loc[mask_after, 'rel_end'] -= (end - start)
+
+            text_df.rename(columns={"text": "Word", "rel_start": "Start", "rel_end": "End"}, inplace=True)
+
+            # Add 'Word Index' column
+            text_df['Word Index'] = text_df.index
 
             non_silent_segments = final_segments(dur=video_clip.duration, silent_segments=silent_segments)
 
@@ -791,14 +857,20 @@ class BestClips:
             non_silent_video = concatenate_videoclips([video_clip.subclip(start, end) for start, end in non_silent_segments])
 
             final_shorts.append(non_silent_video)
+            json_transcriptions.append(text_df.to_json(orient='records', lines=True))
 
-        return final_shorts
+        return final_shorts, json_transcriptions
 
 
     def save_vids(self):
-        for i in range(len(self.final_shorts)):
-            output_file_path = os.path.join(self.run_path, f"short_{str(i)}.mp4")
-            self.final_shorts[i].write_videofile(output_file_path, fps=24, audio_codec='aac')
+        for short_num in range(len(self.final_shorts)):
+            base_name = f"short_{str(short_num)}"
+            video_output_file_path = os.path.join(self.run_path, f"{base_name}.mp4")
+            json_output_file_path = os.path.join(self.run_path, f"{base_name}.json")
+            self.final_shorts[short_num].write_videofile(video_output_file_path, fps=24, audio_codec='aac')
+            with open(json_output_file_path, "w") as json_file:
+                json_file.write(self.json_transcription[short_num])
+
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
 
          
@@ -806,5 +878,5 @@ if __name__ == "__main__":
     # # Insert video path to .mp4 file or youtube url link
     # video = ""
     # username = "My User"
-    # best_clips = BestClips(video_str=video, username=username, use_gpt=False)
+    # best_clips = BestClips(video_str=video, username=username, use_gpt=True)
     pass

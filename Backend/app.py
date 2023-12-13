@@ -68,28 +68,38 @@ def set_upload_complete(userEmail, complete):
         print(f"An error occurred while setting upload_complete for {userEmail}: {e}")
         raise e  # Reraising the exception will help to identify if there is an issue with the database operation
 
-def upload_to_gcloud(bucket, source_file_name, destination_blob_name, userEmail):
+def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_blob_name, json_destination_blob_name, userEmail):
     if not userEmail:
         print("Error: User ID is None or empty.")
         return False
     
-    user_prev_runs_path = f"{userEmail}/PreviousRuns/{destination_blob_name}"
-    user_cur_run_path = f"{userEmail}/CurrentRun/{destination_blob_name}"
+    user_prev_runs_path_video = f"{userEmail}/PreviousRuns/{video_destination_blob_name}"
+    user_cur_run_path_video = f"{userEmail}/CurrentRun/{video_destination_blob_name}"
+    user_prev_runs_path_json = f"{userEmail}/PreviousRuns/{json_destination_blob_name}"
+    user_cur_run_path_json = f"{userEmail}/CurrentRun/{json_destination_blob_name}"
 
-    if not os.path.isfile(source_file_name):
-        print(f"The file {source_file_name} does not exist.")
+    if not os.path.isfile(video_file_name):
+        print(f"The file {video_file_name} does not exist.")
+        return False
+    
+    if not os.path.isfile(json_file_name):
+        print(f"The file {json_file_name} does not exist.")
         return False
 
     try:
-        blob_prev = bucket.blob(user_prev_runs_path)
-        blob_prev.upload_from_filename(source_file_name)
-        blob_cur = bucket.blob(user_cur_run_path)
-        blob_cur.upload_from_filename(source_file_name)
+        blob_prev_video = bucket.blob(user_prev_runs_path_video)
+        blob_prev_video.upload_from_filename(video_file_name)
+        blob_prev_json = bucket.blob(user_prev_runs_path_json)
+        blob_prev_json.upload_from_filename(json_file_name)
+        blob_cur_video = bucket.blob(user_cur_run_path_video)
+        blob_cur_video.upload_from_filename(video_file_name)
+        blob_cur_json = bucket.blob(user_cur_run_path_json)
+        blob_cur_json.upload_from_filename(json_file_name)
 
-        print(f"File {source_file_name} uploaded to {user_cur_run_path} and {user_prev_runs_path}.")
+        print(f"File {video_file_name} and {json_file_name} uploaded to {user_cur_run_path_video}, {user_prev_runs_path_video} and {user_cur_run_path_json}, {user_prev_runs_path_json} respectively.")
         return True
     except Exception as e:
-        print(f"Failed to upload {source_file_name} to {user_cur_run_path} and {user_prev_runs_path}: {e}")
+        print(f"Failed to upload {video_file_name} or {json_file_name}: {e}")
         return False
 
 
@@ -100,7 +110,7 @@ def process_youtube_video(link, userEmail):
         username = userEmail  # Use userEmail for the folder name
 
         # Pass save_folder_name to BestClips constructor
-        best_clips = BestClips(link, username, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(link, username, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         gcloud_bucket_name = "clipitshorts"
         # Delete all of the files in user_cur_run_path if they exist
@@ -111,8 +121,10 @@ def process_youtube_video(link, userEmail):
             blob.delete()
         for i in range(len(best_clips.final_shorts)):
             video_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.mp4")
-            gcloud_destination_name = f"{best_clips.date_time_str}__{os.path.basename(video_file_path)}"
-            upload_to_gcloud(bucket, video_file_path, gcloud_destination_name, userEmail)
+            json_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.json")
+            gcloud_video_destination_name = f"{best_clips.date_time_str}__{os.path.basename(video_file_path)}"
+            gcloud_json_destination_name = f"{best_clips.date_time_str}__{os.path.basename(json_file_path)}"
+            upload_to_gcloud(bucket, video_file_path, json_file_path, gcloud_video_destination_name, gcloud_json_destination_name, userEmail)
         set_upload_complete(userEmail, True)
         
     except Exception as e:
