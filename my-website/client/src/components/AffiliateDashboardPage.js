@@ -16,8 +16,12 @@ function AffiliateDashboardPage() {
     const fetchAffiliateData = async () => {
       try {
         setIsLoading(true);
-        const data = await api.getAffiliateData(); // Fetch data from the backend
-        setAffiliateData(data);
+        const response = await api.getAffiliateData(); // Fetch data from the backend
+        if (response && response.data) {
+          setAffiliateData(response.data); // Ensure data is set correctly
+        } else {
+          setError('No data received from the server.');
+        }
       } catch (err) {
         setError(err.message || 'Failed to fetch data.');
       } finally {
@@ -36,6 +40,9 @@ function AffiliateDashboardPage() {
     return <div className="error">Error: {error}</div>;
   }
 
+  // Check for valid earnings and provide a fallback
+  const validEarnings = affiliateData.earnings || 0;
+
   return (
     <div className="affiliate-dashboard">
       <NavigationBar />
@@ -48,7 +55,7 @@ function AffiliateDashboardPage() {
           </div>
           <div className="stat-item">
             <label>Earnings:</label>
-            <span>${affiliateData.earnings.toFixed(2)}</span>
+            <span>${validEarnings.toFixed(2)}</span> {/* Use validEarnings instead */}
           </div>
         </div>
         <div className="referred-users">

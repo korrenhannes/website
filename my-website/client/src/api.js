@@ -6,6 +6,14 @@ const api = axios.create({
   withCredentials: true
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // Assuming token is stored in local storage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Axios instance for the Flask server running on port 5000
 const apiFlask = axios.create({
   baseURL: process.env.REACT_APP_FLASK_API_URL || 'http://localhost:5000/api',

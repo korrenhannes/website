@@ -7,6 +7,19 @@ const Log = require('../models/logModel');
 const sendEmail = require('../utils/sendEmail');
 const router = express.Router();
 
+// A more complex function to calculate earnings based on sales
+function calculateEarnings(referredUsers) {
+  let totalEarnings = 0;
+  const commissionRate = 0.1; // For example, 10% commission on sales
+
+  referredUsers.forEach(user => {
+    // Assuming each user has a 'sales' field indicating the amount they've generated
+    totalEarnings += user.sales * commissionRate;
+  });
+
+  return totalEarnings;
+}
+
 // Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
   try {
@@ -90,6 +103,36 @@ router.post('/logina', async (req, res) => {
   } catch (error) {
     console.error('Affiliate login error:', error);
     res.status(500).send('Error logging in affiliate');
+  }
+});
+
+// Get affiliate data
+router.get('/data', passport.authenticate('jwt', { session: false }), async (req, res) => {
+  try {
+    // Assuming 'req.user' contains the authenticated user's info
+    const userId = req.user._id;
+
+    // Fetch user data from the database
+    const user = await User.findById(userId).populate('referredUsers');
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    // Construct the data to be sent
+    const affiliateData = {
+      totalReferrals: user.referredUsers.length,
+      earnings: calculateEarnings(user.referredUsers), // Implement this function based on your logic
+      referredUsers: user.referredUsers.map(u => ({
+        email: u.email,
+        referredDate: u.dateOfSubscription // or any other relevant date
+      }))
+    };
+
+    res.json(affiliateData);
+  } catch (error) {
+    console.error("Error fetching affiliate data:", error);
+    res.status(500).send('Error fetching affiliate data');
   }
 });
 
