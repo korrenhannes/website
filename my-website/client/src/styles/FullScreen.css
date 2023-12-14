@@ -66,7 +66,6 @@
 
   .foreground-content h1 {
     font-size: 2em; /* Adjusted font size on smaller screens */
-    color:red;
     width: 80%;
   }
   .foreground-content h2{
@@ -92,11 +91,10 @@
     position: relative;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 50%; /* Add some padding at the top to position content higher */
-    width:100%;
+    width:max-content;
   }
   .foreground-content h1 {
     font-size: 1.5em; /* Adjusted font size on smaller screens */
-    color:#2878b5
   }
   .foreground-content h2{
     font-size: 1em; /* Adjusted font size on smaller screens */
@@ -104,7 +102,7 @@
   .search-container {
     position:relative;
     transform: translate(-50%, -50%);
-    width:100%;
+    width:max-content;
     text-align: center;
     padding-bottom: 75%;
   }
