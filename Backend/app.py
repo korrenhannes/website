@@ -161,7 +161,7 @@ def get_signed_urls():
             print("Missing User-Email header")
             return jsonify({'error': 'User email is required'}), 400
 
-        directory = request.args.get('directory', default=f'{email}/PreviousRuns/')
+        directory = request.args.get('directory', default=f'{email}/CurrentRun/')
         print(f"Requested directory: {directory}")  # Log the actual directory value
 
         bucket_name = 'clipitshorts'
