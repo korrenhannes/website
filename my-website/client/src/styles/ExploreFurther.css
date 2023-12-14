@@ -90,7 +90,7 @@
 /* Responsive design adjustments */
 @media (max-width: 768px) {
     .explore-further-container{
-        margin-top: 10%;
+        margin-top: 5%;
     }
     .explore-further-container .main-content {
         flex-direction: column-reverse; /* Stack video and content vertically on mobile */
@@ -113,6 +113,27 @@
         font-size: 16px; /* Adjust font size for smaller screens */
         align-self: center; /* Center button on mobile */
     }
+    .explore-further-container .main-content .video-tab-container{
+        width:40%;
+        height:60%;
+        position: absolute;
+        left: 55%;
+        top: 25%;
+    }
+    .explore-further-container .main-content .content-section {
+       position:absolute;
+       display: flex;
+       right: 50%;
+       margin-left: 5%;
+       top: 40%;
+       padding: auto;
+    }
+    .explore-further-container .main-content .content-heading{
+        position: absolute;
+        bottom: 70%;
+        
+    }
+    
 }
 @media (max-width: 480px) {
     .explore-further-container{
@@ -138,6 +159,26 @@
         padding: 10px 20px; /* Adjust padding for smaller screens */
         font-size: 16px; /* Adjust font size for smaller screens */
         align-self: center; /* Center button on mobile */
+    }
+    .explore-further-container .main-content .video-tab-container{
+        width:40%;
+        height:60%;
+        position: absolute;
+        left: 55%;
+        top: 25%;
+    }
+    .explore-further-container .main-content .content-section {
+       position:absolute;
+       display: flex;
+       right: 50%;
+       margin-left: 5%;
+       top: 40%;
+       padding: auto;
+    }
+    .explore-further-container .main-content .content-heading{
+        position: absolute;
+        bottom: 70%;
+        
     }
 }
 

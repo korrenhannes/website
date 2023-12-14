@@ -8,9 +8,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
 
-const ContentSection = () => (
+const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
-    <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+    {/* Render content-heading inside ContentSection for larger screens */}
+    {windowWidth > 768 && (
+      <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+    )}
     <p className="content-description">With our innovative algorithm, you will be able to make your favorite podcasts and videos into content for your viewers with a push of a button.</p>
     <button className="cliplt-button">Cliplt</button>
     <div className="video-thumbnails">
@@ -30,6 +33,13 @@ function ExploreFurther() {
   const navigate = useNavigate();
   const playerRef = useRef(null);
   const touchStartRef = useRef(0);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
@@ -142,10 +152,14 @@ function ExploreFurther() {
   return (
     <div className="explore-further-container">
       <div className="main-content">
+         {/* Render content-heading outside ContentSection for mobile screens */}
+        {windowWidth <= 768 && (
+          <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+        )}
         <div className="video-tab-container">
           <video ref={videoRef} className="video-js" />
         </div>
-        <ContentSection />
+        <ContentSection windowWidth={windowWidth} />
       </div>
       {isLoading && <div className="text-center mt-3">Loading...</div>}
       {error && <div className="text-danger text-center mt-3">{error}</div>}
