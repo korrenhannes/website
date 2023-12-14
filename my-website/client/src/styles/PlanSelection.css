@@ -85,3 +85,24 @@
     .next-button:hover {
       background-color: #2878b5;
     }
+    @media (max-width: 480px) {
+      .plan-selection {
+        max-width: 80%;
+      }
+      .plans {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+      }
+      .plan-name {
+        font-size: 15px;
+        color: #3897f0;
+        margin-bottom: 10px;
+      }
+      
+      .plan-price {
+        font-size: 22px;
+        font-weight: bold;
+      }
+    }

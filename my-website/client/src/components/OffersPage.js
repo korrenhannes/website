@@ -47,38 +47,38 @@ function OffersPage() {
 
   return (
     <div className="container-fluid">
-    <div className="plan-selection">
-      <h1>Choose the plan that’s right for you</h1>
-      <ul>
-        <li>{planDescription1}</li>
-        <li>{planDescription2}</li>
-        <li>{planDescription3}</li>
-      </ul>
-      <div className="plans">
-        {plans.map((plan) => (
-          <div
-            key={plan.name}
-            className={`plan ${selectedPlan === plan.name.toLowerCase() ? 'selected' : ''}`}
-            onClick={() => selectPlan(plan.name.toLowerCase())}
-          >
-            <div className="plan-name">{plan.name}</div>
-            <div className="plan-price">{plan.price}</div>
-          </div>
-        ))}
+      <div className="plan-selection">
+        <h1>Choose the plan that’s right for you</h1>
+        <ul>
+          <li>{planDescription1}</li>
+          <li>{planDescription2}</li>
+          <li>{planDescription3}</li>
+        </ul>
+        <div className="plans">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`plan ${selectedPlan === plan.name.toLowerCase() ? 'selected' : ''}`}
+              onClick={() => selectPlan(plan.name.toLowerCase())}
+            >
+              <div className="plan-name">{plan.name}</div>
+              <div className="plan-price">{plan.price}</div>
+            </div>
+          ))}
+        </div>
+        {
+          selectedPlan !== 'basic' ? (
+            <PayPalButton  
+              amount={plans.find(p => p.name.toLowerCase() === selectedPlan).price} 
+              onSuccessfulPayment={handleSuccessfulPayment} 
+              selectedPlan={selectedPlan} 
+              userEmail={userEmail}
+            />
+          ) : (
+            <button className="next-button" onClick={handleNextClick}>Next</button>
+          )
+        }
       </div>
-      {
-        selectedPlan !== 'basic' ? (
-          <PayPalButton  
-            amount={plans.find(p => p.name.toLowerCase() === selectedPlan).price} 
-            onSuccessfulPayment={handleSuccessfulPayment} 
-            selectedPlan={selectedPlan} 
-            userEmail={userEmail}
-          />
-        ) : (
-          <button className="next-button" onClick={handleNextClick}>Next</button>
-        )
-      }
-    </div>
     </div>
   );
 }
