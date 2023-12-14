@@ -71,6 +71,7 @@
     font-size: 1.5em; /* Adjusted font size on smaller screens */
   }
   .foreground-content {
+    position: center;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 35%; /* Add some padding at the top to position content higher */
   }
@@ -79,6 +80,7 @@
 
 @media (max-width: 480px) {
   .foreground-content {
+    position: center;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 30%; /* Add some padding at the top to position content higher */
   }
