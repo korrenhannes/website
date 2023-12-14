@@ -93,30 +93,21 @@
         align-items: center;
       }
       .plan-name {
-        font-size: 20px;
+        font-size: 18px;
         color: #3897f0;
         margin-bottom: 10px;
         align-self: center;
-        margin-right: 10%;
+        margin-right: 15%;
       }
       
       .plan-price {
-        font-size: 28px;
+        font-size: 26px;
         font-weight: bold;
         align-self: center;
         margin-right: 10%;
       }
-      .plan-selection ul {
-        list-style: none;
-        padding: 0;
-        margin-bottom: 30px;
-        margin-left: 10%;
-      }
       
       .plan-selection ul li {
-        font-size: 16px;
-        padding: 5px 0;
-        position: relative;
-        margin-left: 10%;
+        margin-left: 5%;
       }
     }
