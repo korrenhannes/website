@@ -92,12 +92,13 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
       </div>
       {isMobile && (
         <div className="countdown-mobile">
+          <Link to="/offers">limited deals</Link>
           <Countdown timeLeft={timeLeft} />
         </div>
       )} 
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-        <Link to="/offers">Products</Link>
-        {!isMobile && <Countdown timeLeft={timeLeft} />}
+        {!isMobile && <Link to="/offers">limited deals</Link>}
+        {!isMobile && <Countdown timeLeft={timeLeft} />} 
         <Link to="/how-it-works">Why us</Link>
         <a href="/partner">Partner with us</a>
         <a href="/support">Support</a>
