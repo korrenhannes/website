@@ -77,7 +77,7 @@
     padding-top: 35%; /* Add some padding at the top to position content higher */
   }
   .search-container {
-    position: center;
+    position: relative;
     transform: translate(-50%, -50%);
     width: 50%;
     text-align: center;
@@ -87,7 +87,7 @@
 
 @media (max-width: 480px) {
   .foreground-content {
-    position: center;
+    position: relative;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 50%; /* Add some padding at the top to position content higher */
   }
@@ -99,11 +99,11 @@
     font-size: 1em; /* Adjusted font size on smaller screens */
   }
   .search-container {
-    position: center;
+    position:relative;
     transform: translate(-50%, -50%);
-    width: 70%;
+    width: 80%;
     text-align: center;
-    padding-bottom: 50%;
+    padding-bottom: 70%;
   }
 }
 
