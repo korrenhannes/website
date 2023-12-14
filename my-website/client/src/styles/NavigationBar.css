@@ -146,11 +146,21 @@
 @media (max-width: 480px) {
   .hamburger {
     margin-left: 0;
-    margin-right: 5px; /* Adjust right margin to move closer to edge */
+    margin-right: 1px; /* Adjust right margin to move closer to edge */
     padding: 0.25em; /* Adjust padding to make button smaller */
   }
   .hamburger div {
     width: 20px; /* Adjust width of lines */
     height: 2px; /* Adjust height of lines */
+  }
+  .countdown-mobile{
+    font-size: smaller;
+  }
+  .logo-button {
+    margin-left: 0;
+  }
+  .logo-button img {
+    height: 40px; /* Adjust for mobile as necessary */
+    width: 20px;
   }
 }

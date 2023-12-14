@@ -41,7 +41,6 @@ function PartnerWithUsPage() {
 
   return (
     <div className="main-container">
-      <NavigationBar />
       <div className="card">
         <h2 className="text-center">Become a Partner</h2>
         <p className="text-center">Join our affiliate program and earn commissions for every customer you refer.</p>
