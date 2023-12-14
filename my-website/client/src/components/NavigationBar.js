@@ -82,6 +82,11 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
         </>
       );
   };
+  const handleLinkClick = () => {
+    if (isMobile) {
+      setShowMobileMenu(false);
+    }
+  };
 
   return (
     <nav className="navigation-bar">
@@ -97,11 +102,11 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
         </div>
       )} 
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-        {!isMobile && <Link to="/offers">limited deals</Link>}
+        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>limited deals</Link>}
         {!isMobile && <Countdown timeLeft={timeLeft} />} 
-        <Link to="/how-it-works">Why us</Link>
-        <a href="/partner">Partner with us</a>
-        <a href="/support">Support</a>
+        <Link to="/how-it-works" onClick={handleLinkClick}>Why us</Link>
+        <Link to="/partner" onClick={handleLinkClick}>Partner with us</Link>
+        <Link to="/support" onClick={handleLinkClick}>Support</Link>
         {isMobile && renderAuthLinks()}
       </div>
       <div className="nav-actions">

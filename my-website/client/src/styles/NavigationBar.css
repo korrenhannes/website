@@ -48,6 +48,8 @@
   background-color:  #3897f0;
   border: white;
   width: min-content;
+  margin-right: 5px; /* Adjust right margin to move closer to edge */
+  margin-left: 0;
 }
 
 .hamburger div {
@@ -142,10 +144,13 @@
  
 }
 @media (max-width: 480px) {
-.hamburger{
-  margin-left: 0%;
-}
-.hamburger div{
-width: min-content;
-}
+  .hamburger {
+    margin-left: 0;
+    margin-right: 5px; /* Adjust right margin to move closer to edge */
+    padding: 0.25em; /* Adjust padding to make button smaller */
+  }
+  .hamburger div {
+    width: 20px; /* Adjust width of lines */
+    height: 2px; /* Adjust height of lines */
+  }
 }
