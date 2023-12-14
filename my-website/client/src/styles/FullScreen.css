@@ -104,7 +104,7 @@
   .search-container {
     position:relative;
     transform: translate(-50%, -50%);
-    width:max-content;
+    width:100%;
     text-align: center;
     padding-bottom: 75%;
   }
