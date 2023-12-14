@@ -60,13 +60,13 @@ function FreeUserPage() {
     };
   }, [backgroundVideoRef]);
 
-  const fetchVideosFromGCloud = async (fetchFromUndefined = false) => {
+  const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
-  
-    let emailToUse = fetchFromUndefined ? 'undefined' : userEmail;
-  
-    if (!emailToUse && !fetchFromUndefined) {
+
+    let emailToUse = userEmail;
+
+    if (!emailToUse) {
       const token = localStorage.getItem('token');
       if (token) {
         try {
@@ -89,6 +89,7 @@ function FreeUserPage() {
     }
   
     try {
+      // Attempt to fetch videos from the 'CurrentRun' directory
       const response = await apiFlask.get('/signed-urls', {
         params: {
           directory: `${emailToUse}/PreviousRuns`
@@ -98,21 +99,37 @@ function FreeUserPage() {
         }
       });
   
-      const signedUrls = response.data.signedUrls;
-      if (signedUrls && signedUrls.length > 0) {
-        setVideos(signedUrls);
-        loadVideo(signedUrls[0]);
-        setUserVideosLoaded(true);
-      } else {
-        setError('No videos found in Google Cloud Storage.');
+      let signedUrls = response.data.signedUrls;
+      if (!signedUrls || signedUrls.length === 0) {
+        // If 'CurrentRun' is empty, fetch from the 'undefined' directory
+        const responseFromUndefined = await apiFlask.get('/signed-urls', {
+          params: {
+            directory: `undefined/`
+          },
+          headers: {
+            'User-Email': emailToUse  // Include the User-Email header
+          }
+        });
+
+        signedUrls = responseFromUndefined.data.signedUrls;
+
+        if (!signedUrls || signedUrls.length === 0) {
+          setError('No videos found in Google Cloud Storage.');
+          setIsLoading(false);
+          return;
+        }
       }
+
+      setVideos(signedUrls);
+      loadVideo(signedUrls[0]);
+      setUserVideosLoaded(true);
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   
   
   
@@ -151,18 +168,21 @@ function FreeUserPage() {
 
   const handleKeyPress = (event) => {
     if (event.keyCode === 13) { // 13 is the keycode for the Enter key
-      loadNextVideo();
+      if (!userVideosLoaded) {
+        fetchVideosFromGCloud();
+      } else {
+        loadNextVideo();
+      }
     }
-  };
-  
-  useEffect(() => {
+};
+
+useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
-  
+
     return () => {
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [currentVideoIndex, videos]); // Include dependencies
-  
+}, [currentVideoIndex, videos, userVideosLoaded]);
 
   const handleDownloadVideo = async () => {
     if (!playerRef.current) {
