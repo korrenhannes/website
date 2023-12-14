@@ -68,17 +68,17 @@ function FreeUserPage() {
   
     if (!emailToUse && !fetchFromUndefined) {
       const token = localStorage.getItem('token');
-      try {
-        if (token) {
+      if (token) {
+        try {
           const decoded = jwtDecode(token);
           emailToUse = decoded.email;
           setUserEmail(decoded.email);
+        } catch (error) {
+          console.error("Error decoding token:", error);
+          setError('Authentication error. Please log in again.');
+          setIsLoading(false);
+          return;
         }
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        setError('Authentication error. Please log in again.');
-        setIsLoading(false);
-        return;
       }
     }
   
@@ -90,8 +90,11 @@ function FreeUserPage() {
   
     try {
       const response = await apiFlask.get('/signed-urls', {
+        params: {
+          directory: `${emailToUse}/PreviousRuns`
+        },
         headers: {
-          'User-Email': emailToUse
+          'User-Email': emailToUse  // Include the User-Email header
         }
       });
   
@@ -99,9 +102,7 @@ function FreeUserPage() {
       if (signedUrls && signedUrls.length > 0) {
         setVideos(signedUrls);
         loadVideo(signedUrls[0]);
-        setUserVideosLoaded(!fetchFromUndefined);
-      } else if (!fetchFromUndefined) {
-        fetchVideosFromGCloud(true);
+        setUserVideosLoaded(true);
       } else {
         setError('No videos found in Google Cloud Storage.');
       }
@@ -112,7 +113,11 @@ function FreeUserPage() {
     }
   };
   
+  
+  
+  
   const loadVideo = (videoUrl) => {
+    console.log("Loading video URL:", videoUrl); // Log the URL being loaded
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
     const playPromise = playerRef.current.play();
@@ -130,65 +135,75 @@ function FreeUserPage() {
   
 
   const loadNextVideo = async () => {
-    if (!videos || videos.length === 0) {
-      console.error('Error: Video list is empty or not loaded');
-      return;
-    }
-  
-    let nextIndex = currentVideoIndex + 1;
-  
+    let nextIndex = currentVideoIndex + 2;
+
     if (nextIndex >= videos.length) {
-      await fetchVideosFromGCloud();
-      const updatedVideos = await fetchVideos();
-      if (updatedVideos.length > currentVideoIndex + 1) {
-        nextIndex = currentVideoIndex + 1;
-        setVideos(updatedVideos);
-      } else {
-        console.log('No more videos to load for the user');
+      if (userVideosLoaded) {
+        setError('No more videos to load.');
         return;
+      } else {
+        await fetchVideosFromFolder(userEmail);
       }
+    } else {
+      setCurrentVideoIndex(nextIndex);
+      loadVideo(videos[nextIndex]);
     }
-  
-    setCurrentVideoIndex(nextIndex);
-    loadVideo(videos[nextIndex]);
   };
 
-  const fetchVideos = async () => {
-    const response = await apiFlask.get('/signed-urls', {
-      headers: {
-        'User-Email': userEmail || 'undefined'
+  
+  const fetchVideosFromFolder = async (email, folder = 'CurrentRun') => {
+    setIsLoading(true);
+    setError(null);
+  
+    try {
+      const response = await apiFlask.get('/signed-urls', {
+        params: {
+          directory: `${email}/${folder}`
+        },
+        headers: {
+          'User-Email': email
+        }
+      });
+
+      console.log('All URLs:', response.data.signedUrls); // Log all URLs for debugging
+
+      // Filter out only .mp4 URLs
+      const signedUrls = response.data.signedUrls.filter(url => url.endsWith('.mp4'));
+
+      console.log('Filtered MP4 URLs:', signedUrls); // Log filtered URLs for debugging
+
+      if (signedUrls.length > 0) {
+        setVideos(signedUrls);
+        setCurrentVideoIndex(0);
+        loadVideo(signedUrls[0]);
+        setUserVideosLoaded(true);
+      } else {
+        setError('No MP4 videos found.');
       }
-    });
-    return response.data.signedUrls || [];
+    } catch (err) {
+      setError(`Error fetching videos: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+
+  
 
   const handleKeyPress = (event) => {
-    if (event.keyCode === 13) {
-      if (!userVideosLoaded) {
-        fetchVideosFromGCloud(true);
-      } else {
-        loadNextVideo();
-      }
+    if (event.keyCode === 13) { // 13 is the keycode for the Enter key
+      loadNextVideo();
     }
   };
-
+  
   useEffect(() => {
-    const videoElement = backgroundVideoRef.current;
-    if (videoElement) {
-      videoElement.addEventListener('dblclick', handleDoubleTap);
-      videoElement.addEventListener('touchend', handleDoubleTap);
-    }
-
     window.addEventListener('keydown', handleKeyPress);
-
+  
     return () => {
-      if (videoElement) {
-        videoElement.removeEventListener('dblclick', handleDoubleTap);
-        videoElement.removeEventListener('touchend', handleDoubleTap);
-      }
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [currentVideoIndex, videos, userVideosLoaded]);
+  }, [currentVideoIndex, videos]); // Include dependencies
+  
 
   const handleDownloadVideo = async () => {
     if (!playerRef.current) {
