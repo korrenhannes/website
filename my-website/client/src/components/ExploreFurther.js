@@ -141,7 +141,6 @@ function ExploreFurther() {
 
   return (
     <div className="explore-further-container">
-      <NavigationBar />
       <div className="main-content">
         <div className="video-tab-container">
           <video ref={videoRef} className="video-js" />
