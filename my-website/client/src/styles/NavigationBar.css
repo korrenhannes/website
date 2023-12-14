@@ -160,6 +160,16 @@
     align-items: center;
     justify-items: center;
   }
+  .deals-link{
+    margin: 0px;
+    margin-right: 0px;
+    padding: 0px;
+  }
+  .countdown{
+    margin: 0px;
+    margin-left: 0px;
+    padding: 0px;
+  }
   .logo-button {
     margin-left: 0;
   }
