@@ -12,20 +12,34 @@ const logSchema = new mongoose.Schema({
   },
   paymentPlan: {
     type: String,
-    required: false // This field is not required as not all logs might have a payment plan associated with them
+    required: false // Not all logs might have a payment plan associated with them
   },
   dateOfSubscription: {
     type: Date,
     default: Date.now
-    },
+  },
   timestamp: {
     type: Date,
     default: Date.now
   },
   dayOfSubscription: { 
     type: Number,
-     required: false 
-    },
+    required: false 
+  },
+  // Fields specific to affiliates
+  isAffiliateAction: {
+    type: Boolean,
+    default: false
+  },
+  affiliateCode: {
+    type: String,
+    required: function() { return this.isAffiliateAction; } // Required if it's an affiliate action
+  },
+  referredUserEmail: {
+    type: String,
+    required: false // For tracking referrals, if applicable
+  },
+  // You can add more fields here as needed for affiliate tracking
 });
 
 // Create the model from the schema

@@ -1,10 +1,12 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
+const JwtStrategy = require('passport-jwt').Strategy;
+const ExtractJwt = require('passport-jwt').ExtractJwt;
 const User = require('./models/User'); // Adjust the path as necessary
 const jwt = require('jsonwebtoken');
 
-// Configure Google OAuth Strategy
+// Google OAuth Strategy
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -28,7 +30,7 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// Configure Facebook OAuth Strategy
+// Facebook OAuth Strategy
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
@@ -52,5 +54,24 @@ passport.use(new FacebookStrategy({
     }
   }
 ));
+
+// JWT Strategy
+const jwtOptions = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.JWT_SECRET
+};
+
+passport.use(new JwtStrategy(jwtOptions, (jwtPayload, done) => {
+  User.findById(jwtPayload.userId, (err, user) => {
+    if (err) {
+      return done(err, false);
+    }
+    if (user) {
+      return done(null, user);
+    } else {
+      return done(null, false);
+    }
+  });
+}));
 
 module.exports = passport;
