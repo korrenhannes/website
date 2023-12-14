@@ -138,12 +138,9 @@ function FreeUserPage() {
     let nextIndex = currentVideoIndex + 2;
 
     if (nextIndex >= videos.length) {
-      if (userVideosLoaded) {
-        setError('No more videos to load.');
-        return;
-      } else {
-        await fetchVideosFromFolder(userEmail);
-      }
+      nextIndex = 0;
+      setCurrentVideoIndex(nextIndex);
+      loadVideo(videos[nextIndex]);
     } else {
       setCurrentVideoIndex(nextIndex);
       loadVideo(videos[nextIndex]);
