@@ -162,12 +162,12 @@
   }
   .deals-link{
     margin: 0px;
-    margin-right: 0px;
+    margin-right: 1px;
     padding: 0px;
   }
   .countdown{
     margin: 0px;
-    margin-left: 0px;
+    margin-left: 1px;
     padding: 0px;
   }
   .logo-button {
@@ -175,6 +175,6 @@
   }
   .logo-button img {
     height: 40px; /* Adjust for mobile as necessary */
-    width: 55px;
-  }
+    margin-left: 0px;
+    }
 }
