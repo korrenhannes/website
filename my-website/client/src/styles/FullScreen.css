@@ -66,14 +66,21 @@
 
   .foreground-content h1 {
     font-size: 2em; /* Adjusted font size on smaller screens */
+    color:red;
   }
   .foreground-content h2{
     font-size: 1.5em; /* Adjusted font size on smaller screens */
   }
   .foreground-content {
-    position: center;
+    position: relative;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 35%; /* Add some padding at the top to position content higher */
+  }
+  .search-container {
+    position: center;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    text-align: center;
   }
   
 }
@@ -86,9 +93,18 @@
   }
   .foreground-content h1 {
     font-size: 1.5em; /* Adjusted font size on smaller screens */
+    color:#2878b5
   }
   .foreground-content h2{
     font-size: 1em; /* Adjusted font size on smaller screens */
+  }
+  .search-container {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    text-align: center;
   }
 }
 
