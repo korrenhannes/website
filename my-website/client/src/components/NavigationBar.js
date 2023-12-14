@@ -92,7 +92,7 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
       </div>
       {isMobile && (
         <div className="countdown-mobile">
-          <Link to="/offers">limited deals</Link>
+          <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>limited deals</Link>
           <Countdown timeLeft={timeLeft} />
         </div>
       )} 
