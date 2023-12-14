@@ -155,6 +155,10 @@
   }
   .countdown-mobile{
     font-size: smaller;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-items: center;
   }
   .logo-button {
     margin-left: 0;
