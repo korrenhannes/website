@@ -6,6 +6,14 @@ const api = axios.create({
   withCredentials: true
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // Assuming token is stored in local storage
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // Axios instance for the Flask server running on port 5000
 const apiFlask = axios.create({
   baseURL: process.env.REACT_APP_FLASK_API_URL || 'http://localhost:5000/api',
@@ -17,9 +25,25 @@ api.postForgotPassword = async (email) => {
   return await api.post('/auth/forgot-password', { email });
 };
 
-// Add a function to handle the reset password request
+// Function to handle reset password request
 api.postResetPassword = async (token, password) => {
   return await api.post('/auth/reset-password', { token, password });
 };
+
+// Function to register as an affiliate
+api.registerAffiliate = async ({ email, password }) => {
+  return await api.post('/auth/register', { email, password });
+};
+
+// Function for affiliate login
+api.loginAffiliate = async ({ email, password }) => {
+  return await api.post('/auth/logina', { email, password });
+};
+
+// Function to fetch affiliate data
+api.getAffiliateData = async () => {
+  return await api.get('/auth/data'); // Adjust the endpoint as needed
+};
+
 
 export { api, apiFlask };
