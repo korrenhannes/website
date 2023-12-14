@@ -87,22 +87,36 @@
     }
     @media (max-width: 480px) {
       .plan-selection {
-        max-width: 80%;
+        max-width: max-content;
       }
       .plans {
-        display: flex;
         align-items: center;
-        justify-content: space-between;
-        margin-bottom: 30px;
       }
       .plan-name {
-        font-size: 15px;
+        font-size: 20px;
         color: #3897f0;
         margin-bottom: 10px;
+        align-self: center;
+        margin-right: 10%;
       }
       
       .plan-price {
-        font-size: 22px;
+        font-size: 28px;
         font-weight: bold;
+        align-self: center;
+        margin-right: 10%;
+      }
+      .plan-selection ul {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+        margin-left: 10%;
+      }
+      
+      .plan-selection ul li {
+        font-size: 16px;
+        padding: 5px 0;
+        position: relative;
+        margin-left: 10%;
       }
     }
