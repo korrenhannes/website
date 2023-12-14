@@ -145,8 +145,8 @@
 }
 @media (max-width: 480px) {
   .hamburger {
-    margin-left: 0;
-    margin-right: 1px; /* Adjust right margin to move closer to edge */
+    margin-left: 1px;
+    margin-right: 0px; /* Adjust right margin to move closer to edge */
     padding: 0.20em; /* Adjust padding to make button smaller */
   }
   .hamburger div {
