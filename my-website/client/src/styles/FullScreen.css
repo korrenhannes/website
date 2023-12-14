@@ -92,7 +92,7 @@
     position: relative;
     justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 50%; /* Add some padding at the top to position content higher */
-    width:max-content;
+    width:100%;
   }
   .foreground-content h1 {
     font-size: 1.5em; /* Adjusted font size on smaller screens */
