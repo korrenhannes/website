@@ -147,11 +147,11 @@
   .hamburger {
     margin-left: 0;
     margin-right: 1px; /* Adjust right margin to move closer to edge */
-    padding: 0.25em; /* Adjust padding to make button smaller */
+    padding: 0.20em; /* Adjust padding to make button smaller */
   }
   .hamburger div {
-    width: 20px; /* Adjust width of lines */
-    height: 2px; /* Adjust height of lines */
+    width: 15px; /* Adjust width of lines */
+    height: 1.5px; /* Adjust height of lines */
   }
   .countdown-mobile{
     font-size: smaller;
