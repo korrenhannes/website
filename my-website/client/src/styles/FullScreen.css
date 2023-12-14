@@ -89,7 +89,7 @@
   .foreground-content {
     position: center;
     justify-content:flex-start; /* Align items to the start of the container */
-    padding-top: 30%; /* Add some padding at the top to position content higher */
+    padding-top: 45%; /* Add some padding at the top to position content higher */
   }
   .foreground-content h1 {
     font-size: 1.5em; /* Adjusted font size on smaller screens */
@@ -99,11 +99,9 @@
     font-size: 1em; /* Adjusted font size on smaller screens */
   }
   .search-container {
-    position: absolute;
-    top: 70%;
-    left: 50%;
+    position: center;
     transform: translate(-50%, -50%);
-    width: 45%;
+    width: 50%;
     text-align: center;
   }
 }
