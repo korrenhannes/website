@@ -148,44 +148,6 @@ function FreeUserPage() {
   };
 
   
-  const fetchVideosFromFolder = async (email, folder = 'CurrentRun') => {
-    setIsLoading(true);
-    setError(null);
-  
-    try {
-      const response = await apiFlask.get('/signed-urls', {
-        params: {
-          directory: `${email}/${folder}`
-        },
-        headers: {
-          'User-Email': email
-        }
-      });
-
-      console.log('All URLs:', response.data.signedUrls); // Log all URLs for debugging
-
-      // Filter out only .mp4 URLs
-      const signedUrls = response.data.signedUrls.filter(url => url.endsWith('.mp4'));
-
-      console.log('Filtered MP4 URLs:', signedUrls); // Log filtered URLs for debugging
-
-      if (signedUrls.length > 0) {
-        setVideos(signedUrls);
-        setCurrentVideoIndex(0);
-        loadVideo(signedUrls[0]);
-        setUserVideosLoaded(true);
-      } else {
-        setError('No MP4 videos found.');
-      }
-    } catch (err) {
-      setError(`Error fetching videos: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
-  
 
   const handleKeyPress = (event) => {
     if (event.keyCode === 13) { // 13 is the keycode for the Enter key
@@ -231,18 +193,6 @@ function FreeUserPage() {
     }
   };
 
-  // Double Tap Handler
-  const handleDoubleTap = (() => {
-    let lastTap = 0;
-    return function(event) {
-      const currentTime = new Date().getTime();
-      const tapLength = currentTime - lastTap;
-      if (tapLength < 500 && tapLength > 0) {
-        loadNextVideo();
-      }
-      lastTap = currentTime;
-    };
-  })();
 
   return (
     <div className="full-screen-container">
