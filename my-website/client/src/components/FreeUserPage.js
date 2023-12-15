@@ -4,12 +4,15 @@ import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { apiFlask } from '../api'; // Importing the Axios instance for Flask
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
+
 
 import NavigationBar from './NavigationBar';
 import '../styles/FreeUserPage.css';
 import '../styles/NavigationBar.css';
 
 function FreeUserPage() {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [videos, setVideos] = useState([]);
@@ -63,9 +66,9 @@ function FreeUserPage() {
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
     setError(null);
-
+  
     let emailToUse = userEmail;
-
+  
     if (!emailToUse) {
       const token = localStorage.getItem('token');
       if (token) {
@@ -83,13 +86,13 @@ function FreeUserPage() {
     }
   
     if (!emailToUse) {
-      setError('User email not found. Please log in again.');
+      setError('User email not found. Redirecting to signup...');
       setIsLoading(false);
+      navigate('/signup'); // Redirect to signup if no email is found
       return;
     }
   
     try {
-      // Attempt to fetch videos from the 'CurrentRun' directory
       const response = await apiFlask.get('/signed-urls', {
         params: {
           directory: `${emailToUse}/CurrentRun`
@@ -101,7 +104,6 @@ function FreeUserPage() {
   
       let signedUrls = response.data.signedUrls;
       if (!signedUrls || signedUrls.length === 0) {
-        // If 'CurrentRun' is empty, fetch from the 'undefined' directory
         const responseFromUndefined = await apiFlask.get('/signed-urls', {
           params: {
             directory: `undefined/`
@@ -110,16 +112,16 @@ function FreeUserPage() {
             'User-Email': emailToUse  // Include the User-Email header
           }
         });
-
+  
         signedUrls = responseFromUndefined.data.signedUrls;
-
+  
         if (!signedUrls || signedUrls.length === 0) {
           setError('No videos found in Google Cloud Storage.');
           setIsLoading(false);
           return;
         }
       }
-
+  
       setVideos(signedUrls);
       loadVideo(signedUrls[0]);
       setUserVideosLoaded(true);
@@ -129,6 +131,7 @@ function FreeUserPage() {
       setIsLoading(false);
     }
   };
+  
 
   
   
