@@ -131,20 +131,20 @@
 
 /* Media Query for Max Width 768 Pixels */
 @media (max-width: 768px) {
-  h1, .lead, .how-does-it-work, .card-title, .card-text, .step h3, .step p {
-    font-size: 80%; /* Scale down all text sizes */
-  }
-
   .container {
     padding: 0.5rem; /* Reduce container padding */
   }
 
   .card {
+    justify-content: center;
     flex-basis: 28%; /* Adjust card width for side by side layout */
     margin: 0.5rem; /* Adjust margin */
     padding: 0.5rem; /* Reduce padding inside card */
     width: 20%;
     align-items: center;
+    align-self: center;
+    position:relative;
+    margin-left: auto;
   }
 
   .icon {
@@ -163,9 +163,7 @@
 
 /* Media Query for Max Width 480 Pixels */
 @media (max-width: 480px) {
-  h1, .lead, .how-does-it-work, .card-title, .card-text, .step h3, .step p {
-    font-size: 70%; /* Further reduction in text sizes */
-  }
+  
 
   .container {
     padding: 0.25rem; /* Even smaller padding */
@@ -177,6 +175,10 @@
     padding: 0.25rem; /* Reduce padding inside card */
     width: 20%;
     align-items: center;
+    margin-left: auto;
+    align-self: center;
+    position:relative;
+    justify-content: center;
   }
 
   .icon {
