@@ -16,20 +16,32 @@ function FreeUserPage() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [userEmail, setUserEmail] = useState('');
   const [userVideosLoaded, setUserVideosLoaded] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const videoContainerRef = useRef(null); // Ref for the video container
   const backgroundVideoRef = useRef(null);
   const socket = useRef(null);
   const playerRef = useRef(null);
 
+
   useEffect(() => {
-    socket.current = io('http://localhost:3000');
-    socket.current.on('connect', () => console.log('Connected to socket.io server'));
+    // Connecting to the Flask server on port 5000
+    socket.current = io('http://localhost:5000');
+    socket.current.on('upload_progress', data => {
+      if (data.userEmail === userEmail) {
+        setUploadProgress(data.progress);
+      }
+    });
+    socket.current.on('connect', () => {
+      console.log('Connected to socket.io server on port 5000');
+    });
+    // Handle other events specific to the Flask server
+  
     return () => {
       if (socket.current) {
         socket.current.disconnect();
       }
     };
-  }, []);
+  }, [userEmail]); // Include any dependencies for useEffect here
 
   useEffect(() => {
     setTimeout(() => {
@@ -221,7 +233,9 @@ useEffect(() => {
       <div className="video-container" ref={videoContainerRef}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered" id="background-video"></video>
       </div>
-
+      <div className="upload-progress-bar">
+        <div className="upload-progress" style={{ width: `${uploadProgress}%` }}></div>
+      </div>
       <div className="video-ui-overlay">
         {/* Elements for video title, user interaction, etc. */}
       </div>

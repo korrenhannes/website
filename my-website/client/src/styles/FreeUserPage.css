@@ -50,6 +50,17 @@
   background-color: #0056b3; /* Darken button on hover */
 }
 
+.upload-progress-bar {
+  width: 100%;
+  background-color: #eee;
+}
+
+.upload-progress {
+  height: 20px;
+  background-color: blue;
+  width: 0%; /* Initial width */
+}
+
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .full-screen-container {
