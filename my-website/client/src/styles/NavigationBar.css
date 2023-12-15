@@ -164,7 +164,7 @@
     padding: 0.20em; /* Adjust padding to make button smaller */
   }
   .hamburger div {
-    width: 20px; /* Adjust width of lines */
+    width: 18px; /* Adjust width of lines */
     height: 3px; /* Adjust height of lines */
   }
   .countdown-mobile{
