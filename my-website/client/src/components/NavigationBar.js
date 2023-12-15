@@ -77,8 +77,8 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
       ? <button onClick={handleLogout} className="nav-signup">Logout</button>
       : (
         <>
-          <Link to="/login" className="nav-login">Log in</Link>
-          <Link to="/signup" className="nav-signup">Join us!</Link>
+          <Link to="/login" onClick={handleLinkClick} className="nav-login">Log in</Link>
+          <Link to="/signup" onClick={handleLinkClick} className="nav-signup">Join us!</Link>
         </>
       );
   };

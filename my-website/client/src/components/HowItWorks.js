@@ -63,21 +63,21 @@ const HowItWorks = () => {
         <p className="lead text-black">With our simple 3 step process you can transform long videos into short and exciting content.</p>
         <h2 className="how-does-it-work text-primary">How does it work?</h2>
         <div className="row justify-content-start">
-            <div className="card">
+            <div className="card-little">
               <div className="card-body">
                 <img src={uploadIcon} alt="Upload" className="icon" />
                 <h3 className="card-title">Upload</h3>
                 {windowWidth >= 768 && (<p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>)}
               </div>
             </div>
-            <div className="card">
+            <div className="card-little">
               <div className="card-body">
                 <img src={clipIcon} alt="ClipIt" className="icon" />
                 <h3 className="card-title">ClipIt</h3>
                 {windowWidth >= 768 && ( <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it with 1,000+ options of customization including effects and audio.</p>)}
               </div>
             </div>
-            <div className="card">
+            <div className="card-little">
               <div className="card-body">
                 <img src={shareIcon} alt="Share It" className="icon" />
                 <h3 className="card-title">Share It</h3>

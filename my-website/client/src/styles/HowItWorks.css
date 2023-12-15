@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-.card {
+.card-little {
   display: flex;
   flex-direction: column;
   border: 1px solid #000;
@@ -135,7 +135,7 @@
     padding: 0.5rem; /* Reduce container padding */
   }
 
-  .card {
+  .card-little {
     flex-basis: 28%; /* Adjust card width for side by side layout */
     margin: 0.5rem; /* Adjust margin */
     padding: 0.5rem; /* Reduce padding inside card */
@@ -168,7 +168,7 @@
     padding: 0.25rem; /* Even smaller padding */
   }
 
-  .card {
+  .card-little {
     flex-basis: 28%; /* Adjust card width for full width in small screens */
     margin: 0.25rem; /* Smaller margin */
     padding: 0.25rem; /* Reduce padding inside card */
@@ -177,7 +177,7 @@
     margin-left: auto;
     margin-right: auto;
   }
-  .card .card-title{
+  .card-little .card-title{
     font-size: 90%;
   }
 
