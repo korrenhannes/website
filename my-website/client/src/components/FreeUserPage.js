@@ -92,7 +92,7 @@ function FreeUserPage() {
       // Attempt to fetch videos from the 'CurrentRun' directory
       const response = await apiFlask.get('/signed-urls', {
         params: {
-          directory: `${emailToUse}/PreviousRuns`
+          directory: `${emailToUse}/CurrentRun`
         },
         headers: {
           'User-Email': emailToUse  // Include the User-Email header
@@ -152,7 +152,7 @@ function FreeUserPage() {
   
 
   const loadNextVideo = async () => {
-    let nextIndex = currentVideoIndex + 2;
+    let nextIndex = currentVideoIndex + 1;
 
     if (nextIndex >= videos.length) {
       nextIndex = 0;
