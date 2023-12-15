@@ -10,13 +10,16 @@
   overflow: hidden;
 }
 
+
 .card-little {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   border: 1px solid #000;
   border-radius: 8px;
   margin: 0.3em  auto;
-  height: 90%;
+  height: 300px; /* Adjust this value to your preference */
+  flex-basis: 30%; /* Adjust card width for side by side layout */
+  justify-content: center;
 }
 
 .card-body {
@@ -26,15 +29,17 @@
   padding: 1rem;
 }
 
-.card-title {
+ .card-title {
   font-size: 1.3rem;
   font-weight: bold;
   margin-bottom: 0.3rem;
 }
 
 .card-text {
-  font-size: 0.9rem;
-  margin: 0 auto;
+  color: #000; /* Dark color for headings */
+  font-size: 20px; /* Adjust the font size */
+  font-weight: 500; /* Medium font weight */
+  margin-bottom: 1rem; /* Space below the heading */
 }
 
 .container {
@@ -71,9 +76,10 @@
 
 .row {
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   flex-grow: 1;
   overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .step h3 {
@@ -140,6 +146,7 @@
     margin: 0.5rem; /* Adjust margin */
     padding: 0.5rem; /* Reduce padding inside card */
     width: 20%;
+    height: 90%;
     align-items: center;
     margin-right: auto;
     margin-left: auto;
@@ -177,7 +184,7 @@
     margin-left: auto;
     margin-right: auto;
   }
-  .card-little .card-title{
+  .card-title{
     font-size: 90%;
   }
 

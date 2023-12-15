@@ -44,15 +44,20 @@ const HowItWorks = () => {
         handleSwipe('down');
       }
     };
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
 
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('wheel', handleWheel);
+    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
   return (
