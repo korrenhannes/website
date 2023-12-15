@@ -48,7 +48,7 @@
   background-color: white;
   border: white;
   width: min-content;
-  margin-right: 5px; /* Adjust right margin to move closer to edge */
+  margin-right: 0px; /* Adjust right margin to move closer to edge */
   margin-left: 0;
 }
 
@@ -159,7 +159,7 @@
 }
 @media (max-width: 480px) {
   .hamburger {
-    margin-left: 1px;
+    margin-left: 0px;
     margin-right: 0px; /* Adjust right margin to move closer to edge */
     padding: 0.20em; /* Adjust padding to make button smaller */
   }
