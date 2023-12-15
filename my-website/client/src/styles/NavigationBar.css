@@ -45,7 +45,7 @@
   display: none;
   cursor: pointer;
   z-index: 1001;
-  background-color:  #3897f0;
+  background-color: white;
   border: white;
   width: min-content;
   margin-right: 5px; /* Adjust right margin to move closer to edge */
@@ -53,7 +53,7 @@
 }
 
 .hamburger div {
-  background-color:white;
+  background-color:#2878b5;
   height: 3px;
   width: 25px;
   margin: 5px 0;
@@ -176,7 +176,7 @@
   }
   .logo-button img {
     height: 40px; /* Adjust for mobile as necessary */
-    width: 70px;
+    width: 80px;
     margin-left: 0px;
     }
 }

@@ -265,6 +265,7 @@ function CloudAPIPage() {
               />
             </div>
           </form>
+          <p className="try-it-text">enter url to try it</p>
         </div>
         {isLoading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}

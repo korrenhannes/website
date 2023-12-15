@@ -13,6 +13,8 @@ const shareIcon = require('../assets/shareIcon.png');
 const HowItWorks = () => {
   const navigate = useNavigate();
   const touchStartRef = useRef(0);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
   const handleSwipe = (direction) => {
     // Placeholder functions - replace these with actual navigation logic
     const navigateUp = () => navigate('/support'); // Navigate to your next page
@@ -61,33 +63,27 @@ const HowItWorks = () => {
         <p className="lead text-black">With our simple 3 step process you can transform long videos into short and exciting content.</p>
         <h2 className="how-does-it-work text-primary">How does it work?</h2>
         <div className="row justify-content-start">
-          <div className="col-md-4">
             <div className="card">
               <div className="card-body">
                 <img src={uploadIcon} alt="Upload" className="icon" />
                 <h3 className="card-title">Upload</h3>
-                <p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>
+                {windowWidth >= 768 && (<p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>)}
               </div>
             </div>
-          </div>
-          <div className="col-md-4">
             <div className="card">
               <div className="card-body">
                 <img src={clipIcon} alt="ClipIt" className="icon" />
                 <h3 className="card-title">ClipIt</h3>
-                <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it with 1,000+ options of customization including effects and audio.</p>
+                {windowWidth >= 768 && ( <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it with 1,000+ options of customization including effects and audio.</p>)}
               </div>
             </div>
-          </div>
-          <div className="col-md-4">
             <div className="card">
               <div className="card-body">
                 <img src={shareIcon} alt="Share It" className="icon" />
                 <h3 className="card-title">Share It</h3>
-                <p className="card-text">After choosing and clipping your videos you can simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>
+                {windowWidth >= 768 && (<p className="card-text">After choosing and clipping your videos you can simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>)}
               </div>
             </div>
-          </div>
         </div>
       </div>
     </div>
