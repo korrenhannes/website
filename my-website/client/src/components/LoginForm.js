@@ -13,13 +13,6 @@ function LoginForm({ onLoginSuccess }) {
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(''); // State for handling login errors
   const navigate = useNavigate();
-
-  // const storeUserDataAndNavigate = (token, userId, email) => {
-  //   localStorage.setItem('token', token);
-  //   localStorage.setItem('userId', userId);
-  //   localStorage.setItem('email', email); // Storing the user email
-  //   navigate('/cloud-api');
-  // };
   
 
   const handleSubmit = async (event) => {

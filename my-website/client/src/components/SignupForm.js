@@ -8,7 +8,7 @@ import '../styles/NavigationBar.css';
 import '../styles/LoginForm.css'; // Import the new CSS styles for consistency with LoginForm
 
 
-function SignupForm() {
+function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,7 +27,7 @@ function SignupForm() {
     try {
       // Example for signup
       await api.post('/auth/signup', { email, password }).then(response => {
-        localStorage.setItem('token', response.data.token);
+        onSignupSuccess(response.data);
         navigate('/offers');
       });
     } catch (error) {

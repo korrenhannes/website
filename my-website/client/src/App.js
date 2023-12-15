@@ -51,7 +51,8 @@ function App() {
 
   const handleSignupSuccess = (data) => {
     console.log('Signed up user:', data);
-    // Handle signup success (similar to login, if applicable)
+    localStorage.setItem('token', data.token); // Assuming the token is in the data response
+    setIsLoggedIn(true);
   };
 
   const handleLogoutSuccess = () => {
