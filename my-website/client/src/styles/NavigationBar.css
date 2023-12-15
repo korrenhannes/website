@@ -54,9 +54,9 @@
 
 .hamburger div {
   background-color:#2878b5;
-  height: 3px;
+  height: 4px; /* Make lines thicker */
   width: 25px;
-  margin: 5px 0;
+  margin: 3px 0; /* Reduce space between lines */
   border-radius: 3px;
   transition: all 0.3s ease;
 }
@@ -105,7 +105,20 @@
     display: none;
     flex: 1;
     justify-content: center;
+    transition: all 0.3s ease;
   }
+  .hamburger.open div:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  
+  .hamburger.open div:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.open div:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+  
 
   .nav-links.active {
     justify-items: center;
@@ -114,13 +127,14 @@
     position:fixed;
     top: 50px; /* Adjust based on your nav bar height */
     right: 0;
-    margin-top: 16px;
+    margin-top: 10px;
     margin-right: 2%;
     background-color: #ffffff;
     width: 37%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 1em 1em;
     box-sizing: border-box; /* To include padding in width */
+    border-radius: 20%;
   }
   .nav-links.active .nav-signup{
 

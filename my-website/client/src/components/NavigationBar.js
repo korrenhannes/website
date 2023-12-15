@@ -102,16 +102,17 @@ const NavigationBar = ({ timeLeft, isLoggedIn, onLogoutSuccess }) => {
         </div>
       )} 
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>limited deals</Link>}
+        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>limited deals</Link>} {/* remember to add error handling and a message when a guest presses on this button */}
         {!isMobile && <Countdown timeLeft={timeLeft} />} 
         <Link to="/how-it-works" onClick={handleLinkClick}>Why us</Link>
         <Link to="/partner" onClick={handleLinkClick}>Partner with us</Link>
         <Link to="/support" onClick={handleLinkClick}>Support</Link>
+        <Link to="/my-videos" onClick={handleLinkClick}>my videos</Link> {/* remember to add a condition to show this link only to regular or premium users, and to create the page */}
         {isMobile && renderAuthLinks()}
       </div>
       <div className="nav-actions">
         {!isMobile && renderAuthLinks()}
-        <button className="hamburger" onClick={toggleMobileMenu}>
+        <button className={`hamburger ${showMobileMenu ? 'open' : ''}`}  onClick={toggleMobileMenu}>
           <div></div>
           <div></div>
           <div></div>
