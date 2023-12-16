@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
-import '../styles/FreeUserPage.css';
+import styles from '../styles/FreeUserPage.module.css';
 import NextVideoButton from './NextVideoButton'; // Import the custom button
 
 // Register the custom button with Video.js
@@ -248,16 +248,16 @@ useEffect(() => {
 
 
   return (
-    <div className="full-screen-container">
+    <div className={styles.fullScreenContainer}>
       <NavigationBar />
 
-      <div className="video-container1" ref={videoContainerRef}>
+      <div className={styles.videocontainer1} ref={videoContainerRef}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
-        <button onClick={handleDownloadVideo} className="download-button">Download Video</button>
+        <button onClick={handleDownloadVideo} className={styles.downloadbutton}>Download Video</button>
 
       </div>
 
-      <div className="video-ui-overlay">
+      <div className={styles.videouioverlay}>
         {/* Elements for video title, user interaction, etc. */}
       </div>
 

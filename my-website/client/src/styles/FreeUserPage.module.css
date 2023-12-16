@@ -1,4 +1,4 @@
-.full-screen-container {
+.fullscreencontainer {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -9,7 +9,7 @@
   margin-top: 50px; /* Margin from the top of the page */
 }
 
-.video-container1 {
+.videocontainer1 {
   display: flex;
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
@@ -24,7 +24,7 @@
 }
 
 
-.download-button {
+.downloadbutton {
   border: none;
   background-color: #007bff; /* Bootstrap primary color */
   color: white;
@@ -37,7 +37,7 @@
   transition: background-color 0.3s;
 }
 
-.download-button:hover {
+.downloadbutton:hover {
   background-color: #0056b3; /* Darken button on hover */
 }
 
@@ -48,21 +48,21 @@
     width: 80%; /* Larger percentage for smaller screens */
   }
 
-  .video-container1 { /* Update this as well */
+  .videocontainer1 { /* Update this as well */
     width: 100%; /* Adapt width on smaller screens */
     padding-top: 56.25%; /* Maintain aspect ratio */
   }
 
-  .full-screen-container {
+  .fullscreencontainer {
       padding: 10px;
   }
 
-  .video-container {
+  .videocontainer {
       width: 90%; /* Increase width on smaller screens for better visibility */
       padding-top: 50%; /* Adjust aspect ratio for smaller screens */
   }
 
-  .download-button {
+  .downloadbutton {
       font-size: 14px;
       padding: 8px 15px;
   }

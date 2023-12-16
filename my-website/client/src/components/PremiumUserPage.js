@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
 import NavigationBar from './NavigationBar';
-import '../styles/FreeUserPage.css';
 import '../styles/NavigationBar.css';
 
 function FreeUserPage() {
