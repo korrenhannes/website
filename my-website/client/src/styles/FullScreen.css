@@ -92,7 +92,6 @@
 @media (max-width: 480px) {
   .foreground-content {
     position: relative;
-    justify-content:flex-start; /* Align items to the start of the container */
     padding-top: 50%; /* Add some padding at the top to position content higher */
     width:max-content;
   }
@@ -107,7 +106,6 @@
     transform: translate(-50%, -50%);
     width:max-content;
     text-align: center;
-    padding-bottom: 75%;
   }
 }
 
