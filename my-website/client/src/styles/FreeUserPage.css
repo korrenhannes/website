@@ -1,6 +1,3 @@
-/* FreeUserPage.css */
-
-
 .full-screen-container {
   display: flex;
   flex-direction: column;
@@ -12,25 +9,10 @@
   margin-top: 50px; /* Margin from the top of the page */
 }
 
-.video-container {
-  width: 60%; /* Further reduced width to make video smaller */
-  max-width: 500px; /* Adjust max-width for smaller video size */
-  position: relative;
-  padding-top: 30%; /* Adjust aspect ratio */
-  margin-bottom: 20px;
-  border-radius: 25px; /* Rounded corners like a phone */
-  overflow: hidden; /* Ensures video corners are also rounded */
-  margin: auto; /* Centering the video container */
-}
-
-#background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Centering the video inside the container */
-  width: 100%;
+/* Video.js Fluid class for responsive video */
+.video-js.vjs-fluid {
+  width: 50%;
   height: auto;
-  border-radius: 25px; /* Rounded corners */
 }
 
 .download-button {
