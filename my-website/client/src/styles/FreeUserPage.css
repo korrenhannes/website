@@ -1,6 +1,3 @@
-/* FreeUserPage.css */
-
-
 .full-screen-container {
   display: flex;
   flex-direction: column;
@@ -12,26 +9,20 @@
   margin-top: 50px; /* Margin from the top of the page */
 }
 
-.video-container {
-  width: 60%; /* Further reduced width to make video smaller */
-  max-width: 500px; /* Adjust max-width for smaller video size */
-  position: relative;
-  padding-top: 30%; /* Adjust aspect ratio */
-  margin-bottom: 20px;
-  border-radius: 25px; /* Rounded corners like a phone */
-  overflow: hidden; /* Ensures video corners are also rounded */
-  margin: auto; /* Centering the video container */
+.video-container1 {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Full viewport height */
+  width: 100%; /* Full width */
 }
 
-#background-video {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Centering the video inside the container */
-  width: 100%;
-  height: auto;
-  border-radius: 25px; /* Rounded corners */
+.video-js.vjs-fluid {
+  position: relative; /* Relative positioning */
+  width: 50%; /* Adjust width as needed */
+  height: auto; /* Height auto for maintaining aspect ratio */
 }
+
 
 .download-button {
   border: none;
@@ -52,6 +43,16 @@
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
+  
+  .video-js.vjs-fluid {
+    width: 80%; /* Larger percentage for smaller screens */
+  }
+
+  .video-container1 { /* Update this as well */
+    width: 100%; /* Adapt width on smaller screens */
+    padding-top: 56.25%; /* Maintain aspect ratio */
+  }
+
   .full-screen-container {
       padding: 10px;
   }
