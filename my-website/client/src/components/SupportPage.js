@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import '../styles/Support.css'; // New CSS file for support page
 import CloudAPIPage from './CloudAPIPage';

@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
-import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
+import styles from '../styles/FullScreen.module.css';
 
 
 
@@ -180,32 +180,33 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   };
 
   return (
-        <div className="full-screen-container">
-          <div className="foreground-content">
-            <h1>creating content has never been easier</h1>
-            <h2>just clipIt</h2>
-            <div className="search-container">
-              <form onSubmit={handleSearchSubmit} className="search-form">
-                <div className="input-logo-container">
-                  <input
-                    type="text"
-                    id="google-like-search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Enter search query"
-                  />
-                  <img
-                    src="\magnifying-glass_2015241.png"
-                    alt="Logo"
-                    className="search-logo"
-                    onClick={handleLogoClick}
-                  />
-                </div>
-              </form>
-              <p className="try-it-text">enter url to try it</p>
+    <div className={styles['full-screen-container']}>
+      <div className={styles['foreground-content']}>
+        <h1>creating content has never been easier</h1>
+        <h2>just clipIt</h2>
+        <div className={styles['search-container']}>
+          <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
+            <div className={styles['input-logo-container']}>
+              <input
+                type="text"
+                id={styles['google-like-search']}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Enter search query"
+              />
+              <img
+                src="\magnifying-glass_2015241.png"
+                alt="Logo"
+                className={styles['search-logo']}
+                onClick={handleLogoClick}
+              />
             </div>
-          </div>
+          </form>
+          <p className={styles['try-it-text']}>enter URL to try it</p>
         </div>
+      </div>
+    </div>
+
   );
 }
 
