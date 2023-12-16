@@ -6,6 +6,8 @@ import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
+import { Controller, Scene } from 'react-scrollmagic-r18';
+
 
 
 
@@ -14,74 +16,16 @@ function CloudAPIPage() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
-  const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu';
-  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
-  const fetchVideos = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const randomPage = Math.floor(Math.random() * 10) + 1;
-      const response = await axios.get(PEXELS_API_URL, {
-        headers: {
-          Authorization: PEXELS_API_KEY
-        },
-        params: {
-          per_page: 2,
-          page: randomPage
-        }
-      });
-      const backgroundVideo = response.data.videos[0].video_files[0].link;
-      backgroundVideoRef.current.src = backgroundVideo;
-    } catch (err) {
-      setError('Error fetching videos from Pexels: ' + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ 
 
-  const fetchUserPaymentPlan = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const userEmail = localStorage.getItem('email'); // Retrieve userEmail from localStorage
-      if (!token || !userEmail) {
-        console.log('No token or user email found, defaulting to free plan');
-        setUserPaymentPlan('free');
-        return;
-      }
   
-      const response = await axios.get(`http://localhost:3000/api/auth/user/payment-plan?email=${userEmail}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-  
-      if (response && response.data && response.data.paymentPlan) {
-        setUserPaymentPlan(response.data.paymentPlan);
-      } else {
-        console.log('No payment plan info found, defaulting to free plan');
-        setUserPaymentPlan('free');
-      }
-    } catch (error) {
-      console.error('Error fetching user payment plan:', error.message);
-      setUserPaymentPlan('free');
-    }
-  };
   
 
   useEffect(() => {
-    fetchVideos();
-    fetchUserPaymentPlan();
-
-    const handleDoubleClick = () => {
-      fetchVideos();
-    };
-
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
@@ -103,13 +47,11 @@ function CloudAPIPage() {
       }
     };
 
-    window.addEventListener('dblclick', handleDoubleClick);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
@@ -242,35 +184,40 @@ function CloudAPIPage() {
   };
 
   return (
-    <div className="full-screen-container">
-      <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
-      <div className="foreground-content">
-        <h1>creating content has never been easier</h1>
-        <h2>just clipIt</h2>
-        <div className="search-container">
-          <form onSubmit={handleSearchSubmit} className="search-form">
-            <div className="input-logo-container">
-              <input
-                type="text"
-                id="google-like-search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter search query"
-              />
-              <img
-                src="\magnifying-glass_2015241.png"
-                alt="Logo"
-                className="search-logo"
-                onClick={handleLogoClick}
-              />
+    <Controller>
+      <Scene triggerHook="onCenter" duration={300} offset={-100}>
+        {(progress) => (
+          <div className="full-screen-container" style={{ opacity: progress, transform: `scale(${progress})` }}>
+            <div className="foreground-content">
+              <h1>creating content has never been easier</h1>
+              <h2>just clipIt</h2>
+              <div className="search-container">
+                <form onSubmit={handleSearchSubmit} className="search-form">
+                  <div className="input-logo-container">
+                    <input
+                      type="text"
+                      id="google-like-search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Enter search query"
+                    />
+                    <img
+                      src="\magnifying-glass_2015241.png"
+                      alt="Logo"
+                      className="search-logo"
+                      onClick={handleLogoClick}
+                    />
+                  </div>
+                </form>
+                <p className="try-it-text">enter url to try it</p>
+              </div>
+              {isLoading && <p>Loading...</p>}
+              {error && <p>Error: {error}</p>}
             </div>
-          </form>
-          <p className="try-it-text">enter url to try it</p>
-        </div>
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-      </div>
-    </div>
+          </div>
+      )}
+      </Scene>
+    </Controller>
   );
 }
 

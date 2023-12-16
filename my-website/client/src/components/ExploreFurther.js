@@ -7,6 +7,8 @@ import NavigationBar from './NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
+import { Controller, Scene } from 'react-scrollmagic-r18';
+
 
 const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
@@ -150,20 +152,26 @@ function ExploreFurther() {
   }, []);
 
   return (
-    <div className="explore-further-container">
-      <div className="main-content">
-         {/* Render content-heading outside ContentSection for mobile screens */}
-        {windowWidth <= 768 && (
-          <h2 className="content-heading">“Content creation has never been this easy!”</h2>
-        )}
-        <div className="video-tab-container">
-          <video ref={videoRef} className="video-js" />
-        </div>
-        <ContentSection windowWidth={windowWidth} />
-      </div>
-      {isLoading && <div className="text-center mt-3">Loading...</div>}
-      {error && <div className="text-danger text-center mt-3">{error}</div>}
-    </div>
+    <Controller>
+      <Scene triggerHook="onCenter" duration={300} offset={-100}>
+        {(progress) => (
+          <div className="explore-further-container" style={{ opacity: progress, transform: `scale(${progress})` }}>
+            <div className="main-content">
+              {/* Render content-heading outside ContentSection for mobile screens */}
+              {windowWidth <= 768 && (
+                <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+              )}
+              <div className="video-tab-container">
+                <video ref={videoRef} className="video-js" />
+              </div>
+              <ContentSection windowWidth={windowWidth} />
+            </div>
+            {isLoading && <div className="text-center mt-3">Loading...</div>}
+            {error && <div className="text-danger text-center mt-3">{error}</div>}
+          </div>
+    )}
+    </Scene>
+  </Controller>
   );
 }
 

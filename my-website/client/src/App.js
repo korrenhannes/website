@@ -20,6 +20,8 @@ import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
+import { Link } from 'react-scroll'; // Add this line
+
 
 
 
