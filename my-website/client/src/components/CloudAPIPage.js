@@ -6,7 +6,6 @@ import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
-import { Controller, Scene } from 'react-scrollmagic-r18';
 
 
 
@@ -56,7 +55,7 @@ function CloudAPIPage() {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, []);
+  }, [navigate]);
 
   const handleSearchSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -184,40 +183,32 @@ function CloudAPIPage() {
   };
 
   return (
-    <Controller>
-      <Scene triggerHook="onCenter" duration={300} offset={-100}>
-        {(progress) => (
-          <div className="full-screen-container" style={{ opacity: progress, transform: `scale(${progress})` }}>
-            <div className="foreground-content">
-              <h1>creating content has never been easier</h1>
-              <h2>just clipIt</h2>
-              <div className="search-container">
-                <form onSubmit={handleSearchSubmit} className="search-form">
-                  <div className="input-logo-container">
-                    <input
-                      type="text"
-                      id="google-like-search"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Enter search query"
-                    />
-                    <img
-                      src="\magnifying-glass_2015241.png"
-                      alt="Logo"
-                      className="search-logo"
-                      onClick={handleLogoClick}
-                    />
-                  </div>
-                </form>
-                <p className="try-it-text">enter url to try it</p>
-              </div>
-              {isLoading && <p>Loading...</p>}
-              {error && <p>Error: {error}</p>}
+        <div className="full-screen-container">
+          <div className="foreground-content">
+            <h1>creating content has never been easier</h1>
+            <h2>just clipIt</h2>
+            <div className="search-container">
+              <form onSubmit={handleSearchSubmit} className="search-form">
+                <div className="input-logo-container">
+                  <input
+                    type="text"
+                    id="google-like-search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Enter search query"
+                  />
+                  <img
+                    src="\magnifying-glass_2015241.png"
+                    alt="Logo"
+                    className="search-logo"
+                    onClick={handleLogoClick}
+                  />
+                </div>
+              </form>
+              <p className="try-it-text">enter url to try it</p>
             </div>
           </div>
-      )}
-      </Scene>
-    </Controller>
+        </div>
   );
 }
 
