@@ -21,67 +21,12 @@ function CloudAPIPage() {
   const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu';
   const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
-  const fetchVideos = async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const randomPage = Math.floor(Math.random() * 10) + 1;
-      const response = await axios.get(PEXELS_API_URL, {
-        headers: {
-          Authorization: PEXELS_API_KEY
-        },
-        params: {
-          per_page: 2,
-          page: randomPage
-        }
-      });
-      const backgroundVideo = response.data.videos[0].video_files[0].link;
-      backgroundVideoRef.current.src = backgroundVideo;
-    } catch (err) {
-      setError('Error fetching videos from Pexels: ' + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ 
 
-  const fetchUserPaymentPlan = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const userEmail = localStorage.getItem('email'); // Retrieve userEmail from localStorage
-      if (!token || !userEmail) {
-        console.log('No token or user email found, defaulting to free plan');
-        setUserPaymentPlan('free');
-        return;
-      }
   
-      const response = await axios.get(`http://localhost:3000/api/auth/user/payment-plan?email=${userEmail}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-  
-      if (response && response.data && response.data.paymentPlan) {
-        setUserPaymentPlan(response.data.paymentPlan);
-      } else {
-        console.log('No payment plan info found, defaulting to free plan');
-        setUserPaymentPlan('free');
-      }
-    } catch (error) {
-      console.error('Error fetching user payment plan:', error.message);
-      setUserPaymentPlan('free');
-    }
-  };
   
 
   useEffect(() => {
-    fetchVideos();
-    fetchUserPaymentPlan();
-
-    const handleDoubleClick = () => {
-      fetchVideos();
-    };
-
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
