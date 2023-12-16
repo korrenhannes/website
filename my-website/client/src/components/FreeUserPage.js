@@ -10,7 +10,10 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 import '../styles/FreeUserPage.css';
+import NextVideoButton from './NextVideoButton'; // Import the custom button
 
+// Register the custom button with Video.js
+videojs.registerComponent('NextVideoButton', NextVideoButton);
 
 function FreeUserPage() {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -47,14 +50,23 @@ function FreeUserPage() {
           preload: true
         }, () => {
           console.log('Player is ready');
+          // Add NextVideoButton to the player
+          playerRef.current.getChild('controlBar').addChild('NextVideoButton', {});
+          
           fetchVideosFromGCloud();
         });
-
+  
         playerRef.current.on('ended', () => {
+          fetchVideosFromGCloud();
+        });
+  
+        // Handle 'nextVideo' event
+        playerRef.current.on('nextVideo', () => {
           loadNextVideo();
         });
       }
     }, 0);
+  
 
     return () => {
       if (playerRef.current) {
@@ -71,6 +83,7 @@ function FreeUserPage() {
   
     let emailToUse = userEmail;
   
+    // Check for email in the state, if not present, decode from the token
     if (!emailToUse) {
       const token = localStorage.getItem('token');
       if (token) {
@@ -87,31 +100,35 @@ function FreeUserPage() {
       }
     }
   
+    // Redirect if email is not found
     if (!emailToUse) {
       setError('User email not found. Redirecting to signup...');
       setIsLoading(false);
-      navigate('/signup'); // Redirect to signup if no email is found
+      navigate('/signup');
       return;
     }
   
+    // Fetch the signed URLs
     try {
       const response = await apiFlask.get('/signed-urls', {
         params: {
           directory: `${emailToUse}/CurrentRun`
         },
         headers: {
-          'User-Email': emailToUse  // Include the User-Email header
+          'User-Email': emailToUse
         }
       });
   
       let signedUrls = response.data.signedUrls;
+  
+      // Fallback to undefined directory if no URLs found
       if (!signedUrls || signedUrls.length === 0) {
         const responseFromUndefined = await apiFlask.get('/signed-urls', {
           params: {
             directory: `undefined/`
           },
           headers: {
-            'User-Email': emailToUse  // Include the User-Email header
+            'User-Email': emailToUse
           }
         });
   
@@ -125,50 +142,61 @@ function FreeUserPage() {
       }
   
       setVideos(signedUrls);
-      loadVideo(signedUrls[0]);
+      setCurrentVideoIndex(0); // Reset the index to start from the first video
+      loadVideo(signedUrls[0]); // Load the first video
       setUserVideosLoaded(true);
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
+      console.error('Error fetching videos:', err);
     } finally {
       setIsLoading(false);
     }
   };
   
-
-  
   
   
   const loadVideo = (videoUrl) => {
-    console.log("Loading video URL:", videoUrl); // Log the URL being loaded
+    if (!videoUrl) {
+      console.error('Invalid video URL');
+      return;
+    }
+  
+    console.log("Loading video URL:", videoUrl);
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
-    const playPromise = playerRef.current.play();
   
+    const playPromise = playerRef.current.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         // Automatic playback started successfully.
       }).catch(error => {
         console.error('Error attempting to play video:', error);
-        // Handle the error for autoplay restrictions.
-        // For example, show a play button to the user to start playback manually.
       });
     }
   };
   
 
-  const loadNextVideo = async () => {
-    let nextIndex = currentVideoIndex + 1;
-
-    if (nextIndex >= videos.length) {
-      nextIndex = 0;
-      setCurrentVideoIndex(nextIndex);
-      loadVideo(videos[nextIndex]);
-    } else {
-      setCurrentVideoIndex(nextIndex);
-      loadVideo(videos[nextIndex]);
-    }
+  const loadNextVideo = () => {
+    setCurrentVideoIndex(prevIndex => {
+      // Check if the videos array is empty
+      if (videos.length === 0) {
+        console.error('Videos array is empty.');
+        return prevIndex; // Return the previous index if the array is empty
+      }
+  
+      let nextIndex = (prevIndex + 1) % videos.length;
+  
+      const nextVideoUrl = videos[nextIndex];
+      if (nextVideoUrl) {
+        console.log('Next video URL:', nextVideoUrl);
+        loadVideo(nextVideoUrl);
+      } else {
+        console.error('Invalid video URL at index:', nextIndex);
+      }
+  
+      return nextIndex;
+    });
   };
-
   
 
   const handleKeyPress = (event) => {
@@ -179,7 +207,7 @@ function FreeUserPage() {
         loadNextVideo();
       }
     }
-};
+  };
 
 useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
