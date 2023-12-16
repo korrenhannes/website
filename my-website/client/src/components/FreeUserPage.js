@@ -8,8 +8,9 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
 import NavigationBar from './NavigationBar';
-import '../styles/FreeUserPage.css';
 import '../styles/NavigationBar.css';
+import '../styles/FreeUserPage.css';
+
 
 function FreeUserPage() {
   const navigate = useNavigate(); // Initialize useNavigate
@@ -42,7 +43,8 @@ function FreeUserPage() {
           muted: true,
           controls: false,
           fluid: true,
-          loop: false
+          loop: true,
+          preload: true
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();
@@ -222,7 +224,7 @@ useEffect(() => {
       <NavigationBar />
 
       <div className="video-container" ref={videoContainerRef}>
-        <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered" id="background-video"></video>
+        <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
       </div>
 
       <div className="video-ui-overlay">
