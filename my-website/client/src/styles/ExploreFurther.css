@@ -7,9 +7,14 @@
     align-items: center; /* Center content vertically */
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     color: #333; /* Dark grey color for text */
-    min-height: 100vh; /* Full viewport height */
-    padding: 2rem; /* Padding on all sides */
-    margin-top: 2%;
+    min-height: 100%; /* Full viewport height */
+    padding: 0; /* Padding on all sides */
+    margin: 0;
+    position: absolute; /* Adding absolute positioning */
+    width: 100%;       /* Full viewport width */
+    top: 0;
+    left: 0;
+    overflow: hidden; /* This prevents internal scrolling */
 }
 
 /* The navigation bar styles remain the same */
@@ -32,6 +37,7 @@
     overflow: hidden; /* Ensure the video doesn't overflow the rounded corners */
     position: relative; /* Keep this to maintain the layout */
     margin: auto; /* Center the container in the parent */
+    margin-top: 45px;
 }
 
 /* Ensure the video fills the container and respects the rounded corners */
@@ -89,9 +95,6 @@
 
 /* Responsive design adjustments */
 @media (max-width: 768px) {
-    .explore-further-container{
-        margin-top: 5%;
-    }
     .explore-further-container .main-content {
         flex-direction: column-reverse; /* Stack video and content vertically on mobile */
     }
@@ -131,14 +134,12 @@
     .explore-further-container .main-content .content-heading{
         position: absolute;
         bottom: 70%;
+        margin-left: 15px;
         
     }
     
 }
 @media (max-width: 480px) {
-    .explore-further-container{
-        margin-top: 10%;
-    }
     .explore-further-container .main-content {
         flex-direction: column-reverse; /* Stack video and content vertically on mobile */
     }
