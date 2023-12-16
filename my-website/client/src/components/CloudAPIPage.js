@@ -6,6 +6,8 @@ import '../styles/FullScreen.css';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
+import { Controller, Scene } from 'react-scrollmagic-r18';
+
 
 
 
@@ -48,13 +50,11 @@ function CloudAPIPage() {
       }
     };
 
-    window.addEventListener('dblclick', handleDoubleClick);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('dblclick', handleDoubleClick);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
@@ -187,35 +187,41 @@ function CloudAPIPage() {
   };
 
   return (
-    <div className="full-screen-container">
-      <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
-      <div className="foreground-content">
-        <h1>creating content has never been easier</h1>
-        <h2>just clipIt</h2>
-        <div className="search-container">
-          <form onSubmit={handleSearchSubmit} className="search-form">
-            <div className="input-logo-container">
-              <input
-                type="text"
-                id="google-like-search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter search query"
-              />
-              <img
-                src="\magnifying-glass_2015241.png"
-                alt="Logo"
-                className="search-logo"
-                onClick={handleLogoClick}
-              />
+    <Controller>
+      <Scene triggerHook="onCenter" duration={300} offset={-100}>
+        {(progress) => (
+          <div className="full-screen-container" style={{ opacity: progress, transform: `scale(${progress})` }}>
+            <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
+            <div className="foreground-content">
+              <h1>creating content has never been easier</h1>
+              <h2>just clipIt</h2>
+              <div className="search-container">
+                <form onSubmit={handleSearchSubmit} className="search-form">
+                  <div className="input-logo-container">
+                    <input
+                      type="text"
+                      id="google-like-search"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Enter search query"
+                    />
+                    <img
+                      src="\magnifying-glass_2015241.png"
+                      alt="Logo"
+                      className="search-logo"
+                      onClick={handleLogoClick}
+                    />
+                  </div>
+                </form>
+                <p className="try-it-text">enter url to try it</p>
+              </div>
+              {isLoading && <p>Loading...</p>}
+              {error && <p>Error: {error}</p>}
             </div>
-          </form>
-          <p className="try-it-text">enter url to try it</p>
-        </div>
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-      </div>
-    </div>
+          </div>
+      )}
+      </Scene>
+    </Controller>
   );
 }
 
