@@ -16,12 +16,9 @@ function CloudAPIPage() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
-  const backgroundVideoRef = useRef(null);
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
-  const PEXELS_API_KEY = 'hKTWEteFrhWt6vY5ItuDO4ZUwVx2jvnfr0wtDgeqhIyedZyDXVDutynu';
-  const PEXELS_API_URL = 'https://api.pexels.com/videos/popular';
 
  
 
@@ -191,7 +188,6 @@ function CloudAPIPage() {
       <Scene triggerHook="onCenter" duration={300} offset={-100}>
         {(progress) => (
           <div className="full-screen-container" style={{ opacity: progress, transform: `scale(${progress})` }}>
-            <video ref={backgroundVideoRef} autoPlay muted loop id="background-video"></video>
             <div className="foreground-content">
               <h1>creating content has never been easier</h1>
               <h2>just clipIt</h2>
