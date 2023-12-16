@@ -41,7 +41,7 @@ function FreeUserPage() {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
           muted: true,
-          controls: false,
+          controls: true,
           fluid: true,
           loop: true,
           preload: true
@@ -223,15 +223,16 @@ useEffect(() => {
     <div className="full-screen-container">
       <NavigationBar />
 
-      <div className="video-container" ref={videoContainerRef}>
+      <div className="video-container1" ref={videoContainerRef}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
+        <button onClick={handleDownloadVideo} className="download-button">Download Video</button>
+
       </div>
 
       <div className="video-ui-overlay">
         {/* Elements for video title, user interaction, etc. */}
       </div>
 
-      <button onClick={handleDownloadVideo} className="download-button">Download Video</button>
 
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
