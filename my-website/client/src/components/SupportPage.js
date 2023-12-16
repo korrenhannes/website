@@ -26,7 +26,7 @@ function SupportPage() {
   return (
       <div className="full-screen-container-support">
         <footer className="top-half">
-          <CloudAPIPage />
+          <CloudAPIPage enableScrollHandling={false} />
         </footer>
         <footer className="support-footer">
           <div className="footer-content">

@@ -10,7 +10,7 @@ import Fingerprint2 from 'fingerprintjs2';
 
 
 
-function CloudAPIPage() {
+function CloudAPIPage({ enableScrollHandling = true }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,13 +18,10 @@ function CloudAPIPage() {
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
-
- 
-
-  
-  
-
   useEffect(() => {
+    if (!enableScrollHandling) {
+      return;
+    }
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
