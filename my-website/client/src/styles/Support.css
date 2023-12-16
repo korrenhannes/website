@@ -1,110 +1,98 @@
-.full-screen-container-support {
+/* Support.css */
+
+/* General styles for the SupportPage component */
+.support-page {
   display: flex;
   flex-direction: column;
   height: 100vh; /* Full height of the viewport */
   margin: 0;
   padding: 0;
   overflow: hidden; /* Prevent scrolling */
+  position: relative; /* Set relative for positioning the video */
   width: 100%;
-
 }
-.top-half{
-  position:relative;
-  width: 100%;
-  background-color: #f8f9fa; /* Light background for the support section */
-  display:flex;
+
+/* Styles for the video background */
+.support-page .support-background-video {
+  position: absolute; /* Absolute positioning to cover the full screen */
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -1; /* Set to -1 so content goes over the video */
+}
+
+/* Styles for the upper half of the page */
+.support-page .top-half {
+  flex: 4; /* Takes up 4 times the space compared to flex: 1 */
+  overflow: hidden;
+  display: flex;
   align-items: center;
-  padding: 0px;
-  box-sizing: border-box;
-  margin: 0px;
-  flex:4; /* Takes up only the space it needs */
-  overflow: hidden;
+  justify-content: center;
+  background-color: transparent; /* Since the video is in the background */
 }
 
-.support-content {
-  text-align: center;
-  max-width: 600px;
-}
-
-.support-content h3 {
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.support-content p {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.support-content a {
-  color: #007bff;
-  text-decoration: none;
-  margin-bottom: 20px;
-  display: inline-block;
-}
-
-.support-content a:hover {
-  text-decoration: underline;
-}
-
-/* You can add more styling as per your need */
-.support-footer {
-  background-color: #222; /* Dark background as seen in your image */
+/* Styles for the support footer */
+.support-page .support-footer {
+  background-color: #222; /* Dark background for the footer */
   color: white;
-  padding:  0px;
-  width: 100%;
-  flex: 2; /* Takes up remaining space */
+  flex: 1; /* Takes up 1 unit of space */
   overflow: hidden;
-  position: relative;
+  padding: 20px; /* Padding for content within footer */
+  position: relative; /* Ensure the footer is positioned correctly */
 }
 
-.footer-content {
+/* Styles for content within the footer */
+.support-page .footer-content {
   display: flex;
   justify-content: space-around;
   max-width: 1200px;
   margin: 0 auto;
-  margin-top: 0px;
-  overflow-y: auto;
 }
 
-.footer-section {
+/* Styles for each section within the footer */
+.support-page .footer-section {
   display: flex;
   flex-direction: column;
 }
 
-.footer-section h4 {
+.support-page .footer-section h4 {
   font-size: 1.2em;
   margin-bottom: 20px;
 }
 
-.footer-section ul {
+.support-page .footer-section ul {
   list-style: none;
   padding: 0;
 }
 
-.footer-section ul li {
+.support-page .footer-section ul li {
   margin-bottom: 10px;
 }
 
-.footer-section ul li a {
+.support-page .footer-section ul li a {
   color: #aaa;
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
-.footer-section ul li a:hover {
+.support-page .footer-section ul li a:hover {
   color: #fff;
   text-decoration: underline;
 }
 
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
-  .footer-content {
+  .support-page .footer-content {
     flex-direction: column;
     align-items: center;
   }
 
-  .footer-section {
+  .support-page .footer-section {
     margin-bottom: 20px;
   }
 }
+
+/* Additional styles can be added below as needed */

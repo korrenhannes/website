@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
@@ -194,7 +193,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
       </video>
       <div className={styles['foreground-content']}>
         <h1>creating content has never been easier</h1>
-        <h2>just clipIt</h2>
+        <h2>Simply clipIt</h2>
         <div className={styles['search-container']}>
           <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
             <div className={styles['input-logo-container']}>
