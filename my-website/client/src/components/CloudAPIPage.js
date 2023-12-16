@@ -181,6 +181,17 @@ function CloudAPIPage({ enableScrollHandling = true }) {
 
   return (
     <div className={styles['full-screen-container']}>
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        id="background-video"
+        className={styles['background-video']}
+      >
+        <source src="\Simply ClipIt..mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <div className={styles['foreground-content']}>
         <h1>creating content has never been easier</h1>
         <h2>just clipIt</h2>
