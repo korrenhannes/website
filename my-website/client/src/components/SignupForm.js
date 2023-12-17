@@ -12,6 +12,7 @@ function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmationCode, setConfirmationCode] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -25,6 +26,12 @@ function SignupForm({ onSignupSuccess }) {
     }
 
     try {
+      // Request to send confirmation code
+      await api.post('/auth/send-confirmation', { email });
+
+      // Add a step to verify the confirmation code
+      await api.post('/auth/verify-confirmation', { email, confirmationCode });
+
       // Example for signup
       await api.post('/auth/signup', { email, password }).then(response => {
         onSignupSuccess(response.data);

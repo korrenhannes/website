@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   dayOfSubscription: { type: Number, required: false },
   isAffiliate: { type: Boolean, default: false },
   affiliateCode: { type: String, unique: true, sparse: true },
+  isConfirmed: { type: Boolean, default: false }, // Add this line to include the isConfirmed field
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   // Additional affiliate-specific fields can be added here
 });

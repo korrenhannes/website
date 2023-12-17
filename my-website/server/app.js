@@ -170,7 +170,26 @@ cron.schedule('0 0 * * *', async () => {
     console.error('Error in token renewal cron job:', error);
   }
 });
+// Confirm Email Route
+app.get('/confirm/:confirmationCode', async (req, res) => {
+  try {
+    const { confirmationCode } = req.params;
+    const user = await User.findOne({ confirmationCode });
 
+    if (!user) {
+      return res.status(404).send('Confirmation code not found');
+    }
+
+    // Mark the user as confirmed (you can add a field like 'isConfirmed' in the User model)
+    user.isConfirmed = true;
+    await user.save();
+
+    res.status(200).send('Email confirmed successfully');
+  } catch (error) {
+    console.error('Email confirmation error:', error);
+    res.status(500).send('Error confirming email');
+  }
+});
 // Route for video upload
 app.post('/upload-video', upload.single('video'), (req, res) => {
   if (!req.file) {
