@@ -46,4 +46,14 @@ api.getAffiliateData = async () => {
 };
 
 
+// Function to send confirmation code
+api.sendConfirmationCode = async (email) => {
+  return await api.post('/auth/send-confirmation', { email });
+};
+
+// Function to verify confirmation code
+api.verifyConfirmationCode = async (email, confirmationCode) => {
+  return await api.post('/auth/verify-confirmation', { email, confirmationCode });
+};
+
 export { api, apiFlask };

@@ -53,8 +53,8 @@ function App() {
 
   const handleSignupSuccess = (data) => {
     console.log('Signed up user:', data);
-    localStorage.setItem('token', data.token); // Assuming the token is in the data response
-    setIsLoggedIn(true);
+    // No immediate login after signup, user needs to confirm email
+    alert('Signup successful. Please check your email to confirm your account.');
   };
 
   const handleLogoutSuccess = () => {
