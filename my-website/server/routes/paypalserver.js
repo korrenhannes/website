@@ -17,7 +17,7 @@ router.use(express.json());
 function environment() {
   let clientId = process.env.REACT_APP_PAYPAL_CLIENT_ID;
   let clientSecret = process.env.REACT_APP_PAYPAL_CLIENT_SECRET;
-  return new paypal.core.SandboxEnvironment(clientId, clientSecret);
+  return new paypal.core.LiveEnvironment(clientId, clientSecret);
 }
 
 // PayPal HTTP client
@@ -35,7 +35,7 @@ router.post("/create-order", async (req, res) => {
       }
     }]
   });
-
+ 
   try {
     const response = await paypalClient.execute(request);
     console.log('response:',response.result.id);
