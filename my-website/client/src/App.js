@@ -21,6 +21,8 @@ import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
+import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
+
 
 
 
@@ -115,6 +117,7 @@ function App() {
             <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />
             <Route path="/partner" element={<PartnerWithUsPage />} />
             <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordPage />} /> 
           </Routes>
         </div>
       </Router>

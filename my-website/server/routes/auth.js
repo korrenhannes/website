@@ -21,6 +21,28 @@ function calculateEarnings(referredUsers) {
   return totalEarnings;
 }
 
+// Reset Password Route
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpires: { $gt: Date.now() } });
+    
+    if (!user) {
+      return res.status(400).send('Password reset token is invalid or has expired.');
+    }
+
+    user.password = password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).send('Your password has been changed.');
+  } catch (error) {
+    console.error("Error in reset password route:", error);
+    res.status(500).send('Error resetting password.');
+  }
+});
+
 // Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
   try {
