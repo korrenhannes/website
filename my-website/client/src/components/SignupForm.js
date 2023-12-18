@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../api'; // Importing the Axios instance for Flask
+import { api } from '../api'; // Ensure this is the correct import for your API calls
 import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
 import FacebookLogin from '@greatsumini/react-facebook-login'; // Import FacebookLogin
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
-import '../styles/LoginForm.css'; // Import the new CSS styles for consistency with LoginForm
-
+import '../styles/LoginForm.css'; // Import CSS styles
 
 function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
@@ -25,19 +24,19 @@ function SignupForm({ onSignupSuccess }) {
     }
 
     try {
-      // Example for signup
-      await api.post('/auth/signup', { email, password }).then(response => {
-        onSignupSuccess(response.data);
-        navigate('/offers');
-      });
+      const response = await api.post('/auth/signup', { email, password });
+      localStorage.setItem('userEmail', email); // Store email in local storage
+      onSignupSuccess(response.data);
+      navigate('/confirmation-wait'); // Navigate to confirmation-wait page
     } catch (error) {
       if (error.response && error.response.data) {
         setError("Signup failed: " + error.response.data.message);
       } else {
-        setError("Signup failed. Please try again.");
+        navigate('/confirmation-wait'); // Navigate to confirmation-wait page
       }
     }
   };
+
 
   const handleGoogleSignup = async (googleData) => {
     console.log("Google signup data:", googleData);

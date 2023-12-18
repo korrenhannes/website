@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Log = require('../models/logModel');
 const sendEmail = require('../utils/sendEmail');
+const sendConfirmationEmail = require('../utils/sendConfirmationEmail');
 const router = express.Router();
 
 // A more complex function to calculate earnings based on sales
@@ -145,14 +146,30 @@ router.post('/signup', async (req, res) => {
       return res.status(400).send('Email already in use');
     }
 
-    const user = new User({ email, password, paymentPlan: 'free' });
+    // Generate a confirmation code
+    const confirmationCode = crypto.randomBytes(20).toString('hex');
+
+    // Create a new user with the confirmation code
+    const user = new User({
+      email,
+      password, // Password is hashed in the User model pre-save hook
+      paymentPlan: 'free',
+      isConfirmed: false,
+      confirmationCode
+    });
+
     await user.save();
+
+    // Send a confirmation email
+    await sendConfirmationEmail(email, confirmationCode);
+
     const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret');
     await new Log({ action: 'User Signup', userEmail: email }).save();
-    res.status(201).send({ message: 'User created successfully', token });
+
+    res.status(201).send({ message: 'User created successfully. Please check your email to confirm your account.', token });
   } catch (error) {
     console.error("Signup error:", error);
-    res.status(400).send(error.message);
+    res.status(500).send('Error in user signup');
   }
 });
 
@@ -171,13 +188,93 @@ router.post('/login', async (req, res) => {
     // Log the login action
     await new Log({ action: 'User Login', userEmail: email }).save();
 
-    res.send({ token });
+    // Include the isConfirmed status in the response
+    res.send({ 
+      token,
+      isConfirmed: user.isConfirmed // Ensure this property exists on your User model
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(400).send(error.message);
   }
 });
 
+
+router.post('/send-confirmation', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if email is provided and valid
+    if (!email) {
+      return res.status(400).send('Email is required.');
+    }
+
+    // Log for debugging
+    console.log('Email received:', email);
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send('User not found.');
+    }
+
+    // Generate a new confirmation code
+    const confirmationCode = crypto.randomBytes(20).toString('hex');
+    user.confirmationCode = confirmationCode;
+    await user.save();
+
+    // Send the confirmation code via email
+    await sendConfirmationEmail(email, confirmationCode);
+
+    res.status(200).send('Confirmation code sent.');
+  } catch (error) {
+    console.error('Error in send-confirmation route:', error);
+    res.status(500).send('Error sending confirmation code.');
+  }
+});
+
+
+
+
+
+// Route to verify confirmation code
+router.post('/verify-confirmation', async (req, res) => {
+  const { email, confirmationCode } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send('User not found.');
+    }
+
+    if (user.confirmationCode === confirmationCode) {
+      user.isConfirmed = true;
+      await user.save();
+      res.status(200).send('Email successfully confirmed.');
+    } else {
+      res.status(400).send('Invalid confirmation code.');
+    }
+  } catch (error) {
+    console.error('Error in verify-confirmation route:', error);
+    res.status(500).send('Error verifying confirmation code.');
+  }
+});
+
+// Route to check if the user's email has been confirmed
+router.get('/check-confirmation', async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).json({ isConfirmed: user.isConfirmed });
+  } catch (error) {
+    console.error('Error in /check-confirmation route:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Update User's Payment Plan
 router.post('/update-plan', async (req, res) => {
