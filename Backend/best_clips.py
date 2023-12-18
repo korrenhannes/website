@@ -25,7 +25,10 @@ if os.path.exists('.env'):
 WHISPER_MODEL_FULL_TRANSCRIPT = "tiny.en"
 WHISPER_MODEL_INTERESTING_PARTS = "medium.en"
 
+LEXICON_NAME = 'vader_lexicon'
+
 openai_api_key = "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"
+openai_api_key = os.environ.get('OPENAI_API_KEY')
 FIRST_INP =  "I'm going to send you a trascript of a podcast as a list of words with indices. I want to make an interesting 30-60 second clip from the podcast.\nI want you to send me a starting index and an ending index (around 120-150 words) so that the content adheres to the AIDA formula: Attention, Interest, Desire, and Action, using a hook at the start, a value bomb in the middle and a call to action at the end.\nMAKE SURE THAT THE END IS COHERENT - **THE FINISH INDEX IS AT THE END OF A SENTENCE!**\nSend me a response to see that you understood the expected format of your response (as if I sent you a long list of words)."
 FIRST_RES = "(17-153)"
 SECOND_INP = "Great! **KEEPING THE SAME FORMAT** IN YOUR RESPONSE AND ADDING NO MORE WORDS, here is the transcript:"
@@ -265,7 +268,7 @@ class BestClips:
 
             # Creates relevant folders
             date_time = datetime.now()
-            self.temp_dir = tempfile.mkdtemp()
+            self.temp_dir = tempfile.mkdtemp(dir="/app/temp")
             self.date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
             self.user_name = username
             self.user_folder_name = os.path.join(self.temp_dir, self.user_name)
@@ -409,7 +412,7 @@ class BestClips:
 
     
     def make_sentence_df(self, block_size=10):
-        nltk.download('vader_lexicon')
+        nltk.download(LEXICON_NAME)
         sia = SentimentIntensityAnalyzer()
 
         blocks = []
@@ -604,12 +607,13 @@ class BestClips:
         print(f"Chat GPT's response is:\n{assistant_reply}\n\nCost of input: ${cost_of_input}\nCost of output: ${cost_of_output}\nTotal cost: ${total_cost}\n\n")
 
         regg = "\d{1,6}\s*-\s*\d{1,6}"
-        span = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))[0]
+        res = list(dict.fromkeys(re.compile(regg).findall(assistant_reply.replace("Index",""))))
+        span = res[0] if len(res) > 0 else "0-120"
         cut = (int(span.split('-')[0]), int(span.split('-')[1]))
         text_length = cut[1] - cut[0]
         final_start_index = cut[0]
         final_end_index = cut[1] if (text_length > 100 and text_length < 300) else cut[0] + 150 # In case Chat GPT returned short or long range
-
+        final_end_index = min(final_end_index, len(df) - 1)
         # Find the nearest sentence to end on
         current_index = final_end_index
 

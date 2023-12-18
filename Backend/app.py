@@ -110,7 +110,7 @@ def process_youtube_video(link, userEmail):
         username = userEmail  # Use userEmail for the folder name
 
         # Pass save_folder_name to BestClips constructor
-        best_clips = BestClips(link, username, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(link, username, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         set_upload_complete(userEmail, True)
         
@@ -193,4 +193,4 @@ def get_user_payment_plan():
     return jsonify({'paymentPlan': payment_plan})
 
 if __name__ == '__main__':
-    socketio.run(app, debug=False, host='127.0.0.1', port=5000)
+    socketio.run(app, debug=False, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)
