@@ -202,7 +202,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
                 id={styles['google-like-search']}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter Url"
+                placeholder="Enter Url To Try It"
               />
               <img
                 src="\magnifying-glass_2015241.png"
@@ -212,7 +212,6 @@ function CloudAPIPage({ enableScrollHandling = true }) {
               />
             </div>
           </form>
-          <p className={styles['try-it-text']}>Enter URL to Try It</p>
         </div>
       </div>
     </div>
