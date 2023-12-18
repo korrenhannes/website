@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api'; // Make sure this is the correct import for your API calls
+import styles from '../styles/FullScreen.module.css'; // Import the same CSS
 
 function ConfirmationWaitPage() {
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -30,10 +31,22 @@ function ConfirmationWaitPage() {
   }, [navigate]);
 
   return (
-    <div className="confirmation-wait-page">
-      <h2>Waiting for Email Confirmation</h2>
-      <p>Please check your email and click on the confirmation link.</p>
-      {isConfirmed && <p>Your email has been confirmed! Redirecting...</p>}
+    <div className={styles['full-screen-container']}>
+      <video
+        autoPlay
+        loop
+        muted
+        id="background-video"
+        className={styles['background-video']}
+      >
+        <source src="\Simply ClipIt..mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+      <div className={styles['foreground-content']}>
+        <h1>Waiting for Email Confirmation</h1>
+        <p>Please check your email and click on the confirmation link.</p>
+        {isConfirmed && <p>Your email has been confirmed! Redirecting...</p>}
+      </div>
     </div>
   );
 }
