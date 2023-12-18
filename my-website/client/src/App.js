@@ -9,6 +9,7 @@ import {
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
+import ConfirmationWaitPage from './components/ConfirmationWaitPage'; // Added import for ConfirmationWaitPage
 import CloudAPIPage from './components/CloudAPIPage';
 import OffersPage from './components/OffersPage';
 import FreeUserPage from './components/FreeUserPage';
@@ -20,7 +21,7 @@ import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
-import { Link } from 'react-scroll'; // Add this line
+
 
 
 
@@ -53,8 +54,7 @@ function App() {
 
   const handleSignupSuccess = (data) => {
     console.log('Signed up user:', data);
-    // No immediate login after signup, user needs to confirm email
-    alert('Signup successful. Please check your email to confirm your account.');
+    Navigate('/confirmation-wait'); // Redirect to confirmation-wait page
   };
 
   const handleLogoutSuccess = () => {
@@ -112,6 +112,7 @@ function App() {
             <Route path="/free-user" element={<FreeUserPage />} />
             <Route path="/regular-user" element={<RegularUserPage />} />
             <Route path="/premium-user" element={<PremiumUserPage />} />
+            <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />
             <Route path="/partner" element={<PartnerWithUsPage />} />
             <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
           </Routes>

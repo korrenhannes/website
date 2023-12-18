@@ -65,6 +65,7 @@ app.use(passport.initialize());
 app.use('/api/auth', authRoutes);
 app.use('/api/paypal', paypalRoutes);
 
+
 // Passport initialization
 app.use(passport.initialize());
 

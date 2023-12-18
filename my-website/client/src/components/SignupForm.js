@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { api } from '../api'; // Importing the Axios instance for Flask
+import { api } from '../api'; // Ensure this is the correct import for your API calls
 import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
 import FacebookLogin from '@greatsumini/react-facebook-login'; // Import FacebookLogin
 import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
-import '../styles/LoginForm.css'; // Import the new CSS styles for consistency with LoginForm
-
+import '../styles/LoginForm.css'; // Import CSS styles
 
 function SignupForm({ onSignupSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [confirmationCode, setConfirmationCode] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -26,17 +24,9 @@ function SignupForm({ onSignupSuccess }) {
     }
 
     try {
-      // Request to send confirmation code
-      await api.post('/auth/send-confirmation', { email });
-
-      // Add a step to verify the confirmation code
-      await api.post('/auth/verify-confirmation', { email, confirmationCode });
-
-      // Example for signup
-      await api.post('/auth/signup', { email, password }).then(response => {
-        onSignupSuccess(response.data);
-        navigate('/offers');
-      });
+      const response = await api.post('/auth/signup', { email, password });
+      onSignupSuccess(response.data);
+      navigate('/confirmation-wait'); // Navigate to confirmation-wait page
     } catch (error) {
       if (error.response && error.response.data) {
         setError("Signup failed: " + error.response.data.message);
@@ -45,6 +35,7 @@ function SignupForm({ onSignupSuccess }) {
       }
     }
   };
+
 
   const handleGoogleSignup = async (googleData) => {
     console.log("Google signup data:", googleData);
