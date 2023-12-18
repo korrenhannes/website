@@ -110,13 +110,15 @@ function FreeUserPage() {
       }
     }
   
-    // Redirect if email is not found
-    if (!emailToUse) {
-      setError('User email not found. Redirecting to signup...');
-      setIsLoading(false);
+  // Redirect if email is not found, after displaying a custom message
+  if (!emailToUse) {
+    setIsLoading(false);
+    setTimeout(() => {
+      alert('Please take a moment to sign up for free to use your free try.');
       navigate('/signup');
-      return;
-    }
+    }, 2500); // Redirect after 5 seconds
+    return;
+  }
   
     // Fetch the signed URLs
     try {
