@@ -20,8 +20,14 @@ function LoginForm({ onLoginSuccess }) {
     setLoginError(''); // Reset login error
     try {
       const response = await api.post('/auth/login', { email, password });
-      onLoginSuccess(response.data);
-      navigate('/cloud-api');
+      
+      // Check if the email is confirmed
+      if (response.data.isConfirmed) {
+        onLoginSuccess(response.data);
+        navigate('/cloud-api');
+      } else {
+        setLoginError('Please confirm your email before logging in.');
+      }
     } catch (error) {
       console.error("Login failed:", error);
       setLoginError('Login failed. Please check your credentials.');
