@@ -51,6 +51,11 @@ api.sendConfirmationCode = async (email) => {
   return await api.post('/auth/send-confirmation', { email });
 };
 
+// Function to check email confirmation status
+api.checkConfirmation = async (email) => {
+  return await api.get(`/auth/check-confirmation?email=${email}`);
+};
+
 // Function to verify confirmation code
 api.verifyConfirmationCode = async (email, confirmationCode) => {
   return await api.post('/auth/verify-confirmation', { email, confirmationCode });

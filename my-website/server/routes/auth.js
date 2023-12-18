@@ -254,6 +254,22 @@ router.post('/verify-confirmation', async (req, res) => {
   }
 });
 
+// Route to check if the user's email has been confirmed
+router.get('/check-confirmation', async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.status(200).json({ isConfirmed: user.isConfirmed });
+  } catch (error) {
+    console.error('Error in /check-confirmation route:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // Update User's Payment Plan
 router.post('/update-plan', async (req, res) => {

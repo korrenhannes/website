@@ -25,13 +25,14 @@ function SignupForm({ onSignupSuccess }) {
 
     try {
       const response = await api.post('/auth/signup', { email, password });
+      localStorage.setItem('userEmail', email); // Store email in local storage
       onSignupSuccess(response.data);
       navigate('/confirmation-wait'); // Navigate to confirmation-wait page
     } catch (error) {
       if (error.response && error.response.data) {
         setError("Signup failed: " + error.response.data.message);
       } else {
-        setError("Signup failed. Please try again.");
+        navigate('/confirmation-wait'); // Navigate to confirmation-wait page
       }
     }
   };

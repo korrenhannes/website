@@ -7,26 +7,27 @@ function ConfirmationWaitPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Define interval in the broader scope
-    const interval = setInterval(() => {
-      checkConfirmation(interval);
-    }, 5000); // Check every 5 seconds
-
-    return () => clearInterval(interval); // Clean up the interval on component unmount
-  }, []);
-
-  const checkConfirmation = async (interval) => {
-    try {
-      const response = await api.get('/auth/check-confirmation'); // Adjust the endpoint as necessary
-      if (response.data.isConfirmed) {
-        setIsConfirmed(true);
-        clearInterval(interval); // Stop checking once confirmed
-        navigate('/offers');
-      }
-    } catch (error) {
-      console.error("Error checking confirmation:", error);
+    const userEmail = localStorage.getItem('userEmail'); // Retrieve email from local storage
+    if (!userEmail) {
+      navigate('/signup'); // Redirect to signup if email is not found
+      return;
     }
-  };
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await api.checkConfirmation(userEmail);
+        if (response.data.isConfirmed) {
+          setIsConfirmed(true);
+          clearInterval(interval); // Stop checking once confirmed
+          navigate('/offers');
+        }
+      } catch (error) {
+        console.error("Error checking confirmation:", error);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval); // Clean up
+  }, [navigate]);
 
   return (
     <div className="confirmation-wait-page">
