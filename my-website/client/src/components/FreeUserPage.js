@@ -7,7 +7,6 @@ import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 
-import NavigationBar from './NavigationBar';
 import '../styles/NavigationBar.css';
 import styles from '../styles/FreeUserPage.module.css';
 import NextVideoButton from './NextVideoButton'; // Import the custom button
@@ -110,6 +109,7 @@ function FreeUserPage() {
   
     // Fetch the signed URLs
     try {
+      console.log(emailToUse, 'fetching video');
       const response = await apiFlask.get('/signed-urls', {
         params: {
           directory: `${emailToUse}/CurrentRun`
@@ -249,8 +249,6 @@ useEffect(() => {
 
   return (
     <div className={styles.fullScreenContainer}>
-      <NavigationBar />
-
       <div className={styles.videocontainer1} ref={videoContainerRef}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
         <button onClick={handleDownloadVideo} className={styles.downloadbutton}>Download Video</button>
