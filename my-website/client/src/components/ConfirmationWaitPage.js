@@ -19,7 +19,7 @@ function ConfirmationWaitPage() {
         if (response.data.isConfirmed) {
           setIsConfirmed(true);
           clearInterval(interval); // Stop checking once confirmed
-          navigate('/offers');
+          navigate('/login');
         }
       } catch (error) {
         console.error("Error checking confirmation:", error);

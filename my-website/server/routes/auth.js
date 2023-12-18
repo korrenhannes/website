@@ -188,12 +188,17 @@ router.post('/login', async (req, res) => {
     // Log the login action
     await new Log({ action: 'User Login', userEmail: email }).save();
 
-    res.send({ token });
+    // Include the isConfirmed status in the response
+    res.send({ 
+      token,
+      isConfirmed: user.isConfirmed // Ensure this property exists on your User model
+    });
   } catch (error) {
     console.error("Login error:", error);
     res.status(400).send(error.message);
   }
 });
+
 
 router.post('/send-confirmation', async (req, res) => {
   try {
