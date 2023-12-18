@@ -13,7 +13,7 @@ const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
     {/* Render content-heading inside ContentSection for larger screens */}
     {windowWidth > 768 && (
-      <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+      <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
     )}
     <p className="content-description">With our innovative algorithm, you will be able to make your favorite podcasts and videos into content for your viewers with a push of a button.</p>
     <button className="cliplt-button">Cliplt</button>
@@ -155,7 +155,7 @@ function ExploreFurther() {
         <div className="main-content">
           {/* Render content-heading outside ContentSection for mobile screens */}
           {windowWidth <= 768 && (
-            <h2 className="content-heading">“Content creation has never been this easy!”</h2>
+            <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
           )}
           <div className="video-tab-container">
             <video ref={videoRef} className="video-js" />

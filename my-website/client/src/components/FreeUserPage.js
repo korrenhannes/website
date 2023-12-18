@@ -53,6 +53,16 @@ function FreeUserPage() {
           playerRef.current.getChild('controlBar').addChild('NextVideoButton', {});
           
           fetchVideosFromGCloud();
+          const controlBarChildren = playerRef.current.controlBar.children();
+          controlBarChildren.forEach(component => {
+            // You may want to keep some components like 'ProgressControl'
+            if (component.name() !== 'ProgressControl') {
+              component.hide();
+            }
+          });
+          // ... inside your useEffect after the player is ready
+          playerRef.current.controlBar.pictureInPictureToggle.hide();
+
         });
   
         playerRef.current.on('ended', () => {
@@ -63,6 +73,7 @@ function FreeUserPage() {
         playerRef.current.on('nextVideo', () => {
           loadNextVideo();
         });
+        
       }
     }, 0);
   
@@ -197,6 +208,27 @@ function FreeUserPage() {
       return nextIndex;
     });
   };
+  const loadPreviousVideo = () => {
+    setCurrentVideoIndex(prevIndex => {
+      // Check if the videos array is empty
+      if (videos.length === 0) {
+        console.error('Videos array is empty.');
+        return prevIndex; // Return the previous index if the array is empty
+      }
+  
+      let nextIndex = (prevIndex - 1) % videos.length;
+  
+      const nextVideoUrl = videos[nextIndex];
+      if (nextVideoUrl) {
+        console.log('Next video URL:', nextVideoUrl);
+        loadVideo(nextVideoUrl);
+      } else {
+        console.error('Invalid video URL at index:', nextIndex);
+      }
+  
+      return nextIndex;
+    });
+  };
   
 
   const handleKeyPress = (event) => {
@@ -208,6 +240,23 @@ function FreeUserPage() {
       }
     }
   };
+  const handleVideoPress = (event) => {
+    // Get the bounding rectangle of the container
+    const rect = videoContainerRef.current.getBoundingClientRect();
+    
+    // Calculate the midpoint of the container
+    const midpoint = rect.left + (rect.width / 2);
+  
+    // Determine if the click is on the left or right side
+    if (event.clientX < midpoint) {
+      // Left side clicked
+      loadPreviousVideo();
+    } else {
+      // Right side clicked
+      loadNextVideo();
+    }
+  };
+  
 
 useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -249,17 +298,14 @@ useEffect(() => {
 
   return (
     <div className={styles.fullScreenContainer}>
-      <div className={styles.videocontainer1} ref={videoContainerRef}>
+      <div className={styles.videocontainer1} ref={videoContainerRef} onClick={handleVideoPress}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
-        <button onClick={handleDownloadVideo} className={styles.downloadbutton}>Download Video</button>
-
       </div>
 
       <div className={styles.videouioverlay}>
         {/* Elements for video title, user interaction, etc. */}
       </div>
-
-
+      <button onClick={handleDownloadVideo} className={styles.downloadbutton}>Download Video</button>
       {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
     </div>

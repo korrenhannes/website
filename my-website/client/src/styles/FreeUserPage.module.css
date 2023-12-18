@@ -1,20 +1,28 @@
 .fullscreencontainer {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   background-color: #f4f4f4; /* Minimalist background color */
   padding: 20px;
   box-sizing: border-box;
   margin-top: 50px; /* Margin from the top of the page */
+  overflow: hidden;
 }
 
 .videocontainer1 {
   display: flex;
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
-  height: 100vh; /* Full viewport height */
-  width: 100%; /* Full width */
+  height: 85vh; /* Full viewport height */
+  width: 50vh; /* Full width */
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5.5%;
+  background-color: #fff; /* White background */
+  border-radius: 36px; /* Rounded corners for the 'phone' */
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow for depth */
+  overflow: hidden; /* Ensure video doesn't overflow the rounded corners */
 }
 
 .video-js.vjs-fluid {
@@ -22,6 +30,40 @@
   width: 50%; /* Adjust width as needed */
   height: auto; /* Height auto for maintaining aspect ratio */
 }
+
+/* ... (other styles) */
+
+/* Hide all control bar components except the progress control */
+.video-js .vjs-control-bar {
+  display: flex;
+  background: 0 !important;
+  visibility: hidden; /* Hide everything initially */
+}
+.video-js .vjs-picture-in-picture-control {
+  display: none !important;
+}
+
+/* Show the progress control and customize it */
+.video-js .vjs-control-bar .vjs-progress-control {
+  visibility: visible; /* Only the progress bar will be visible */
+  width: 100% !important;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Customize the progress bar's appearance */
+.video-js .vjs-control-bar .vjs-progress-control .vjs-progress-holder {
+  background: rgba(255, 255, 255, 0.5); /* A lighter background for the seek bar */
+  height: 4px; /* Make the progress bar thinner */
+  margin: 0;
+}
+
+.video-js .vjs-control-bar .vjs-progress-control .vjs-play-progress {
+  background-color: #ff0000; /* Color of the played part of the progress bar */
+}
+
+/* ... (other responsive styles) */
 
 
 .downloadbutton {
@@ -32,9 +74,14 @@
   border-radius: 5px;
   font-size: 16px;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: auto;
   cursor: pointer;
   transition: background-color 0.3s;
+  justify-self: center;
+  align-self: center;
+  position: absolute;
+  top: 50%;
+  left: 75%;
 }
 
 .downloadbutton:hover {
@@ -45,12 +92,13 @@
 @media (max-width: 768px) {
   
   .video-js.vjs-fluid {
-    width: 80%; /* Larger percentage for smaller screens */
+    width: 90%; /* Make sure the video fills the container */
+    height: 90%; /* Make sure the video fills the container */
+    object-fit: cover; /* Adjust how the video fits in the container */
   }
 
   .videocontainer1 { /* Update this as well */
-    width: 100%; /* Adapt width on smaller screens */
-    padding-top: 56.25%; /* Maintain aspect ratio */
+   margin-top: 13.5VH;
   }
 
   .fullscreencontainer {
@@ -59,11 +107,25 @@
 
   .videocontainer {
       width: 90%; /* Increase width on smaller screens for better visibility */
-      padding-top: 50%; /* Adjust aspect ratio for smaller screens */
   }
 
   .downloadbutton {
       font-size: 14px;
       padding: 8px 15px;
+      margin-right: 1%;
+      margin-left: 1%;
+      left: 76%;
+      width: auto;
+      display: none;
   }
+}
+@media (max-width: 480px) {
+  .videocontainer1 { /* Update this as well */
+    width: 100%; /* Adapt width on smaller screens */
+    height:100%;
+    overflow: hidden;
+    border-radius:0%; /* Rounded corners for the 'phone' */
+    box-shadow:none /* Shadow for depth */
+  }
+
 }
