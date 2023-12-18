@@ -192,8 +192,8 @@ function CloudAPIPage({ enableScrollHandling = true }) {
         Your browser does not support the video tag.
       </video>
       <div className={styles['foreground-content']}>
-        <h1>creating content has never been easier</h1>
-        <h2>Simply clipIt</h2>
+        <h1>Creating Content Has Never Been Easier</h1>
+        <h2>Simply ClipIt</h2>
         <div className={styles['search-container']}>
           <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
             <div className={styles['input-logo-container']}>
@@ -202,7 +202,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
                 id={styles['google-like-search']}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter search query"
+                placeholder="Enter Url"
               />
               <img
                 src="\magnifying-glass_2015241.png"
@@ -212,7 +212,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
               />
             </div>
           </form>
-          <p className={styles['try-it-text']}>enter URL to try it</p>
+          <p className={styles['try-it-text']}>Enter URL to Try It</p>
         </div>
       </div>
     </div>
