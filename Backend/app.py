@@ -11,13 +11,19 @@ from dotenv import load_dotenv
 
 from best_clips import BestClips
 
-# Load environment variables
-load_dotenv()
+# Load .env file if it exists, useful for local development
+if os.path.exists('.env'):
+    load_dotenv()
 
 # MongoDB setup
-mongo_uri = os.getenv('DB_URI')
+mongo_uri = os.environ.get('DB_URI')
 mongo_client = MongoClient(mongo_uri)
 db = mongo_client['test']
+
+google_cloud_key_file = os.environ.get('GOOGLE_CLOUD_KEY_FILE')
+if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
+    raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
+
 
 app = Flask(__name__)
 
@@ -27,12 +33,6 @@ CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://l
 # Specify the origins that are allowed to connect for SocketIO
 # Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
 socketio = SocketIO(app, cors_allowed_origins="http://localhost:3001", logger=True, engineio_logger=True)
-
-google_cloud_key_file = os.getenv('GOOGLE_CLOUD_KEY_FILE')
-if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
-    raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
-
-print(f"GOOGLE_CLOUD_KEY_FILE: {google_cloud_key_file}")
 
 
 def generate_signed_url(bucket_name, blob_name):
@@ -110,21 +110,8 @@ def process_youtube_video(link, userEmail):
         username = userEmail  # Use userEmail for the folder name
 
         # Pass save_folder_name to BestClips constructor
-        best_clips = BestClips(link, username, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(link, username, use_gpt=False) # Change use_gpt to True if you're not debugging and want to see the best parts
         
-        gcloud_bucket_name = "clipitshorts"
-        # Delete all of the files in user_cur_run_path if they exist
-        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-        bucket = storage_client.bucket(gcloud_bucket_name)
-        blobs = bucket.list_blobs(prefix=f"{userEmail}/CurrentRun/")
-        for blob in blobs:
-            blob.delete()
-        for i in range(len(best_clips.final_shorts)):
-            video_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.mp4")
-            json_file_path = os.path.join(best_clips.run_path, f"short_{str(i)}.json")
-            gcloud_video_destination_name = f"{best_clips.date_time_str}__{os.path.basename(video_file_path)}"
-            gcloud_json_destination_name = f"{best_clips.date_time_str}__{os.path.basename(json_file_path)}"
-            upload_to_gcloud(bucket, video_file_path, json_file_path, gcloud_video_destination_name, gcloud_json_destination_name, userEmail)
         set_upload_complete(userEmail, True)
         
     except Exception as e:
@@ -206,4 +193,4 @@ def get_user_payment_plan():
     return jsonify({'paymentPlan': payment_plan})
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=False, host='127.0.0.1', port=5000)
