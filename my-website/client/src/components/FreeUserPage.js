@@ -109,15 +109,15 @@ function FreeUserPage() {
       }
     }
   
-  // Redirect if email is not found, after displaying a custom message
-  if (!emailToUse) {
+    // Redirect if email is not found, after displaying a custom message
+    if (!emailToUse) {
     setIsLoading(false);
     setTimeout(() => {
       alert('Please take a moment to sign up for free to use your free try.');
       navigate('/signup');
     }, 2500); // Redirect after 5 seconds
     return;
-  }
+    }
   
     // Fetch the signed URLs
     try {
@@ -130,11 +130,12 @@ function FreeUserPage() {
           'User-Email': emailToUse
         }
       });
-  
       let signedUrls = response.data.signedUrls;
+      console.log('signed urls from user folder:', signedUrls);
   
       // Fallback to undefined directory if no URLs found
       if (!signedUrls || signedUrls.length === 0) {
+        console.log('signed urls is still empty, fetching from undefined');
         const responseFromUndefined = await apiFlask.get('/signed-urls', {
           params: {
             directory: `undefined/`
@@ -145,7 +146,7 @@ function FreeUserPage() {
         });
   
         signedUrls = responseFromUndefined.data.signedUrls;
-  
+        console.log('signed urls from undefined:', signedUrls);
         if (!signedUrls || signedUrls.length === 0) {
           setError('No videos found in Google Cloud Storage.');
           setIsLoading(false);
@@ -154,8 +155,10 @@ function FreeUserPage() {
       }
   
       setVideos(signedUrls);
+      //remember to make it show videos randommly and not in order with Math.floor(Math.random()*(signedUrls.length-1))+1
       setCurrentVideoIndex(0); // Reset the index to start from the first video
       loadVideo(signedUrls[0]); // Load the first video
+      console.log('videos loaded, setting usersvideosloade to true');
       setUserVideosLoaded(true);
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
@@ -234,7 +237,9 @@ function FreeUserPage() {
 
   const handleKeyPress = (event) => {
     if (event.keyCode === 13) { // 13 is the keycode for the Enter key
+      console.log('enter pressed, checking if videos are loaded:', userVideosLoaded);
       if (!userVideosLoaded) {
+        console.log('videos not loaded, loading them right now');
         fetchVideosFromGCloud();
       } else {
         loadNextVideo();
@@ -252,7 +257,7 @@ function FreeUserPage() {
     if (event.clientX < midpoint) {
       // Left side clicked
       loadPreviousVideo();
-    } else {
+    } else  {
       // Right side clicked
       loadNextVideo();
     }
