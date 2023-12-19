@@ -20,7 +20,7 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 
 # Install build dependencies, Python packages, and preload models
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --fix-missing --no-install-recommends \
     libffi-dev \
     libssl-dev \
     libsm6 \

@@ -4,6 +4,8 @@ from pymongo import MongoClient
 import os
 import threading
 import datetime
+import tempfile
+from werkzeug.utils import secure_filename
 from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
@@ -104,14 +106,11 @@ def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_
         return False
 
 
-def process_youtube_video(link, userEmail):
+def process_youtube_video(video_info, userEmail, temp_dir_path):
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
 
     try:
-        username = userEmail  # Use userEmail for the folder name
-
-        # Pass save_folder_name to BestClips constructor
-        best_clips = BestClips(link, username, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
         
         set_upload_complete(userEmail, True)
 
@@ -121,19 +120,30 @@ def process_youtube_video(link, userEmail):
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
-    data = request.json
-    youtube_link = data.get('link')
-    userEmail = data.get('userEmail')  # Extract user ID from the request
-
-    if not youtube_link:
-        return jsonify({'error': 'No YouTube link provided'}), 400
+    userEmail = request.form.get('userEmail')
     if not userEmail:
         return jsonify({'error': 'No user ID provided'}), 400
 
+    video_info = None
+
+    if 'file' in request.files:
+        file = request.files['file']
+        if file.filename != '':
+            filename = secure_filename(file.filename)
+            temp_dir_path = tempfile.mkdtemp(dir="/app/temp")
+            file_path = os.path.join(temp_dir_path, filename)
+            file.save(file_path)
+            video_info = file_path
+    else:
+        video_info = request.form.get('link')
+
+    if not video_info:
+        return jsonify({'error': 'Invalid video or YouTube video provided'}), 400
+
     try:
-        thread = threading.Thread(target=process_youtube_video, args=(youtube_link, userEmail))
+        thread = threading.Thread(target=process_youtube_video, args=(video_info, userEmail, temp_dir_path))
         thread.start()
-        return jsonify({'message': 'YouTube video processing started'})
+        return jsonify({'message': 'Video processing started'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

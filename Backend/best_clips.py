@@ -10,7 +10,6 @@ from moviepy.editor import *
 from pytube import YouTube
 from tqdm import tqdm
 from openai import OpenAI
-import tempfile
 import imutils
 import cv2
 import nltk
@@ -256,8 +255,8 @@ class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, username, use_gpt=False, audio_dest='audio.mp3', full_word_transcript_dest="full_word_transcript.csv",
-                  interesting_word_transcript_dest="interesting_transcript.csv", num_of_shorts=5):
+    def __init__(self, video_str, username, temp_dir, use_gpt=False, audio_dest='audio.mp3',
+                  full_word_transcript_dest="full_word_transcript.csv", num_of_shorts=5):
         try:
             self.num_of_shorts = num_of_shorts
             
@@ -268,7 +267,7 @@ class BestClips:
 
             # Creates relevant folders
             date_time = datetime.now()
-            self.temp_dir = tempfile.mkdtemp(dir="/app/temp")
+            self.temp_dir = temp_dir
             self.date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
             self.user_name = username
             self.user_folder_name = os.path.join(self.temp_dir, self.user_name)
@@ -317,15 +316,8 @@ class BestClips:
             self.final_shorts, self.json_transcription = self.remove_silence()
             print("Saving shorts!\n")
             self.save_vids()
-
-            # Move all to function if it works
             print("Saving to cloud!\n")
-            gcloud_bucket_name = "clipitshorts"
-            storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-            self.bucket = storage_client.bucket(gcloud_bucket_name)
-            self.upload_to_cloud()
-            storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
-            storage_client.close()
+            self.save_to_cloud()
         except InvalidVideoError as e:
             print(f"Error: {e}")
         except Exception as e:
@@ -344,17 +336,43 @@ class BestClips:
         except Exception:
             # An exception is raised if the URL is not valid or there's an issue
             return False
-        
 
+    
     def download_youtube_video(self, url):
-        print("Downloading Youtube Video")
+        print("Downloading YouTube Video in Highest Quality")
+
+        # Create a YouTube object
         youtube_video = YouTube(url)
-        video = youtube_video.streams.get_highest_resolution()
-        out_file = video.download(self.run_path)
-        base, _ = os.path.splitext(out_file)
-        new_file = base + '.mp4'
-        os.rename(out_file, new_file)
-        return new_file
+
+        # Get the best resolution video stream
+        video_stream = youtube_video.streams.filter(progressive=False, file_extension='mp4').order_by('resolution').desc().first()
+
+        # Get the best quality audio stream
+        audio_stream = youtube_video.streams.filter(only_audio=True).order_by('abr').desc().first()
+
+        # Download video and audio streams separately
+        video_filename = video_stream.download(output_path=self.run_path, filename_prefix='video_')
+        audio_filename = audio_stream.download(output_path=self.run_path, filename_prefix='audio_')
+
+        # Load video and audio using moviepy
+        video_clip = VideoFileClip(video_filename)
+        audio_clip = AudioFileClip(audio_filename)
+
+        # Set the audio of the video clip
+        final_clip = video_clip.set_audio(audio_clip)
+
+        # Generate the output filename
+        base, _ = os.path.splitext(video_filename)
+        new_filename = base + '.mp4'
+
+        # Write the final clip with both video and audio
+        final_clip.write_videofile(new_filename, codec="libx264", audio_codec="aac")
+
+        # Remove the separate video and audio files
+        os.remove(video_filename)
+        os.remove(audio_filename)
+
+        return new_filename
 
 
     def audio_video(self, video):
@@ -515,6 +533,7 @@ class BestClips:
 
         extend_sec = self.unedited_clip_time / 2 # How many seconds are we taking on each side of the interesting parts before transcribing and sending the prompt to ChatGPT
         interesting_times = []
+        self.num_of_shorts = min(len(result_df), self.num_of_shorts)
         for short_num in range(self.num_of_shorts):
             cur_row = result_df.iloc[short_num]
             mid_time = (cur_row['end'] + cur_row['start']) / 2
@@ -978,9 +997,12 @@ class BestClips:
                 json_file.write(self.json_transcription[short_num])
 
         print(f"\n\n\nTotal run cost was:\n${self.total_run_cost}")
-
+      
     
-    def upload_to_cloud(self):
+    def save_to_cloud(self):
+        gcloud_bucket_name = "clipitshorts"
+        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+        self.bucket = storage_client.bucket(gcloud_bucket_name)
         # Delete all of the files in user_cur_run_path if they exist
         blobs = self.bucket.list_blobs(prefix=f"{self.user_name}/CurrentRun/")
         for blob in blobs:
@@ -991,11 +1013,13 @@ class BestClips:
             gcloud_video_destination_name = f"{self.date_time_str}__{os.path.basename(video_file_path)}"
             gcloud_json_destination_name = f"{self.date_time_str}__{os.path.basename(json_file_path)}"
             upload_to_gcloud(self.bucket, video_file_path, json_file_path, gcloud_video_destination_name, gcloud_json_destination_name, self.user_name)
+        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+        storage_client.close()
 
          
 if __name__ == "__main__":
-    # # Insert video path to .mp4 file or youtube url link
-    # video = "C://Users//along//VS Code//Shorts Project//website//My User//Erling Haaland Predicts KSI Loss Winning Premier League Dillon Danis vs Logan Paul - 392.mp4"
+    # Insert video path to .mp4 file or youtube url link
+    # video = "https://www.youtube.com/watch?v=0coDgV3JDTw"
     # username = "My User"
     # best_clips = BestClips(video_str=video, username=username, use_gpt=False)
     pass
