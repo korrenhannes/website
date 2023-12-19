@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
 from pymongo import MongoClient
 import os
 import threading
@@ -29,10 +28,6 @@ app = Flask(__name__)
 
 # Enable CORS with support for credentials and specific origins
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3001"}})
-
-# Specify the origins that are allowed to connect for SocketIO
-# Adjust the origins according to your environment. Use '*' to allow all origins (not recommended for production).
-socketio = SocketIO(app, cors_allowed_origins="http://localhost:3001", logger=True, engineio_logger=True)
 
 
 def generate_signed_url(bucket_name, blob_name):
@@ -191,6 +186,3 @@ def get_user_payment_plan():
 
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
-
-if __name__ == '__main__':
-    socketio.run(app, debug=False, host='0.0.0.0', port=5000, allow_unsafe_werkzeug=True)

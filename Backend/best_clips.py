@@ -133,7 +133,7 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
     color = 'white' if random.random() < 0.25 else 'Yellow'
     stroke_color = 'black'
     font = FONT_PATH
-    font_size = 60
+    font_size = 50
     placement = ('center', (1280 * (2/3))) if one_person_on_screen else ('center')
 
     return (TextClip(text.upper(), font=font, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
@@ -148,7 +148,7 @@ def add_subs_video(new_start_time, people_times, vid, df):
         one_person_times = [people_times['1_person'][i] + relevant_time_shift for i in range(len(people_times['1_person']))]
         two_people_times = [people_times['2_people'][i] + relevant_time_shift for i in range(len(people_times['2_people']))]
         relevant_time_shift += new_start_time
-        max_char_count = 18
+        max_char_count = 20
         grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
         txt_clips = [text_clip(group[0], group[2] - group[1], group[1] - relevant_time_shift, group[3]) for group in grouped_words]
         audio = vid.audio
