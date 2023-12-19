@@ -49,16 +49,15 @@ function FreeUserPage() {
           preload: true
         }, () => {
           console.log('Player is ready');
-          // Add NextVideoButton to the player
-          playerRef.current.getChild('controlBar').addChild('NextVideoButton', {});
           
           fetchVideosFromGCloud();
+          playerRef.current.controlBar.hide();
           const controlBarChildren = playerRef.current.controlBar.children();
           controlBarChildren.forEach(component => {
             // You may want to keep some components like 'ProgressControl'
-            if (component.name() !== 'ProgressControl') {
+           
               component.hide();
-            }
+            
           });
           // ... inside your useEffect after the player is ready
           playerRef.current.controlBar.pictureInPictureToggle.hide();

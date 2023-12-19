@@ -35,9 +35,9 @@
 
 /* Hide all control bar components except the progress control */
 .video-js .vjs-control-bar {
-  display: flex;
+  display: none !important;
   background: 0 !important;
-  visibility: hidden; /* Hide everything initially */
+  visibility: hidden !important; /* Hide everything initially */
 }
 .video-js .vjs-picture-in-picture-control {
   display: none !important;
@@ -45,23 +45,19 @@
 
 /* Show the progress control and customize it */
 .video-js .vjs-control-bar .vjs-progress-control {
-  visibility: visible; /* Only the progress bar will be visible */
+  visibility:hidden; /* Only the progress bar will be visible */
   width: 100% !important;
   bottom: 0;
   padding: 0;
   margin: 0;
+  display: none;
 }
 
 /* Customize the progress bar's appearance */
 .video-js .vjs-control-bar .vjs-progress-control .vjs-progress-holder {
-  background: rgba(255, 255, 255, 0.5); /* A lighter background for the seek bar */
-  height: 4px; /* Make the progress bar thinner */
-  margin: 0;
+ display: none;
 }
 
-.video-js .vjs-control-bar .vjs-progress-control .vjs-play-progress {
-  background-color: #ff0000; /* Color of the played part of the progress bar */
-}
 
 /* ... (other responsive styles) */
 
