@@ -340,16 +340,26 @@ router.get('/user/payment-plan', async (req, res) => {
 // Update Tokens
 router.post('/update-tokens', async (req, res) => {
   try {
+    console.log('auth updating tokens');
     const { email, tokens } = req.body;
     const user = await User.findOne({ email });
+    console.log('auth email:', email, 'auth tokens:', tokens, 'auth user:', user);
     if (!user) {
+      console.log('no user found!');
       return res.status(404).send('User not found');
     }
-
+    console.log('user found, auth continue update');
     user.tokens = tokens.toString();
+    if (!user.password){
+      user.password = 'guest';
+      console.log('guest password updated:', user.password);
+    }
     await user.save();
+    console.log('auth saved user');
     const newToken = jwt.sign({ userId: user._id, email: user.email, tokens: user.tokens, dateOfSubscription: user.dateOfSubscription }, 'your_jwt_secret');
+    console.log('auth new token:', newToken);
     res.json({ message: 'Tokens updated successfully', token: newToken });
+    console.log('updated tokens succesfully');
   } catch (error) {
     console.error("Update tokens error:", error);
     res.status(400).send(error.message);

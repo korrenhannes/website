@@ -5,6 +5,8 @@ import io from 'socket.io-client';
 import {
   PayPalScriptProvider
 } from "@paypal/react-paypal-js";
+import { jwtDecode } from 'jwt-decode';
+
 
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
@@ -45,7 +47,11 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    const tokenData = jwtDecode(token);
+    const userEmail = tokenData.email;
+    if (userEmail.includes('@')){
+      setIsLoggedIn(!!token);
+    }
   }, []);
 
   const handleLoginSuccess = (data) => {
