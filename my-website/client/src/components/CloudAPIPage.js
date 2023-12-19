@@ -14,6 +14,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
+  const [mp4File, setMp4File] = useState(null); // State to hold the MP4 file
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
@@ -52,6 +53,11 @@ function CloudAPIPage({ enableScrollHandling = true }) {
       window.removeEventListener('wheel', handleWheel);
     };
   }, [navigate]);
+
+  
+  const handleFileChange = (e) => {
+    setMp4File(e.target.files[0]);
+  };
 
   const handleSearchSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -136,17 +142,27 @@ function CloudAPIPage({ enableScrollHandling = true }) {
     };
     
   
-    const folderName = 'folder_check'; // Example folder name
+    // Create a FormData instance to handle file or link submission
+    const formData = new FormData();
+    formData.append('userEmail', userEmail);
+    formData.append('folder_name', 'folder_check'); // Example folder name
+
+    if (mp4File) {
+      formData.append('file', mp4File); // Add file to formData if it's present
+    } else {
+      formData.append('link', searchQuery); // Add link to formData if file is not present
+    }
+
     try {
-      const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
-        link: searchQuery,
-        folder_name: folderName,
-        userEmail: userEmail  // Include the user ID in the request
+      // Axios POST request with FormData
+      const response = await axios.post('http://localhost:5000/api/process-youtube-video', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
       });
+
       console.log('Video processing started:', response.data);
-      console.log('tokens before:', userTokens);
       const updatedTokens = userTokens - 1;
-      console.log('tokens after', updatedTokens);
       await updateTokens(userEmail, updatedTokens);
       handleRedirection();
     } catch (error) {
@@ -154,11 +170,8 @@ function CloudAPIPage({ enableScrollHandling = true }) {
       setError('Error processing your request. Please try again.');
     } finally {
       setIsLoading(false);
-
-      
     }
   };
-  
   
 
   const handleRedirection = () => {
@@ -203,6 +216,11 @@ function CloudAPIPage({ enableScrollHandling = true }) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter Url To Try It"
+              />
+              <input 
+                type="file" 
+                accept=".mp4"
+                onChange={handleFileChange}
               />
               <img
                 src="\magnifying-glass_2015241.png"
