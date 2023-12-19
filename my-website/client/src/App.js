@@ -47,11 +47,16 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    const tokenData = jwtDecode(token);
-    const userEmail = tokenData.email;
-    if (userEmail.includes('@')){
+    if (typeof token === 'string' && token !== '') { 
+      const tokenData = jwtDecode(token);
+      const userEmail = tokenData.email;
+      if (userEmail.includes('@')){
+        setIsLoggedIn(!!token);
+      }
+    }else{
       setIsLoggedIn(!!token);
     }
+    
   }, []);
 
   const handleLoginSuccess = (data) => {
