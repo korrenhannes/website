@@ -266,12 +266,11 @@ class BestClips:
             self.total_run_cost = 0.0
 
             # Creates relevant folders
+            self.run_path = temp_dir
+            print(f"Run path is {self.run_path}")
             date_time = datetime.now()
-            self.temp_dir = temp_dir
             self.date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
             self.user_name = username
-            self.user_folder_name = os.path.join(self.temp_dir, self.user_name)
-            self.run_path = os.path.join(self.user_folder_name, self.date_time_str)
             self.create_run_folder() # Creates user folder if it doesn't exist and current run folder
 
 
@@ -353,6 +352,7 @@ class BestClips:
         # Download video and audio streams separately
         video_filename = video_stream.download(output_path=self.run_path, filename_prefix='video_')
         audio_filename = audio_stream.download(output_path=self.run_path, filename_prefix='audio_')
+        print(f"Downloaded seperate files to {video_filename} and {audio_filename}")
 
         # Load video and audio using moviepy
         video_clip = VideoFileClip(video_filename)
@@ -362,8 +362,8 @@ class BestClips:
         final_clip = video_clip.set_audio(audio_clip)
 
         # Generate the output filename
-        base, _ = os.path.splitext(video_filename)
-        new_filename = base + '.mp4'
+        new_filename = os.path.join(self.run_path, 'video.mp4')
+        print(f"new_filename={new_filename}")
 
         # Write the final clip with both video and audio
         final_clip.write_videofile(new_filename, codec="libx264", audio_codec="aac")

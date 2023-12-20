@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
+import logging
 
 
 from best_clips import BestClips
@@ -27,6 +28,9 @@ if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
     raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
 
 app = Flask(__name__)
+
+# logging.basicConfig(level=logging.DEBUG)
+app.logger.setLevel(logging.INFO)
 
 # Enable CORS with support for credentials and specific origins
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3001"}})
@@ -120,17 +124,24 @@ def process_youtube_video(video_info, userEmail, temp_dir_path):
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
+    app.logger.info('Received request for /api/process-youtube-video')
+    app.logger.info('Form Data: ' + str({key: request.form[key] for key in request.form.keys()}))
     userEmail = request.form.get('userEmail')
     if not userEmail:
         return jsonify({'error': 'No user ID provided'}), 400
 
     video_info = None
+    user_path = f"/app/temp/{userEmail}"
+
+    # Create the directory if it doesn't exist
+    os.makedirs(user_path, exist_ok=True)
+
+    temp_dir_path = tempfile.mkdtemp(dir=user_path)
 
     if 'file' in request.files:
         file = request.files['file']
         if file.filename != '':
             filename = secure_filename(file.filename)
-            temp_dir_path = tempfile.mkdtemp(dir="/app/temp")
             file_path = os.path.join(temp_dir_path, filename)
             file.save(file_path)
             video_info = file_path

@@ -14,6 +14,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
+  const [file, setFile] = useState(null); // State to hold the selected file
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
 
@@ -53,65 +54,35 @@ function CloudAPIPage({ enableScrollHandling = true }) {
     };
   }, [navigate]);
 
-  const handleSearchSubmit = async (e) => {
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      handleSearchSubmit(null, selectedFile); // Automatically submit after file selection
+    }
+  };
+  
+  const handleSearchSubmit = async (e, selectedFile = null) => {
     if (e) e.preventDefault();
     setIsLoading(true);
+  
+    // Function to get unique computer id
     const getUniqueComputerId = async () => {
-      // Check if the unique identifier is already stored in local storage
       let uniqueId = localStorage.getItem('uniqueComputerId');
-    
       if (!uniqueId) {
-        // Generate a browser fingerprint
         const components = await Fingerprint2.getPromise();
-        const values = components.map((component) => component.value);
+        const values = components.map(component => component.value);
         uniqueId = Fingerprint2.x64hash128(values.join(''), 31);
-    
-        // Store the unique identifier in local storage
         localStorage.setItem('uniqueComputerId', uniqueId);
-        if (!localStorage.getItem('guestToken')){
-          localStorage.setItem('guestToken', 1)
+        if (!localStorage.getItem('guestToken')) {
+          localStorage.setItem('guestToken', 1);
         }
-        console.log('comp id:', localStorage.getItem('uniqueComputerId'), 'guest token:', localStorage.getItem('guestToken'));
       }
-    
       return uniqueId;
     };
-    
   
-   // Retrieve the token from localStorage
-   const token = localStorage.getItem('token');
-  
-   let tokenData = '';
-   let userEmail = await getUniqueComputerId();
-   let userTokens = localStorage.getItem('guestToken');
-   console.log('token', token, 'type:', typeof token);
-   // Check if the token is a string and not empty
-   if (typeof token === 'string' && token !== '') {
-    console.log('token not empty');
-     tokenData = jwtDecode(token);
-     console.log('token data:', tokenData);
-     userEmail = tokenData.email;
-     userTokens = parseInt(tokenData.tokens);
-     console.log('user email:', userEmail, 'user tokens:', userTokens);
-   }
- 
-    
-    console.log('button pressed, details:', userEmail, userTokens);
-    if (!userEmail) {
-      console.log('User ID not found. Please log in again.');
-      setError('User ID not found. Please log in again.');
-      setIsLoading(false);
-      return;
-    }
-    if (userTokens <= 0) {
-      console.log('no more tokens, need to upgrade subscription');
-      setError('no more tokens, need to upgrade subscription');
-      setIsLoading(false);
-      return;
-    }
+    // Function to update tokens
     const updateTokens = async (email, tokens) => {
-      console.log('updating the tokens, email:', email, 'tokens:', tokens);
-
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-tokens`, {
           method: "POST",
@@ -120,45 +91,78 @@ function CloudAPIPage({ enableScrollHandling = true }) {
           },
           body: JSON.stringify({ email: email, tokens: tokens }),
         });
-    
+  
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-    
+  
         const responseData = await response.json();
-    
         if (responseData.token) {
           localStorage.setItem('token', responseData.token);
         }
       } catch (error) {
         console.error('Error updating tokens:', error.message);
+        setError('Error updating tokens');
       }
     };
-    
   
-    const folderName = 'folder_check'; // Example folder name
-    try {
-      const response = await axios.post('http://localhost:5000/api/process-youtube-video', {
+    // Function to handle redirection
+    const handleRedirection = () => {
+      switch (userPaymentPlan) {
+        case 'regular':
+          navigate('/free-user');
+          break;
+        case 'premium':
+          navigate('/premium-user');
+          break;
+        default:
+          navigate('/free-user');
+      }
+    };
+  
+    let userEmail = await getUniqueComputerId();
+    let userTokens = parseInt(localStorage.getItem('guestToken') || '0');
+  
+    if (!userEmail) {
+      setError('User ID not found. Please log in again.');
+      setIsLoading(false);
+      return;
+    }
+    if (userTokens <= 0) {
+      setError('No more tokens, need to upgrade subscription');
+      setIsLoading(false);
+      return;
+    }
+  
+    let payload;
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('userEmail', userEmail);
+      formData.append('folder_name', 'folder_check');
+      payload = formData;
+    } else {
+      payload = {
         link: searchQuery,
-        folder_name: folderName,
-        userEmail: userEmail  // Include the user ID in the request
-      });
+        folder_name: 'folder_check',
+        userEmail: userEmail
+      };
+    }
+  
+    try {
+      const config = selectedFile ? { headers: {'Content-Type': 'multipart/form-data'} } : {};
+      const response = await axios.post('http://localhost:5000/api/process-youtube-video', payload, config);
       console.log('Video processing started:', response.data);
-      console.log('tokens before:', userTokens);
-      const updatedTokens = userTokens - 1;
-      console.log('tokens after', updatedTokens);
-      await updateTokens(userEmail, updatedTokens);
+      userTokens = userTokens - 1;
+      await updateTokens(userEmail, userTokens);
       handleRedirection();
     } catch (error) {
-      console.error('Error submitting search:', error.message);
+      console.error('Error processing your request:', error.message);
       setError('Error processing your request. Please try again.');
     } finally {
       setIsLoading(false);
-
-      
     }
   };
-  
   
 
   const handleRedirection = () => {
@@ -204,6 +208,10 @@ function CloudAPIPage({ enableScrollHandling = true }) {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Enter Url To Try It"
               />
+              <input 
+                type="file" 
+                onChange={handleFileChange}
+              />
               <img
                 src="\magnifying-glass_2015241.png"
                 alt="Logo"
@@ -219,4 +227,4 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   );
 }
 
-export default CloudAPIPage;
+export default CloudAPIPage;
