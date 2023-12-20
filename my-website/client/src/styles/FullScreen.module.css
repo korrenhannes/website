@@ -1,0 +1,219 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+
+.full-screen-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 60px;
+  display: flex;
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+}
+
+.background-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  z-index: -1; /* Ensure the video stays in the background */
+  opacity: 0.5; /* Adjust opacity as needed */
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 9, 9, 0.3); /* Slightly lighter overlay */
+  z-index: 1; /* Above the background video */
+}
+
+.foreground-content {
+  position: relative;
+  z-index: 2; /* Above the overlay */
+  text-align: center;
+  color: white;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.foreground-content h1 {
+  font-size: 3em; /* Starting font size */
+  margin-bottom: 0.5em;
+  max-width: 90%; /* Restrict width to allow some breathing space */
+  word-wrap: break-word; /* Wrap long words */
+  line-height: 1.2; /* Adequate line height for readability */
+  padding: 0 20px; /* Padding for spacing */
+  box-sizing: border-box; /* Include padding in width calculation */
+  overflow-wrap: break-word; /* Break words that are too long */
+  font-weight: bold; /* Make the font bold */
+}
+
+.foreground-content h2 {
+  font-size: 2em; /* Adjusted font size */
+  margin-bottom: 0.5em;
+  font-weight: bold; /* Make the font bold */
+  color: white;
+}
+
+/* Responsive font size adjustments for h2 */
+@media (max-width: 768px) {
+
+  .download-button {
+    bottom: 10px;
+    right: 10px;
+    font-size: 14px;
+    padding: 8px 15px;
+  }
+  
+  .foreground-content h1 {
+    font-size: 2em; /* Adjusted font size on smaller screens */
+    width: 80%;
+  }
+  .foreground-content h2{
+    font-size: 1.5em; /* Adjusted font size on smaller screens */
+  }
+  .foreground-content {
+    position: relative;
+    justify-content:flex-start; /* Align items to the start of the container */
+    padding-top: 35%; /* Add some padding at the top to position content higher */
+    width:max-content;
+  }
+  .search-container {
+    position: relative;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width:max-content;
+  }
+  
+}
+
+@media (max-width: 480px) {
+  .foreground-content {
+    position: relative;
+    padding-top: 50%; /* Add some padding at the top to position content higher */
+    width:max-content;
+  }
+  .foreground-content h1 {
+    font-size: 1.5em; /* Adjusted font size on smaller screens */
+  }
+  .foreground-content h2{
+    font-size: 1em; /* Adjusted font size on smaller screens */
+  }
+  .search-container {
+    position:relative;
+    transform: translate(-50%, -50%);
+    width:max-content;
+    text-align: center;
+  }
+}
+
+.foreground-content button {
+  padding: 0.5em 1.5em;
+  font-size: 1.5em;
+  color: white;
+  background-color: #3897f0; /* Default button color */
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.foreground-content button:hover {
+  background-color: #2878b5; /* Darker shade on hover */
+}
+
+.video-container {
+  position: absolute;
+  z-index: 2; /* Above the overlay */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  top: 0;
+  left: 0;
+  pointer-events: none; /* Allows click through to background elements */
+}
+
+.video-card {
+  pointer-events: auto; /* Enable interaction with the video card */
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.video-card.active {
+  opacity: 1; /* Only the active card is visible */
+}
+
+.search-container {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  text-align: center;
+}
+
+.search-form {
+  display: flex;
+  align-items: center; /* Align items vertically in the center */
+  margin-top: 20px;
+  width: 100%; /* Set the width of the search form to full container width */
+  justify-content: center; /* Center the search form within its container */
+}
+
+.search-logo {
+  position: absolute; /* Position the logo absolutely within the container */
+  right: 10px; /* Position the logo from the right */
+  width: 24px;
+  height: 24px;
+  cursor: pointer; /* Change the cursor to pointer to indicate it's clickable */
+}
+
+.input-logo-container {
+  display: flex;
+  align-items: center; /* Align items in the center vertically */
+  border: 1px solid #dfe1e5; /* Border similar to Google's search bar */
+  border-radius: 24px; /* Rounded corners */
+  width: 100%; /* Increase the width of the search bar */
+  max-width: 800px; /* Set a max-width to prevent it from getting too long */
+  background-color: white; /* Ensuring the background inside the border is white */
+  transition: border-color 0.3s ease; /* Smooth transition for border color */
+  position: relative; /* Needed for absolute positioning of the logo */
+}
+
+.input-logo-container:hover {
+  border-color: #ccc; /* Change border color on hover */
+}
+
+.input-logo-container:hover .search-logo {
+  transform: scale(1.1); /* Scale logo on hover */
+}
+
+#google-like-search {
+  flex-grow: 1; /* Allows the input to take the available space */
+  width: 100%; /* Set the width to fill the container */
+  height: 48px; /* Height for a comfortable search bar */
+  padding-right: 50px; /* Add padding to the right to make space for the logo */
+  padding-left: 20px; /* Add padding to the left as needed */
+  font-size: 16px; /* Font size similar to Google's */
+  border: none;
+  border-radius: 24px; /* Rounded corners */
+  transition: box-shadow 0.3s ease; /* Smooth transition for box shadow */
+}
+
+#google-like-search:focus {
+  outline: none;
+  box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+}

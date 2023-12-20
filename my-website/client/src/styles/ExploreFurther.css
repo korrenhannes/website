@@ -1,0 +1,197 @@
+/* ExploreFurther.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+.explore-further-container {
+    background-color: #E5F0FF; /* Light blue background */
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #333; /* Dark grey color for text */
+    min-height: 100%; /* Full viewport height */
+    padding: 0; /* Padding on all sides */
+    margin: 0;
+    position: absolute; /* Adding absolute positioning */
+    width: 100%;       /* Full viewport width */
+    top: 0;
+    left: 0;
+    overflow: hidden; /* This prevents internal scrolling */
+}
+
+/* The navigation bar styles remain the same */
+
+/* Flex container for the video and content section */
+.explore-further-container .main-content {
+    display: flex;
+    width: 100%;
+    max-width: 1200px; /* Max width of the content */
+    gap: 2rem; /* Space between video and content */
+}
+
+/* Adjust the video container to be smaller and resemble a phone */
+.explore-further-container .video-tab-container {
+    width: 250px; /* Smaller width for the video container */
+    height: 500px; /* Smaller height for the video container */
+    background-color: #fff; /* White background */
+    border-radius: 36px; /* Rounded corners for the 'phone' */
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow to give depth */
+    overflow: hidden; /* Ensure the video doesn't overflow the rounded corners */
+    position: relative; /* Keep this to maintain the layout */
+    margin: auto; /* Center the container in the parent */
+    margin-top: 45px;
+}
+
+/* Ensure the video fills the container and respects the rounded corners */
+.explore-further-container .video-tab {
+    position: absolute; /* Position absolutely within the container */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Cover the container fully */
+}
+
+
+/* Styling for the content section to be next to the video */
+.explore-further-container .content-section {
+    flex-basis: 60%; /* Takes up the remaining 60% of the flex container */
+    padding: 0; /* Remove padding */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left; /* Align text to the left */
+}
+
+/* Button styling */
+.explore-further-container .cliplt-button {
+    background-color: #4A90E2; /* Button color */
+    color: #fff;
+    border: none;
+    padding: 12px 24px; /* Padding for the button */
+    border-radius: 20px; /* Rounded corners */
+    cursor: pointer;
+    font-size: 18px; /* Larger font size */
+    margin-top: 1rem; /* Space above the button */
+    transition: background-color 0.2s; /* Transition for hover effect */
+    align-self: center; /* Center button - adjusted */
+}
+
+.explore-further-container .cliplt-button:hover {
+    background-color: #357abd; /* Darker blue on hover */
+}
+
+
+/* Error/loading message styling */
+.explore-further-container .text-danger,
+.explore-further-container .text-center {
+    position: absolute; /* Position the message absolutely */
+    bottom: 10px; /* Position it at the bottom of the screen */
+    left: 50%; /* Center it horizontally */
+    transform: translateX(-50%); /* Adjust the horizontal position to truly center it */
+    width: 100%; /* Let it take the full width */
+    max-width: 600px; /* Max-width so it doesn't get too wide */
+    text-align: center; /* Center the text */
+}
+
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .explore-further-container .main-content {
+        flex-direction: column-reverse; /* Stack video and content vertically on mobile */
+    }
+
+    .explore-further-container .video-tab-container {
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
+    }
+
+    .explore-further-container .video-tab-container {
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
+    }
+
+    .explore-further-container .cliplt-button {
+        padding: 10px 20px; /* Adjust padding for smaller screens */
+        font-size: 16px; /* Adjust font size for smaller screens */
+        align-self: center; /* Center button on mobile */
+    }
+    .explore-further-container .main-content .video-tab-container{
+        width:40%;
+        height:60%;
+        position: absolute;
+        left: 55%;
+        top: 25%;
+    }
+    .explore-further-container .main-content .content-section {
+       position:absolute;
+       display: flex;
+       right: 50%;
+       margin-left: 5%;
+       top: 40%;
+       padding: auto;
+    }
+    .explore-further-container .main-content .content-heading{
+        position: absolute;
+        bottom: 70%;
+        margin-left: 15px;
+        
+    }
+    
+}
+@media (max-width: 480px) {
+    .explore-further-container .main-content {
+        flex-direction: column-reverse; /* Stack video and content vertically on mobile */
+    }
+
+    .explore-further-container .video-tab-container {
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
+    }
+
+    .explore-further-container .video-tab-container {
+        flex-basis: auto; /* Auto size for mobile */
+        width: 85%; /* Adjust width for smaller screens */
+        margin-top: 1rem; /* Space above video on mobile */
+    }
+
+    .explore-further-container .cliplt-button {
+        padding: 10px 20px; /* Adjust padding for smaller screens */
+        font-size: 16px; /* Adjust font size for smaller screens */
+        align-self: center; /* Center button on mobile */
+    }
+    .explore-further-container .main-content .video-tab-container{
+        width:40%;
+        height:40%;
+        position: absolute;
+        left: 55%;
+        top: 35%;
+    }
+    .explore-further-container .main-content .content-section {
+       position:absolute;
+       display: flex;
+       right: 50%;
+       margin-left: 5%;
+       top: 40%;
+       padding: auto;
+    }
+    .explore-further-container .main-content .content-heading{
+        position: absolute;
+        bottom: 70%;
+        
+    }
+}
+
+
+/* Specific styles to ensure video.js player fills its container */
+.explore-further-container .video-tab-container .video-js {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
