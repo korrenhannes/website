@@ -8,6 +8,7 @@ from datetime import datetime
 from google.cloud import storage
 from moviepy.editor import *
 from pytube import YouTube
+import yt_dlp as youtube_dl
 from tqdm import tqdm
 from openai import OpenAI
 import imutils
@@ -278,7 +279,7 @@ class BestClips:
             if os.path.exists(video_str):
                 self.video_path = video_str
             elif self.is_valid_youtube_url(video_str):
-                self.video_path = self.download_youtube_video(video_str)
+                self.video_path = self.download_youtube_video(video_str, self.run_path)
             else:
                 raise InvalidVideoError("Invalid video URL or path")
 
@@ -337,42 +338,26 @@ class BestClips:
             return False
 
     
-    def download_youtube_video(self, url):
+    def download_youtube_video(self, url, path):
         print("Downloading YouTube Video in Highest Quality")
+        ydl_opts = {
+            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',  # Get the best quality video and audio
+            'outtmpl': os.path.join(path, 'video.%(ext)s'),  # Save in current directory with resolution
+            'noplaylist': True,
+            'verbose': True,
+            'merge_output_format': 'mp4',  # Ensure the output is merged into an mp4 format
+        }
 
-        # Create a YouTube object
-        youtube_video = YouTube(url)
-
-        # Get the best resolution video stream
-        video_stream = youtube_video.streams.filter(progressive=False, file_extension='mp4').order_by('resolution').desc().first()
-
-        # Get the best quality audio stream
-        audio_stream = youtube_video.streams.filter(only_audio=True).order_by('abr').desc().first()
-
-        # Download video and audio streams separately
-        video_filename = video_stream.download(output_path=self.run_path, filename_prefix='video_')
-        audio_filename = audio_stream.download(output_path=self.run_path, filename_prefix='audio_')
-        print(f"Downloaded seperate files to {video_filename} and {audio_filename}")
-
-        # Load video and audio using moviepy
-        video_clip = VideoFileClip(video_filename)
-        audio_clip = AudioFileClip(audio_filename)
-
-        # Set the audio of the video clip
-        final_clip = video_clip.set_audio(audio_clip)
-
-        # Generate the output filename
-        new_filename = os.path.join(self.run_path, 'video.mp4')
-        print(f"new_filename={new_filename}")
-
-        # Write the final clip with both video and audio
-        final_clip.write_videofile(new_filename, codec="libx264", audio_codec="aac")
-
-        # Remove the separate video and audio files
-        os.remove(video_filename)
-        os.remove(audio_filename)
-
-        return new_filename
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+            video_width = info_dict.get('width', None)
+            video_height = info_dict.get('height', None)
+            video_filename = ydl.prepare_filename(info_dict)
+            file_path = os.path.join(path, video_filename)
+            resolution = (video_width, video_height)
+            
+            print(f"Video Resolution: {resolution}")
+        return file_path
 
 
     def audio_video(self, video):

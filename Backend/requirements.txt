@@ -16,3 +16,4 @@ python-dotenv==1.0.0
 pytube==15.0.0
 retina_face==0.0.13
 tqdm==4.60.0
+yt_dlp==2023.11.16
