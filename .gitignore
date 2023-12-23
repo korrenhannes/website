@@ -6,3 +6,5 @@ server/node_modules/
 # Environment configuration files
 # $env:NODE_OPTIONS="--openssl-legacy-provider"
 *.env
+*.mp4
+*.lps
