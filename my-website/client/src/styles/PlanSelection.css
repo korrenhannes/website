@@ -3,14 +3,17 @@
 /* Apply Montserrat to all text */
 body {
   font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
 }
+
   .plan-selection {
-      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       max-width: 800px;
       margin: 0 auto;
       padding: 20px;
       color: #333;
       padding-top: 120px;
+      background-color: #E5F0FF;
+      
     }
     
     .plan-selection h1 {
@@ -83,7 +86,8 @@ body {
       border: none;
       border-radius: 20px; /* More rounded corners as per the reference */
       width: 100%; /* Full width for the button */
-      font-size: 16px; /* Same font size for consistency */
+      font-size: 24px; /* Same font size for consistency */
+      font-weight: bold;
       margin-bottom: 1rem; /* Space after the button */
       cursor: pointer;
     }

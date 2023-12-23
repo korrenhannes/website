@@ -6,31 +6,33 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 .how-it-works-container {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   color: #333;
   background-color: #fff;
   padding-top: 70px;
   padding-bottom: 1rem;
-  text-align: left;
+  text-align: center;
   overflow: hidden;
+  background-color: #E5F0FF; /* Light blue background */
+
+
 }
 
 
 .card-little {
   display: flex;
   flex-direction: row;
-  border: 1px solid #000;
+  border: none;
   border-radius: 8px;
   margin: 0.3em  auto;
   height: 300px; /* Adjust this value to your preference */
   flex-basis: 30%; /* Adjust card width for side by side layout */
   justify-content: center;
+  background-color:#bbc7df;
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
-  justify-content: start;
   padding: 1rem;
 }
 
@@ -70,10 +72,14 @@ body {
   margin-bottom: 0.1rem;
   font-size: 1.2rem;
 }
+.clip-it{
+  color: #78a1d4;
+
+}
 
 .how-does-it-work {
   font-size: 1.8rem;
-  color: #4A90E2;
+  color: #78a1d4;
   margin-bottom: 1.5rem;
   margin-top: 1rem;
   font-weight: bold;
@@ -104,6 +110,8 @@ body {
   width: 50px;
   height: auto;
   margin-bottom: 0.5rem;
+  align-self: center;
+
 }
 
 @media (min-width: 576px) {

@@ -12,17 +12,17 @@ import updatePlanRequest from './UpdatePlanService'; // Adjust the path as neces
 
 function OffersPage() {
   const [selectedPlan, setSelectedPlan] = useState('basic');
-  const [planDescription1, setPlanDescription1] = useState('this is the Basic plan,you get one additional video with smaller water mark');
-  const [planDescription2, setPlanDescription2] = useState('why you should choose the Basic plan');
-  const [planDescription3, setPlanDescription3] = useState('let me convince you');
+  const [planDescription1, setPlanDescription1] = useState('This is the Basic plan, you get one additional video with smaller water mark');
+  const [planDescription2, setPlanDescription2] = useState('Why you should choose the Basic plan');
+  const [planDescription3, setPlanDescription3] = useState('Let me convince you');
   const navigate = useNavigate();
   const userEmail = jwtDecode(localStorage.getItem('token')).email;
 
 
   const plans = [
-    { name: 'Basic', price: 'free', quality: 'Good', title:'you get one additional video with smaller water mark' },
-    { name: 'Regular', price: '27.99', quality: 'Better', title: 'you get 10 videos to edit' },
-    { name: 'Premium', price: '79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
+    { name: 'Basic', price: 'Free', quality: 'Good', title:'you get one additional video with smaller water mark' },
+    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'you get 10 videos to edit' },
+    { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
   ];
 
   const selectPlan = (plan) => {
