@@ -64,9 +64,9 @@ const HowItWorks = () => {
   return (
       <div className="how-it-works-container">
         <div className="container">
-          <h1 className="text-black">It's time to <span className="clip-it">ClipIt</span>.</h1>
-          <p className="lead text-black">“Creating content has never been this easy"  </p>
-          <p className="lead text-black">With our simple 3 step process you can transform long videos into short and exciting content.</p>
+          <h1 className="text-white">It's time to <span className="clip-it">ClipIt</span>.</h1>
+          <p className="lead text-white">“Creating content has never been this easy"  </p>
+          <p className="lead text-white">With our simple 3 step process you can transform long videos into short and exciting content.</p>
           <h2 className="how-does-it-work">How does it work?</h2>
           <div className="row justify-content-start">
               <div className="card-little">

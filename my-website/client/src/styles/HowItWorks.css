@@ -1,18 +1,25 @@
 /* HowItWorks.css */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
 
-/* Apply Montserrat to all text */
+
 body {
   font-family: 'Montserrat', sans-serif;
+  background-image: url('../howworkspic.png'); /* Replace with the correct path to your image */
+  background-size: cover; /* Cover the entire page */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-attachment: fixed; /* Fixed background */
+  background-position: center; /* Center the image */
+
 }
+
 .how-it-works-container {
-  color: #333;
+  color: #fff;
   background-color: #fff;
   padding-top: 70px;
   padding-bottom: 1rem;
   text-align: center;
   overflow: hidden;
-  background-color: #E5F0FF; /* Light blue background */
+  background-color: transparent; /* Since the video is in the background */
 
 
 }
@@ -23,12 +30,13 @@ body {
   flex-direction: row;
   border: none;
   border-radius: 8px;
-  margin: 0.3em  auto;
+  margin: 0.3em auto;
   height: 300px; /* Adjust this value to your preference */
   flex-basis: 30%; /* Adjust card width for side by side layout */
   justify-content: center;
-  background-color:#bbc7df;
+  background-color: rgba(187, 199, 223, 0.9); /* Adjust alpha for transparency */
 }
+
 
 .card-body {
   display: flex;
@@ -43,7 +51,7 @@ body {
 }
 
 .card-text {
-  color: #000; /* Dark color for headings */
+  color: #fff; /* Dark color for headings */
   font-size: 20px; /* Adjust the font size */
   font-weight: 500; /* Medium font weight */
   margin-bottom: 1rem; /* Space below the heading */
@@ -57,6 +65,8 @@ body {
   flex-direction: column;
   justify-content: center;
   overflow: hidden;
+  background-color: transparent; /* Since the video is in the background */
+
 }
 
 .container h1 {
@@ -94,7 +104,7 @@ body {
 }
 
 .step h3 {
-  color: #333;
+  color: #fff;
   font-size: 1.3rem;
   font-weight: bold;
   margin: 0.5rem 0;
