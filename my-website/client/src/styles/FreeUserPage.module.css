@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+.fullscreencontainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #f4f4f4; /* Minimalist background color */
+  padding: 20px;
+  box-sizing: border-box;
+  margin-top: 50px; /* Margin from the top of the page */
+  overflow: hidden;
+}
+
+.videocontainer1 {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 85vh; /* Full viewport height */
+  width: 50vh; /* Full width */
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5.5%;
+  background-color: #fff; /* White background */
+  border-radius: 36px; /* Rounded corners for the 'phone' */
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow for depth */
+  overflow: hidden; /* Ensure video doesn't overflow the rounded corners */
+}
+
+.video-js.vjs-fluid {
+  position: relative; /* Relative positioning */
+  width: 50%; /* Adjust width as needed */
+  height: auto; /* Height auto for maintaining aspect ratio */
+}
+
+/* ... (other styles) */
+
+/* Hide all control bar components except the progress control */
+.video-js .vjs-control-bar {
+  display: none !important;
+  background: 0 !important;
+  visibility: hidden !important; /* Hide everything initially */
+}
+.video-js .vjs-picture-in-picture-control {
+  display: none !important;
+}
+
+/* Show the progress control and customize it */
+.video-js .vjs-control-bar .vjs-progress-control {
+  visibility:hidden; /* Only the progress bar will be visible */
+  width: 100% !important;
+  bottom: 0;
+  padding: 0;
+  margin: 0;
+  display: none;
+}
+
+/* Customize the progress bar's appearance */
+.video-js .vjs-control-bar .vjs-progress-control .vjs-progress-holder {
+ display: none;
+}
+
+
+/* ... (other responsive styles) */
+
+
+.downloadbutton {
+  border: none;
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: auto;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  justify-self: center;
+  align-self: center;
+  position: absolute;
+  top: 50%;
+  left: 75%;
+}
+
+.downloadbutton:hover {
+  background-color: #0056b3; /* Darken button on hover */
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  
+  .video-js.vjs-fluid {
+    width: 90%; /* Make sure the video fills the container */
+    height: 90%; /* Make sure the video fills the container */
+    object-fit: cover; /* Adjust how the video fits in the container */
+  }
+
+  .videocontainer1 { /* Update this as well */
+   margin-top: 13.5VH;
+  }
+
+  .fullscreencontainer {
+      padding: 10px;
+  }
+
+  .videocontainer {
+      width: 90%; /* Increase width on smaller screens for better visibility */
+  }
+
+  .downloadbutton {
+      font-size: 14px;
+      padding: 8px 15px;
+      margin-right: 1%;
+      margin-left: 1%;
+      left: 76%;
+      width: auto;
+      display: none;
+  }
+}
+@media (max-width: 480px) {
+  .videocontainer1 { /* Update this as well */
+    width: 100%; /* Adapt width on smaller screens */
+    height:100%;
+    overflow: hidden;
+    border-radius:0%; /* Rounded corners for the 'phone' */
+    box-shadow:none /* Shadow for depth */
+  }
+
+}
