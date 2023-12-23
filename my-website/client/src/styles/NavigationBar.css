@@ -26,6 +26,8 @@ body {
   margin: 0 1em;
   text-decoration: none;
   color: #333;
+  font-weight: bold; /* Make the font bold */
+
 }
 
 .nav-actions a, .nav-actions button {
@@ -34,6 +36,8 @@ body {
   margin-right: 1em;
   padding: 0.5em 1em;
   border-radius: 20px;
+  font-weight: bold; /* Make the font bold */
+
 }
 
 .nav-actions .nav-signup {

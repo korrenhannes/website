@@ -8,14 +8,14 @@ export const MESSAGES = {
     signUpLink: 'Don’t have an account? ',
     loginError: 'Login failed. Please check your credentials.',
     confirmEmailError: 'Please confirm your email before logging in.',
-    limitedDeals: 'limited deals',
-    whyUs: 'Why us',
-    partnerWithUs: 'Partner with us',
+    limitedDeals: 'Limited Offer',
+    whyUs: 'Why Us',
+    partnerWithUs: 'Partner With Us',
     support: 'Support',
-    myVideos: 'my videos',
+    myVideos: 'My Videos',
     logout: 'Logout',
     login: 'Log in',
-    joinUs: 'Join us!',
+    joinUs: 'Join Us!',
 };
   
   // You can add more text content as needed
