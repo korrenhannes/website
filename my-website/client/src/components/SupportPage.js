@@ -77,9 +77,8 @@ function SupportPage() {
             </ul>
           </div>
           <div className="footer-section best-practices">
-            <h4>share your thoughts</h4>
+            <h4>Here for you anytime</h4>
             <ul>
-              <li><a href="/affiliate">    Contact us</a></li>
               <li><a href="/guide/turn-videos-into-shorts">Our WhatsUp: 972527242424 </a></li>
               <li><a href="/guide/create-videos">Our mail: korren@clipitshorts.com</a></li>
             </ul>
