@@ -1,0 +1,110 @@
+/* Base styles */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+  
+  /* Ensures the content is centered */
+  .main-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  
+  /* Styles for the login card */
+  .card {
+    background-color: #ffffff; /* Light card background */
+    padding: 2rem;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px; /* Set the max-width for the card */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Subtle shadow for depth */
+    color: #000; /* Text color for the card */
+  }
+  
+  /* Styles for headings */
+  .card h2 {
+    color: #000; /* Dark color for headings */
+    font-size: 24px; /* Adjust the font size */
+    font-weight: 500; /* Medium font weight */
+    margin-bottom: 1rem; /* Space below the heading */
+  }
+  
+  /* Styles for form labels and text */
+  .form-label, .card p {
+    color: #000; /* Dark grey color for text */
+    font-size: 16px; /* Adequate font size for readability */
+    margin-bottom: .5rem; /* Space below labels and paragraphs */
+  }
+  
+  /* Styles for input fields */
+  .form-control {
+    background-color: #f0f0f0; /* Lighter than card for contrast */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 4px;
+    color: #000; /* Dark color for text */
+    font-size: 16px; /* Matching font size for consistency */
+    padding: 10px; /* Padding inside input fields */
+    margin-bottom: 1rem; /* Space after each input field */
+  }
+  
+  /* Styles for primary buttons */
+  .btn-primary {
+    background-color: #8e44ad; /* Vibrant purple, matching your reference */
+    color: #ffffff; /* White color for text on buttons */
+    padding: 12px;
+    border: none;
+    border-radius: 20px; /* More rounded corners as per the reference */
+    width: 100%; /* Full width for the button */
+    font-size: 16px; /* Same font size for consistency */
+    margin-bottom: 1rem; /* Space after the button */
+    cursor: pointer;
+  }
+  
+  /* Styles for links */
+  a {
+    color: #0d6efd; /* Same as button color for design consistency */
+    text-decoration: none; /* No underline for a clean look */
+  }
+  
+  a:hover {
+    text-decoration: underline; /* Underline on hover for usability */
+  }
+  
+  /* Styles for social login buttons */
+  .social-login button {
+    background-color: #ffffff; /* White background for the social buttons */
+    color: #000000; /* Black text for contrast */
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 1rem; /* Space between main form and social buttons */
+    width: 100%; /* Full width for the social buttons */
+    font-size: 16px; /* Consistent font size */
+  }
+  
+  /* Custom styles for Google button */
+  .google-button {
+    background-color: #db4437; /* Google's red */
+    color: #ffffff; /* White text for visibility */
+    /* Add any additional styles for the Google button here */
+  }
+  
+  /* Custom styles for Facebook button */
+  .facebook-button {
+    background-color: #4267B2; /* Facebook's blue */
+    color: #ffffff; /* White text for visibility */
+    /* Add any additional styles for the Facebook button here */
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .card {
+      padding: 1rem; /* Smaller padding on smaller screens */
+    }
+  }
+  

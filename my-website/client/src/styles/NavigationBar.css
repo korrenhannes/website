@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+.navigation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5em 2em;
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-logo img {
+  height: 40px;
+}
+
+.nav-links a, .countdown {
+  margin: 0 1em;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold; /* Add bold font for action buttons */
+
+}
+
+.nav-actions a, .nav-actions button {
+  text-decoration: none;
+  color: #333;
+  margin-right: 1em;
+  padding: 0.5em 1em;
+  border-radius: 20px;
+
+}
+
+.nav-actions .nav-signup {
+  background-color: #3897f0;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.nav-actions .nav-signup:hover {
+  background-color: #2878b5;
+}
+
+.hamburger {
+  display: none;
+  cursor: pointer;
+  z-index: 1001;
+  background-color: white;
+  border: white;
+  width: min-content;
+  margin-right: 0px; /* Adjust right margin to move closer to edge */
+  margin-left: 0;
+}
+
+.hamburger div {
+  background-color:#2878b5;
+  height: 4px; /* Make lines thicker */
+  width: 25px;
+  margin: 3px 0; /* Reduce space between lines */
+  border-radius: 3px;
+  transition: all 0.3s ease;
+}
+
+.logo-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.logo-button img {
+  height: 40px; /* Adjust for mobile as necessary */
+}
+
+.nav-actions .nav-login {
+  text-decoration: none;
+  color: #333;
+  margin-right: 1em;
+}
+
+.nav-actions .nav-login:hover {
+  color: #555;
+}
+
+
+
+/* Small screens: Align items and adjust sizes as requested */
+/* ...existing styles... */
+
+/* Media queries for medium screens (e.g., tablets) */
+@media (max-width: 1024px) {
+  /* Adjust the navigation bar */
+  .navigation-bar {
+    padding: 0.5em 1.5em; /* Slightly larger padding than on mobile */
+  }
+
+  /* Adjust the logo size */
+  .nav-logo img {
+    height: 35px; /* Slightly larger than on mobile, smaller than desktop */
+  }
+
+  /* Adjust the hamburger icon */
+  .hamburger {
+    display: block;
+    margin-right: 1em; /* Adjust margin */
+    padding: 0.25em; /* Adjust padding */
+  }
+
+  .hamburger div {
+    width: 22px; /* Adjust width of lines */
+    height: 3.5px; /* Adjust height of lines */
+  }
+
+  /* Adjust the visibility of navigation links */
+  .nav-links {
+    display: none; /* Keep the navigation links hidden */
+  }
+
+  /* Styling for when hamburger is in 'open' state */
+  .hamburger.open div:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+  }
+  
+  .hamburger.open div:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.open div:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  /* Style adjustments for active nav-links */
+  .nav-links.active {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 60px; /* Adjust based on your nav bar height */
+    right: 0;
+    background-color: #ffffff;
+    width: 40%; /* Slightly wider than on mobile */
+    padding: 1em;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 10%; /* Less rounded than on mobile */
+  }
+
+  /* Hide login and signup buttons on medium screens */
+  .nav-actions a {
+    display: none;
+  }
+
+  /* Adjustments for other elements like countdown, deals-link as necessary */
+  /* ... */
+}
+
+/* Hide the login and join us buttons on mobile */
+@media (max-width: 768px) {
+  .nav-actions a {
+    display: none;
+  }
+  .countdown{
+    position: center;
+  }
+  .deals-link{
+    color: #333;
+  }
+
+  .hamburger {
+    display: block;
+  }
+  .nav-links {
+    display: none;
+    flex: 1;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  .hamburger.open div:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+  
+  .hamburger.open div:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .hamburger.open div:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
+  
+
+  .nav-links.active {
+    justify-items: center;
+    display: flex;
+    flex-direction:column;
+    position:fixed;
+    top: 50px; /* Adjust based on your nav bar height */
+    right: 0;
+    margin-top: 10px;
+    margin-right: 2%;
+    background-color: #ffffff;
+    width: 37%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 1em 1em;
+    box-sizing: border-box; /* To include padding in width */
+    border-radius: 20%;
+  }
+  .nav-links.active .nav-signup{
+
+    color: #3897f0;
+    border: none;
+    cursor: pointer;  }
+
+  /* Restyle the logo for mobile */
+  .nav-logo img {
+    height: 30px; /* Smaller logo on mobile */
+    position: relative;
+  }
+
+  /* Adjust nav-bar padding and layout */
+  .navigation-bar {
+    padding: 0.5em 1em;
+    justify-content: space-between;
+  }
+
+  /* Adjust the position of the hamburger icon */
+ 
+}
+@media (max-width: 480px) {
+  .hamburger {
+    margin-left: 0px;
+    margin-right: 0px; /* Adjust right margin to move closer to edge */
+    padding: 0.20em; /* Adjust padding to make button smaller */
+  }
+  .hamburger div {
+    width: 18px; /* Adjust width of lines */
+    height: 3px; /* Adjust height of lines */
+  }
+  .countdown-mobile{
+    font-size: smaller;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-items: center;
+  }
+  .deals-link{
+    margin: 0px;
+    margin-right: 1px;
+    padding: 0px;
+  }
+  .countdown{
+    margin: 0px;
+    margin-left: 1px;
+    padding: 0px;
+    margin-right: 1px;
+  }
+  .logo-button {
+    margin-left: 0;
+  }
+  .logo-button img {
+    height: 40px; /* Adjust for mobile as necessary */
+    width: 75px;
+    margin-left: 0px;
+    }
+}
