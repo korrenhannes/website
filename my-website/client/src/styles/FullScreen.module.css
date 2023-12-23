@@ -92,6 +92,8 @@ body {
   justify-content: center; /* Center content horizontally */
   font-size: 16px; /* Size of the 'OR' text */
   margin: 20px 0; /* Margin around the 'OR' for spacing */
+  font-weight: bold; /* Make the font bold */
+
 }
 
 .or-with-lines::before,

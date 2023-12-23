@@ -220,7 +220,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
                 id={styles['google-like-search']}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter Url To Try It"
+                placeholder="Enter YouTube Url To Try It"
               />
               <img
                 src="\magnifying-glass_2015241.png"
