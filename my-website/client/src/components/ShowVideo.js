@@ -104,7 +104,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
           directory: `undefined`
         },
         headers: {
-          'User-Email': emailToUse
+          'User-Email': `clipitguest@gmail.com`
         }
       });;
       let signedUrls = response.data.signedUrls;
