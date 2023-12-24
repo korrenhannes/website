@@ -63,6 +63,8 @@ body {
   align-items: center;
   padding: auto;
   box-sizing: border-box;
+  margin: auto;
+  margin-bottom: auto;
 }
 
 .foreground-content h1 {
@@ -153,100 +155,6 @@ body {
   background-color: #2878b5; /* Darker shade on hover */
 }
 
-
-/* Responsive font size adjustments for h2 */
-@media (max-width: 768px) {
-  
-  .file-input-container {
-    padding: 0.4em 1em; /* Adjust padding for smaller size */
-    font-size: 0.8em; /* Adjust font size for smaller screens */
-    /* Add any other styles you want to change for smaller screens */
-  }
-  
-  .foreground-content button {
-    padding: 0.4em 1em; /* Smaller padding */
-    font-size: 1.2em; /* Smaller font size */
-  }
-
-  .download-button {
-    bottom: 10px;
-    right: 10px;
-    font-size: 14px;
-    padding: 8px 15px;
-  }
-  
-  .foreground-content h1 {
-    font-size: 2em; /* Adjusted font size on smaller screens */
-    width: 80%;
-  }
-  .foreground-content h2{
-    font-size: 1.5em; /* Adjusted font size on smaller screens */
-  }
-
-  
-  .foreground-content {
-    position: relative;
-    justify-content:flex-start; /* Align items to the start of the container */
-    padding-top: 35%; /* Add some padding at the top to position content higher */
-    width:max-content;
-    overflow: hidden;
-  }
-  .search-container {
-    position: relative;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    width:max-content;
-  }
-  
-}
-
-@media (max-width: 500px) {
-  html, body {
-  overflow: hidden;
-  height: 100%;
-  }
-  .full-screen-container {
-    max-height: 100%; /* Remove the maximum height for mobile devices */
-    overflow: hidden;
-  }
-  .or-with-lines {
-    font-size: 12px; /* Size of the 'OR' text */
-  }
-  
-  
-  .file-input-container {
-    padding: 0.3em 0.8em; /* Further reduce padding for even smaller screens */
-    font-size: 0.5em; /* Reduce font size for smaller screens */
-    /* Add any other styles you want to change for smaller screens */
-  }
-  .upload-file-button,
-  .foreground-content button {
-    padding: 0.3em 0.8em; /* Even smaller padding */
-    font-size: 1em; /* Even smaller font size */
-  }
-  
-  .foreground-content {
-    position: relative;
-    padding-top: 50%; /* Add some padding at the top to position content higher */
-    width:max-content;
-    overflow: hidden;
-  }
-  .foreground-content h1 {
-    font-size: 1.5em; /* Adjusted font size on smaller screens */
-  }
-  .foreground-content h2{
-    font-size: 1em; /* Adjusted font size on smaller screens */
-  }
-  .search-container {
-    position:relative;
-    transform: translate(-50%, -50%);
-    width:max-content;
-    text-align: center;
-    padding-bottom: 80%;
-    
-  }
-}
-
 .foreground-content button {
   padding: 0.5em 1.5em;
   font-size: 1.5em;
@@ -262,34 +170,14 @@ body {
   background-color: #2878b5; /* Darker shade on hover */
 }
 
-.video-container {
-  position: absolute;
-  z-index: 2; /* Above the overlay */
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  top: 0;
-  left: 0;
-  pointer-events: none; /* Allows click through to background elements */
-}
-
-.video-card {
-  pointer-events: auto; /* Enable interaction with the video card */
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-.video-card.active {
-  opacity: 1; /* Only the active card is visible */
-}
-
 .search-container {
   position: absolute;
-  top: 75%;
+  top: 71%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 45%;
   text-align: center;
-  margin-top: 0.5em;
+  margin-top: auto;
 
 }
 
@@ -345,4 +233,21 @@ body {
 #google-like-search:focus {
   outline: none;
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
+}
+
+/* Responsive font size adjustments for h2 */
+@media (max-width: 768px) {
+  .foreground-content h1{
+    margin:auto;
+    margin-bottom: 40%;
+  }
+}
+
+@media (max-width: 500px) {
+  .search-container{
+    margin: auto;
+  }
+  .foreground-content h1{
+    margin-bottom: 50%;
+  }
 }
