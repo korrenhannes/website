@@ -107,13 +107,12 @@ body {
     .explore-further-container .video-tab-container {
         flex-basis: auto; /* Auto size for mobile */
         width: 85%; /* Adjust width for smaller screens */
-        margin-top: 1rem; /* Space above video on mobile */
-    }
-
-    .explore-further-container .video-tab-container {
-        flex-basis: auto; /* Auto size for mobile */
-        width: 85%; /* Adjust width for smaller screens */
-        margin-top: 1rem; /* Space above video on mobile */
+        margin-top: 2.5rem; /* Space above video on mobile */
+        width:40%;
+        height:60%;
+        position: absolute;
+        left: 55%;
+        top: 25%;
     }
 
     .explore-further-container .cliplt-button {
@@ -121,13 +120,7 @@ body {
         font-size: 16px; /* Adjust font size for smaller screens */
         align-self: center; /* Center button on mobile */
     }
-    .explore-further-container .main-content .video-tab-container{
-        width:40%;
-        height:60%;
-        position: absolute;
-        left: 55%;
-        top: 25%;
-    }
+    
     .explore-further-container .main-content .content-section {
        position:absolute;
        display: flex;
@@ -144,7 +137,7 @@ body {
     }
     
 }
-@media (max-width: 480px) {
+@media (max-width: 500px) {
     .explore-further-container .main-content {
         flex-direction: column-reverse; /* Stack video and content vertically on mobile */
     }
@@ -155,11 +148,6 @@ body {
         margin-top: 1rem; /* Space above video on mobile */
     }
 
-    .explore-further-container .video-tab-container {
-        flex-basis: auto; /* Auto size for mobile */
-        width: 85%; /* Adjust width for smaller screens */
-        margin-top: 1rem; /* Space above video on mobile */
-    }
 
     .explore-further-container .cliplt-button {
         padding: 10px 20px; /* Adjust padding for smaller screens */

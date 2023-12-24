@@ -26,6 +26,7 @@ import AffiliateDashboardPage from './components/AffiliateDashboardPage';
 import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
 import ComplaintsPage from './components/ComplaintsPage';
 import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
+import MyVideosPage from './components/MyVideosPage';
 
 
 
@@ -129,6 +130,7 @@ function App() {
                 <Route path="/complaints" element={<ComplaintsPage />} />
                 <Route path="/offers" element={<OffersPage />} />
                 <Route path="/free-user" element={<FreeUserPage />} />
+                <Route path="/my-videos" element={<MyVideosPage />} />
                 <Route path="/regular-user" element={<RegularUserPage />} />
                 <Route path="/premium-user" element={<PremiumUserPage />} />
                 <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />

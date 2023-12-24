@@ -14,7 +14,7 @@ import NextVideoButton from './NextVideoButton'; // Import the custom button
 // Register the custom button with Video.js
 videojs.registerComponent('NextVideoButton', NextVideoButton);
 
-function FreeUserPage() {
+function MyVideosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(''); // State for the current video URL
@@ -65,7 +65,7 @@ function FreeUserPage() {
 
   return (
     <div className={styles.fullScreenContainer}>
-      <ShowVideo pageContext={PAGE_CONTEXT.FREE_USER} updateVideoUrl={updateCurrentVideoUrl} />
+      <ShowVideo pageContext={PAGE_CONTEXT.MY_VIDEOS} updateVideoUrl={updateCurrentVideoUrl} />
 
       <div className={styles.videouioverlay}>
         {/* Elements for video title, user interaction, etc. */}
@@ -77,4 +77,4 @@ function FreeUserPage() {
   );
 }
 
-export default FreeUserPage;
+export default MyVideosPage;
