@@ -87,7 +87,7 @@ function SupportPage() {
       <footer className="support-footer">
         <div className="footer-content">
           <div className="footer-section company-info">
-            <h4>Company (put info and contact)</h4>
+            <h4>More info</h4>
             <ul>
               <li>
                 <button onClick={toggleWritingTab} className="contact-link">Contact us</button>
@@ -96,10 +96,10 @@ function SupportPage() {
             </ul>
           </div>
           <div className="footer-section best-practices">
-            <h4>Here for you anytime</h4>
+            <h4>Available 24/7</h4>
             <ul>
-              <li><a href="/guide/turn-videos-into-shorts">Our WhatsUp: 972527242424 </a></li>
-              <li><a href="/guide/create-videos">Our mail: korren@clipitshorts.com</a></li>
+              <li>Call Us: +972527242424</li>
+              <li>Email: korren@clipitshorts.com</li>
             </ul>
           </div>
         </div>
