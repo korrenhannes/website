@@ -213,7 +213,9 @@ body {
   }
 
   .container {
-    padding: 0.25rem; /* Even smaller padding */
+    padding: 0.25rem; /* Even smaller padding */  
+    margin-top: 5%;
+    
   }
 
   .card-little {
@@ -224,6 +226,7 @@ body {
     align-items: center;
     margin-left: auto;
     margin-right: auto;
+    margin-bottom: auto;
   }
   .card-title{
     font-size: 100%;
