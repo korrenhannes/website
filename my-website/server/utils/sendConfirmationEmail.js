@@ -13,18 +13,18 @@ async function sendConfirmationEmail(email, confirmationCode) {
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
-    subject: 'Confirm Your Email',
+    subject: 'Activate Your ClipIt Account!',
     html: `
-      <div style="font-family: Arial, sans-serif; color: #333;">
-        <h2 style="color: #1a1a1a;">Welcome to OurApp!</h2>
-        <p>Hi there,</p>
-        <p>We are excited to have you on board. To get started with OurApp, please confirm your email address. This ensures that we have your correct email address and can contact you with important information about your account and our services.</p>
-        <a href="${confirmationUrl}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; margin-top: 10px; border-radius: 5px;">Confirm Email</a>
-        <p>If you did not sign up for an OurApp account, please ignore this email or <a href="#">contact support</a> if you have any concerns.</p>
-        <footer>
-          <p>Thank you for choosing OurApp!</p>
-          <p>If the button above does not work, copy and paste the following link into your browser:</p>
-          <a href="${confirmationUrl}" style="color: #4CAF50;">${confirmationUrl}</a>
+      <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h1 style="color: #4CAF50; text-align: center;">Welcome to ClipIt!</h1>
+        <img src="http://localhost:3001/public/Untitled.png" alt="ClipIt Logo" style="display: block; margin: 20px auto; width: 50%;">
+        <p>Hi there!</p>
+        <p>We're thrilled to have you on board. ClipIt is your new companion in revolutionizing social media content creation. Let's get your email verified to kickstart an amazing journey!</p>
+        <a href="${confirmationUrl}" style="background-color: #4CAF50; color: white; padding: 15px 25px; text-align: center; text-decoration: none; display: block; margin: 20px auto; width: fit-content; border-radius: 5px; font-weight: bold;">Activate Account</a>
+        <p style="text-align: center;">Just one click away from starting with ClipIt!</p>
+        <p>If you didn't sign up for ClipIt, you can safely ignore this email, or <a href="https://www.cliplt.com/support">contact our support team</a> for assistance.</p>
+        <footer style="margin-top: 30px; text-align: center;">
+          <p><small>© ${new Date().getFullYear()} ClipIt. All rights reserved.</small></p>
         </footer>
       </div>
     `,
