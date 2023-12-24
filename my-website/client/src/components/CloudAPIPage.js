@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
 import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.png'; // Update the path according to your file structure
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 const nextButton = require('../assets/nextButton.png');
 
 
@@ -21,7 +23,14 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   const touchStartRef = useRef(null);
   // State for video source URL
   const [videoSource, setVideoSource] = useState("https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video");
+  const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
 
+  useEffect(() => {
+    const loadImage = new Image();
+    loadImage.src = chatPic; // URL of your background image
+    loadImage.onload = () => setBackgroundImageLoaded(true);
+  }, []);
+  
    // Ref for the file input
    const fileInputRef = useRef(null);
 
@@ -206,8 +215,14 @@ function CloudAPIPage({ enableScrollHandling = true }) {
       {/* Background Video */}
       <div 
         className={styles['background-image']} 
-        style={{ backgroundImage: `url(${chatPic})` }}
-      ></div>
+        style={{ backgroundImage: `url(${chatPic})` }}>
+        <LazyLoadImage
+          alt="background"
+          effect="blur"
+          src={chatPic} // use your imported image here
+          wrapperClassName={styles['background-image']}
+        />
+      </div>
 
 
       <div className={styles['foreground-content']}>
