@@ -7,6 +7,8 @@ import NavigationBar from './NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
+import { motion } from 'framer-motion'; // Import motion
+
 
 const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
@@ -35,6 +37,20 @@ function ExploreFurther() {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const swipeThreshold = 100; // Increased threshold for swipe sensitivity
   const [swipeEnabled, setSwipeEnabled] = useState(false); // New state for swiping enabled
+  const [swipeDirection, setSwipeDirection] = useState(null); // State for swipe direction
+
+  // Animation variants for Framer Motion
+  const variants = {
+    initial: {
+      y: swipeDirection === 'up' ? '100vh' : '0'
+    },
+    animate: {
+      y: 0
+    },
+    exit: {
+      y: swipeDirection === 'up' ? '0' : '-100vh'
+    }
+  };
 
   useEffect(() => {
     // Delay enabling swipe functionality by 1 second
@@ -114,15 +130,23 @@ function ExploreFurther() {
     }
   }, [currentVideoIndex, videos]);
 
+
   const handleSwipe = (direction) => {
     if (!swipeEnabled) return; // Check if swiping is enabled
 
-    const navigateUp = () => navigate('/how-it-works');
-    const navigateDown = () => navigate('/cloud-api');
+    const navigateUp = () => {
+      setSwipeDirection(1);
+      setTimeout(() => navigate('/how-it-works'), 500); // Delay for animation
+    };
+    const navigateDown = () => {
+      setSwipeDirection(-1);
+      setTimeout(() => navigate('/cloud-api'), 500); // Delay for animation
+    };
 
     if (direction === 'up') navigateUp();
     if (direction === 'down') navigateDown();
   };
+
 
 
   useEffect(() => {
@@ -160,7 +184,14 @@ function ExploreFurther() {
   }, [navigate, swipeEnabled]); // Add swipeEnabled as a dependency
 
   return (
-    <div className="explore-further-container">
+    <motion.div
+      className="explore-further-container"
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      transition={{ duration: 0.5 }}
+    >
       <div className="main-content">
         {windowWidth <= 768 && (
           <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
@@ -172,7 +203,7 @@ function ExploreFurther() {
       </div>
       {isLoading && <div className="text-center mt-3">Loading...</div>}
       {error && <div className="text-danger text-center mt-3">{error}</div>}
-    </div>
+    </motion.div>
   );
 }
 

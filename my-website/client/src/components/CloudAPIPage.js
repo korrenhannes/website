@@ -1,84 +1,98 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
 import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.png'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { motion, useAnimation } from 'framer-motion';
+
 const nextButton = require('../assets/nextButton.png');
-
-
-
 
 function CloudAPIPage({ enableScrollHandling = true }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [userPaymentPlan, setUserPaymentPlan] = useState('free');
-  const [file, setFile] = useState(null); // State to hold the selected file
+  const [file, setFile] = useState(null);
+  const [swipeDirection, setSwipeDirection] = useState(null); // Define swipeDirection state
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
-  // State for video source URL
   const [videoSource, setVideoSource] = useState("https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video");
   const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
+  const swipeControl = useAnimation();
 
   useEffect(() => {
     const loadImage = new Image();
-    loadImage.src = chatPic; // URL of your background image
+    loadImage.src = chatPic;
     loadImage.onload = () => setBackgroundImageLoaded(true);
   }, []);
-  
-   // Ref for the file input
-   const fileInputRef = useRef(null);
 
-  // Handle video loading error
+  const fileInputRef = useRef(null);
+
   const handleVideoError = () => {
     console.error('Switching to alternative video source');
     setVideoSource("https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video");
   };
-  
-   // Function to trigger file input click
-   const handleButtonClick = () => {
-     fileInputRef.current.click();
-   };
+
+  const handleButtonClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStartRef.current) {
+      return;
+    }
+
+    const touchEndY = e.touches[0].clientY;
+    if (touchStartRef.current > touchEndY + 50) {
+      setSwipeDirection('up'); 
+    }
+  };
+
+  const handleWheel = (e) => {
+    if (e.deltaY > 100) {
+      setSwipeDirection('up'); 
+    }
+  };
+
+  useEffect(() => {
+    if (swipeDirection === 'up') {
+      swipeControl.start({ y: '-100vh' }).then(() => {
+        navigate('/explore-further');
+      });
+    }
+  }, [swipeDirection, navigate, swipeControl]);
+
   useEffect(() => {
     if (!enableScrollHandling) {
       return;
     }
-    const handleTouchStart = (e) => {
-      touchStartRef.current = e.touches[0].clientY;
-    };
 
-    const handleTouchMove = (e) => {
-      if (!touchStartRef.current) {
-        return;
-      }
-
-      const touchEndY = e.touches[0].clientY;
-      if (touchStartRef.current > touchEndY + 50) {
-        navigate('/explore-further');
-      }
-    };
-
-    const handleWheel = (e) => {
-      if (e.deltaY > 100) {
-        navigate('/explore-further');
-      }
-    };
-
-    window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('wheel', handleWheel);
 
     return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [navigate]);
+  }, [navigate, swipeControl]);
+
+  useEffect(() => {
+    if (!enableScrollHandling) {
+      return;
+    }
+
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('wheel', handleWheel);
+
+    return () => {
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [navigate, swipeControl]);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
@@ -211,20 +225,16 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   };
 
   return (
-    <div className={styles['full-screen-container']}>
-      {/* Background Video */}
-      <div 
-        className={styles['background-image']} 
-        style={{ backgroundImage: `url(${chatPic})` }}>
-        <LazyLoadImage
-          alt="background"
-          effect="blur"
-          src={chatPic} // use your imported image here
-          wrapperClassName={styles['background-image']}
-        />
+    <motion.div
+      className={styles['full-screen-container']}
+      animate={swipeControl}
+      initial={{ y: 0 }}
+      exit={{ y: '100vh' }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className={styles['background-image']} style={{ backgroundImage: `url(${chatPic})` }}>
+        <LazyLoadImage alt="background" effect="blur" src={chatPic} wrapperClassName={styles['background-image']} />
       </div>
-
-
       <div className={styles['foreground-content']}>
         <h1>Simply ClipIt.</h1>
         <div className={styles['search-container']}>
@@ -261,7 +271,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
 
   );
 }
