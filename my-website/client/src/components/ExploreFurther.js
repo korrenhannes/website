@@ -143,7 +143,6 @@ function ExploreFurther() {
         <ShowVideo pageContext={PAGE_CONTEXT.EXPLORE_FURTHER} updateVideoUrl={updateCurrentVideoUrl} />
         <ContentSection windowWidth={windowWidth} />
       </div>
-      {isLoading && <div className="text-center mt-3">Loading...</div>}
       {error && <div className="text-danger text-center mt-3">{error}</div>}
     </motion.div>
   );
