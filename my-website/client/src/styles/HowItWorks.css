@@ -207,7 +207,10 @@ body {
 
 /* Media Query for Max Width 480 Pixels */
 @media (max-width: 500px) {
-  
+  .how-it-works-container {
+    height: auto;
+    overflow: hidden;
+  }
 
   .container {
     padding: 0.25rem; /* Even smaller padding */
