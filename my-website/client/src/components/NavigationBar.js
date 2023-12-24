@@ -131,7 +131,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
         <Link to="/partner" onClick={handleLinkClick}>{MESSAGES.partnerWithUs}</Link>
         <Link to="/support" onClick={handleLinkClick}>{MESSAGES.support}</Link>
-        <Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>
+        {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
         {isMobile && renderAuthLinks()}
       </div>
       <div className="nav-actions">
