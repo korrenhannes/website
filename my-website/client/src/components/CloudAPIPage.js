@@ -5,7 +5,7 @@ import '../styles/NavigationBar.css';
 import { jwtDecode } from 'jwt-decode';
 import Fingerprint2 from 'fingerprintjs2';
 import styles from '../styles/FullScreen.module.css';
-import chatPic from '../chatpic.png'; // Update the path according to your file structure
+import chatPic from '../chatpic.jpeg'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 const nextButton = require('../assets/nextButton.png');
@@ -24,6 +24,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   // State for video source URL
   const [videoSource, setVideoSource] = useState("https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video");
   const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
+
 
   useEffect(() => {
     const loadImage = new Image();
