@@ -5,7 +5,9 @@ body {
   font-family: 'Montserrat', sans-serif;
   font-weight: bold;
 }
-
+  .container-fluid{
+    background-color: #E5F0FF;
+  }
   .plan-selection {
       max-width: 800px;
       margin: 0 auto;
@@ -37,8 +39,7 @@ body {
       content: '✓';
       color: green;
       font-weight: bold;
-      position: absolute;
-      left: -25px;
+      position: relative;
     }
     
     .plans {
@@ -48,6 +49,7 @@ body {
     }
     
     .plan {
+      background-color: #bfdcf7;
       border: 1px solid #ddd;
       padding: 20px;
       text-align: center;
