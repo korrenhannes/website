@@ -89,6 +89,7 @@ body {
   color: white;
   position: relative;
 }
+
 .or-with-lines {
   display: flex; /* Use flexbox to align elements */
   align-items: center; /* Center items vertically */

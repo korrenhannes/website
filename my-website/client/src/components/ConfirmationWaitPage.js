@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../api'; // Make sure this is the correct import for your API calls
-import styles from '../styles/FullScreen.module.css'; // Import the same CSS
+import { api } from '../api'; // Ensure this is the correct import for your API calls
+import styles from '../styles/FullScreen.module.css'; // Import the appropriate CSS
 
 function ConfirmationWaitPage() {
   const [isConfirmed, setIsConfirmed] = useState(false);
@@ -20,7 +20,7 @@ function ConfirmationWaitPage() {
         if (response.data.isConfirmed) {
           setIsConfirmed(true);
           clearInterval(interval); // Stop checking once confirmed
-          navigate('/login');
+          navigate('/dashboard'); // Navigate to the dashboard or home page
         }
       } catch (error) {
         console.error("Error checking confirmation:", error);
@@ -32,20 +32,15 @@ function ConfirmationWaitPage() {
 
   return (
     <div className={styles['full-screen-container']}>
-      <video
-        autoPlay
-        loop
-        muted
-        id="background-video"
-        className={styles['background-video']}
-      >
-        <source src="\Simply ClipIt..mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      <div
+        className={styles['background-image']}
+        style={{ backgroundImage: 'url("/waiting.png")' }} // Replace with your image path
+      ></div>
       <div className={styles['foreground-content']}>
-        <h1>Waiting for Email Confirmation</h1>
-        <p>Please check your email and click on the confirmation link.</p>
-        {isConfirmed && <p>Your email has been confirmed! Redirecting...</p>}
+        <h1>Welcome to ClipIt!</h1>
+        <p>Thank you for signing up. We're currently confirming your email address.</p>
+        <p>Please check your inbox for a confirmation link to activate your ClipIt account.</p>
+        {isConfirmed && <p>Great! Your email is confirmed. Taking you to ClipIt's world of content creation...</p>}
       </div>
     </div>
   );
