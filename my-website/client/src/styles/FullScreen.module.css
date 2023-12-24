@@ -250,11 +250,13 @@ body {
     margin: auto;
     position: relative;
     top: auto;
-    left: 25%;
+    left: 23.5%;
+    right: auto;
   }
   .foreground-content h1{
     font-size: 3em; /* Starting font size */
     margin: auto;
+    margin-bottom: 6%;
   }
   .or-with-lines {
     font-size: 12px; /* Size of the 'OR' text */
