@@ -27,6 +27,7 @@
         "passport-facebook": "^3.0.0",
         "passport-google-oauth20": "^2.0.0",
         "passport-jwt": "^4.0.1",
+        "react-lazy-load-image-component": "^1.6.0",
         "request": "^2.88.2",
         "socket.io": "^4.7.2"
     },
