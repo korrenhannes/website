@@ -57,7 +57,7 @@ router.post('/forgot-password', async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour from now
     await user.save();
 
-    const resetUrl = `https://backend686868k-c9c97cdcbc27.herokuapp.com/reset-password/${resetToken}`;
+    const resetUrl = `https://www.cliplt.com/reset-password/${resetToken}`;
     await sendEmail({
       to: user.email,
       subject: 'Password Reset',
