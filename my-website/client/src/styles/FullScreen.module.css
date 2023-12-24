@@ -14,6 +14,7 @@ body {
   display: flex;
   align-items: center; /* Center content vertically */
   justify-content: center; /* Center content horizontally */
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
 
 }
 
@@ -240,14 +241,34 @@ body {
   .foreground-content h1{
     margin:auto;
     margin-bottom: 40%;
+
   }
 }
 
 @media (max-width: 500px) {
   .search-container{
     margin: auto;
+    position: relative;
+    top: auto;
+    left: 25%;
   }
   .foreground-content h1{
-    margin-bottom: 50%;
+    font-size: 3em; /* Starting font size */
+    margin: auto;
+  }
+  .or-with-lines {
+    font-size: 12px; /* Size of the 'OR' text */
+  }
+  
+  
+  .file-input-container {
+    padding: 0.3em 0.8em; /* Further reduce padding for even smaller screens */
+    font-size: 0.7em; /* Reduce font size for smaller screens */
+    /* Add any other styles you want to change for smaller screens */
+  }
+ 
+  .foreground-content{
+    margin: auto;
+    margin-top: 12%;
   }
 }

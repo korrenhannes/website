@@ -213,9 +213,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   return (
     <div className={styles['full-screen-container']}>
       {/* Background Video */}
-      <div 
-        className={styles['background-image']} 
-        style={{ backgroundImage: `url(${chatPic})` }}>
+      <div >
         <LazyLoadImage
           alt="background"
           effect="blur"

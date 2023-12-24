@@ -50,7 +50,7 @@ body {
     
     .plan {
       background-color: #bfdcf7;
-      border: 1px solid #ddd;
+      border: none;
       padding: 20px;
       text-align: center;
       width: 30%;
