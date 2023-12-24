@@ -9,7 +9,7 @@ async function sendConfirmationEmail(email, confirmationCode) {
     },
   });
 
-  const confirmationUrl = `http://localhost:3000/confirm/${confirmationCode}`;
+  const confirmationUrl = `https://www.cliplt.com/confirm/${confirmationCode}`;
   const mailOptions = {
     from: process.env.EMAIL_USERNAME,
     to: email,
