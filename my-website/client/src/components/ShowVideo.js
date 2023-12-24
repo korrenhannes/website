@@ -95,19 +95,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
         }
     }
     }
-
-    // Redirect if email is not found, after displaying a custom message
-    if (!emailToUse) {
-    setIsLoading(false);
-    setTimeout(() => {
-    alert('Please take a moment to sign up for free to use your free try.');
-    navigate('/signup');
-    }, 2500); // Redirect after 5 seconds
-    return;
-    }
-
-
-  
+    
     // Fetch the signed URLs
     try {
       console.log(emailToUse, 'fetching video');
