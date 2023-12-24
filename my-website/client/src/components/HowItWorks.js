@@ -15,8 +15,23 @@ const HowItWorks = () => {
   const navigate = useNavigate();
   const touchStartRef = useRef(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const swipeThreshold = 100; // Increased threshold for swipe sensitivity
+  const [swipeEnabled, setSwipeEnabled] = useState(false); // New state for swiping enabled
+
+
+
+  useEffect(() => {
+    // Delay enabling swipe functionality by 1 second
+    const timer = setTimeout(() => {
+      setSwipeEnabled(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSwipe = (direction) => {
+    if (!swipeEnabled) return; // Check if swiping is enabled
+
     // Placeholder functions - replace these with actual navigation logic
     const navigateUp = () => navigate('/support'); // Navigate to your next page
     const navigateDown = () => navigate('/explore-further'); // Navigate to your previous page
@@ -31,17 +46,17 @@ const HowItWorks = () => {
     const handleTouchMove = (e) => {
       if (!touchStartRef.current) return;
       const touchEndY = e.touches[0].clientY;
-      if (touchStartRef.current > touchEndY + 50) {
+      if (touchStartRef.current > touchEndY + swipeThreshold) {
         handleSwipe('up');
-      } else if (touchStartRef.current < touchEndY - 50) {
+      } else if (touchStartRef.current < touchEndY - swipeThreshold) {
         handleSwipe('down');
       }
     };
 
     const handleWheel = (e) => {
-      if (e.deltaY > 100) {
+      if (e.deltaY > swipeThreshold) {
         handleSwipe('up');
-      } else if (e.deltaY < -100) {
+      } else if (e.deltaY < -swipeThreshold) {
         handleSwipe('down');
       }
     };
@@ -60,7 +75,8 @@ const HowItWorks = () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('resize', handleResize);
     };
-  }, [navigate]);
+  }, [navigate, swipeEnabled]); // Add swipeEnabled as a dependency
+  
   return (
       <div className="how-it-works-container">
         <div className="container">
