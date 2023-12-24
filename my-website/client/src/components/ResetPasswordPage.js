@@ -1,10 +1,12 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ResetPasswordForm from './ResetPassword';
 
 function ResetPasswordPage() {
   // Extract the token from the URL
   const { token } = useParams();
+  const navigate = useNavigate();
+
 
   return (
     <div>
