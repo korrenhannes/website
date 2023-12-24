@@ -24,6 +24,8 @@ import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
 import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
+import ComplaintsPage from './components/ComplaintsPage';
+import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 
 
 
@@ -58,6 +60,8 @@ function App() {
     }
     
   }, []);
+
+  const [complaints, setComplaints] = useState([]);
 
   const handleLoginSuccess = (data) => {
     console.log('Logged in user:', data);
@@ -105,33 +109,36 @@ function App() {
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <PayPalScriptProvider options={{
-      "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
-      currency: "USD",
-      intent: "capture"
-    }}>
-      <Router>
-        <div className="App">
-          <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} /> {/* Pass timeLeft to NavigationBar */}
-          <Routes>
-            <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
-            <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
-            <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
-            <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-            <Route path="/cloud-api" element={<CloudAPIPage />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/explore-further" element={<ExploreFurther />} />
-            <Route path="/support" element={<SupportPage />} />
-            <Route path="/offers" element={<OffersPage />} />
-            <Route path="/free-user" element={<FreeUserPage />} />
-            <Route path="/regular-user" element={<RegularUserPage />} />
-            <Route path="/premium-user" element={<PremiumUserPage />} />
-            <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />
-            <Route path="/partner" element={<PartnerWithUsPage />} />
-            <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
-            <Route path="/reset-password/:token" element={<ResetPasswordPage />} /> 
-          </Routes>
-        </div>
-      </Router>
+        "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
+        currency: "USD",
+        intent: "capture"
+      }}>
+        <Router>
+          <div className="App">
+            <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
+            <ComplaintsProvider> {/* Correct placement of ComplaintsProvider */}
+              <Routes>
+                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
+                <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
+                <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
+                <Route path="/forgot-password" element={<ForgotPasswordForm />} />
+                <Route path="/cloud-api" element={<CloudAPIPage />} />
+                <Route path="/how-it-works" element={<HowItWorks />} />
+                <Route path="/explore-further" element={<ExploreFurther />} />
+                <Route path="/support" element={<SupportPage />} />
+                <Route path="/complaints" element={<ComplaintsPage />} />
+                <Route path="/offers" element={<OffersPage />} />
+                <Route path="/free-user" element={<FreeUserPage />} />
+                <Route path="/regular-user" element={<RegularUserPage />} />
+                <Route path="/premium-user" element={<PremiumUserPage />} />
+                <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />
+                <Route path="/partner" element={<PartnerWithUsPage />} />
+                <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
+                <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+              </Routes>
+            </ComplaintsProvider>
+          </div>
+        </Router>
       </PayPalScriptProvider>
     </GoogleOAuthProvider>
   );

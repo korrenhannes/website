@@ -88,11 +88,45 @@ body {
   text-decoration: underline;
 }
 
+/* Styles for the contact link button to make it look like a link */
+.support-page .footer-section ul li .contact-link {
+  background: none;
+  border: none;
+  color: #aaa; /* Same color as other links */
+  font-family: inherit; /* Inherit font style from parent */
+  font-size: inherit; /* Inherit font size from parent */
+  padding: 0; /* Remove default padding */
+  margin: 0; /* Remove default margin */
+  cursor: pointer; /* Cursor to indicate it's clickable */
+  text-decoration: none; /* No underline by default */
+  display: inline; /* To align with other inline elements */
+}
+
+/* Hover effect to match other links */
+.support-page .footer-section ul li .contact-link:hover {
+  color: #fff; /* White color on hover like other links */
+  text-decoration: underline; /* Underline on hover */
+}
+
+.complaint-textarea {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 100px;
+  z-index: 10; /* Ensure it's above other elements */
+}
+
 /* Media queries for responsiveness */
 @media (max-width: 768px) {
   .support-page .footer-content {
     flex-direction: column;
     align-items: center;
+  }
+
+  .support-page .footer-section ul li .contact-link {
+    font-size: 0.9em; /* Adjust font size for smaller screens */
   }
 
   .support-page .footer-section {
@@ -122,6 +156,10 @@ body {
   .support-page .footer-content {
     flex-direction: column;
     padding: 15px; /* Add padding for better spacing */
+  }
+
+  .support-page .footer-section ul li .contact-link {
+    font-size: 0.8em; /* Further reduce font size for very small screens */
   }
 
   .support-page .footer-section h4 {

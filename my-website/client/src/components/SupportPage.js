@@ -3,23 +3,40 @@ import '../styles/NavigationBar.css';
 import '../styles/Support.css';
 import CloudAPIPage from './CloudAPIPage';
 import { useNavigate } from 'react-router-dom';
+import ComplaintsPage from './ComplaintsPage';
+import { useComplaints } from './contexts/ComplaintsContext'; // Import useComplaints
+import { ComplaintsProvider } from './contexts/ComplaintsContext';
 
 function SupportPage() {
   const navigate = useNavigate();
   const touchStartRef = useRef(0);
-  const touchEndRef = useRef(0);  // Added a ref for touch end position
+  const touchEndRef = useRef(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [isWritingTabVisible, setIsWritingTabVisible] = useState(false);
+  const [complaintText, setComplaintText] = useState('');
+
+  // Use the useComplaints hook to access the addComplaint function
+  const { addComplaint } = useComplaints();
+
+  const toggleWritingTab = () => {
+    setIsWritingTabVisible(!isWritingTabVisible);
+  };
+
+  const handleSubmit = (event) => {
+    if (event.key === 'Enter' && complaintText.trim() !== '') {
+      addComplaint(complaintText.trim()); // Add the complaint to the context
+      setComplaintText('');
+      setIsWritingTabVisible(false);
+    }
+  };
+  
 
   const handleSwipe = () => {
-    // Calculate the vertical swipe distance
     const distance = touchEndRef.current - touchStartRef.current;
 
-    // Swipe up
     if (distance < -50) {
       navigate('/next-page');
-    }
-    // Swipe down
-    else if (distance > 50) {
+    } else if (distance > 50) {
       navigate('/how-it-works');
     }
   };
@@ -31,7 +48,7 @@ function SupportPage() {
 
     const handleTouchEnd = (e) => {
       touchEndRef.current = e.changedTouches[0].clientY;
-      handleSwipe(); // Call handleSwipe on touch end
+      handleSwipe();
     };
 
     const handleResize = () => {
@@ -41,7 +58,7 @@ function SupportPage() {
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchend', handleTouchEnd);
     window.addEventListener('resize', handleResize);
-    
+
     const handleScrollSupportPage = (e) => {
       if (e.deltaY < 0) {
         navigate('/how-it-works');
@@ -57,7 +74,7 @@ function SupportPage() {
       window.removeEventListener('wheel', handleScrollSupportPage);
     };
   }, [navigate]);
-  
+
   return (
     <div className="support-page">
       <video autoPlay loop muted className="support-background-video">
@@ -72,7 +89,9 @@ function SupportPage() {
           <div className="footer-section company-info">
             <h4>Company (put info and contact)</h4>
             <ul>
-              <li><a href="/affiliate">Contact us</a></li>
+              <li>
+                <button onClick={toggleWritingTab} className="contact-link">Contact us</button>
+              </li>
               <li><a href="/contact">Become an affiliate</a></li>
             </ul>
           </div>
@@ -85,6 +104,15 @@ function SupportPage() {
           </div>
         </div>
       </footer>
+      {isWritingTabVisible && (
+        <textarea
+          value={complaintText}
+          onChange={(e) => setComplaintText(e.target.value)}
+          onKeyDown={handleSubmit}
+          className="complaint-textarea"
+          placeholder="Enter your complaint..."
+        />
+      )}
     </div>
   );
 }
