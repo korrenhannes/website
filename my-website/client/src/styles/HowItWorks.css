@@ -8,20 +8,33 @@ body {
 }
 
 .how-it-works-container {
+  position: relative;
   color: #fff;
   background-color: #fff;
   padding-top: 70px;
   padding-bottom: 3.1rem;
   text-align: center;
   overflow: hidden;
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
   background-image: url('../howworkspic.png');
   background-size: cover; /* Cover the entire page */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-attachment: fixed; /* Fixed background */
   background-position: center; /* Center the image */
-
-
-
+}
+.how-it-works-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  z-index: 1; /* Below the text */
+}
+.how-it-works-container * {
+  position: relative;
+  z-index: 2; /* Above the overlay */
 }
 
 
@@ -34,7 +47,7 @@ body {
   height: 300px; /* Adjust this value to your preference */
   flex-basis: 30%; /* Adjust card width for side by side layout */
   justify-content: center;
-  background-color: rgba(187, 199, 223, 0.9); /* Adjust alpha for transparency */
+  background-color: rgba(235, 241, 255, 0.7); /* Adjust alpha for transparency */
 }
 
 
