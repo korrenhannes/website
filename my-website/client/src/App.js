@@ -114,9 +114,9 @@ function App() {
         intent: "capture"
       }}>
         <Router>
-          <div className="App">
-            <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
-            <ComplaintsProvider> {/* Correct placement of ComplaintsProvider */}
+          <ComplaintsProvider> {/* Wrap ComplaintsProvider around all components that need access to the complaints context */}
+            <div className="App">
+              <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
               <Routes>
                 <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
                 <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
@@ -136,8 +136,8 @@ function App() {
                 <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
               </Routes>
-            </ComplaintsProvider>
-          </div>
+            </div>
+          </ComplaintsProvider>
         </Router>
       </PayPalScriptProvider>
     </GoogleOAuthProvider>

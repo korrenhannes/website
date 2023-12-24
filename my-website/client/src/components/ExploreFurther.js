@@ -8,10 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
 
-
 const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
-    {/* Render content-heading inside ContentSection for larger screens */}
     {windowWidth > 768 && (
       <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
     )}
@@ -35,6 +33,19 @@ function ExploreFurther() {
   const playerRef = useRef(null);
   const touchStartRef = useRef(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const swipeThreshold = 100; // Increased threshold for swipe sensitivity
+  const [swipeEnabled, setSwipeEnabled] = useState(false); // New state for swiping enabled
+
+  useEffect(() => {
+    // Delay enabling swipe functionality by 1 second
+    const timer = setTimeout(() => {
+      setSwipeEnabled(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -46,8 +57,7 @@ function ExploreFurther() {
     setIsLoading(true);
     setError(null);
 
-    // Retrieve userEmail from localStorage or another secure method
-    const userEmail = localStorage.getItem('userEmail'); // Replace with actual method
+    const userEmail = localStorage.getItem('userEmail');
     if (!userEmail) {
       setError('User email not found. Please log in again.');
       setIsLoading(false);
@@ -85,7 +95,6 @@ function ExploreFurther() {
     }
   };
 
-
   useEffect(() => {
     fetchVideosFromGCloud();
 
@@ -98,7 +107,6 @@ function ExploreFurther() {
   }, [navigate]);
 
   useEffect(() => {
-    // Whenever the currentVideoIndex changes, load the new video
     if (videos.length > 0 && playerRef.current) {
       playerRef.current.src({ src: videos[currentVideoIndex], type: 'video/mp4' });
       playerRef.current.load();
@@ -106,15 +114,16 @@ function ExploreFurther() {
     }
   }, [currentVideoIndex, videos]);
 
-  // Swipe event handlers
   const handleSwipe = (direction) => {
-    // Placeholder functions - replace these with actual navigation logic
-    const navigateUp = () => navigate('/how-it-works'); // Navigate to your next page
-    const navigateDown = () => navigate('/cloud-api'); // Navigate to your previous page
+    if (!swipeEnabled) return; // Check if swiping is enabled
+
+    const navigateUp = () => navigate('/how-it-works');
+    const navigateDown = () => navigate('/cloud-api');
 
     if (direction === 'up') navigateUp();
     if (direction === 'down') navigateDown();
   };
+
 
   useEffect(() => {
     const handleTouchStart = (e) => {
@@ -124,17 +133,17 @@ function ExploreFurther() {
     const handleTouchMove = (e) => {
       if (!touchStartRef.current) return;
       const touchEndY = e.touches[0].clientY;
-      if (touchStartRef.current > touchEndY + 50) {
+      if (touchStartRef.current > touchEndY + swipeThreshold) {
         handleSwipe('up');
-      } else if (touchStartRef.current < touchEndY - 50) {
+      } else if (touchStartRef.current < touchEndY - swipeThreshold) {
         handleSwipe('down');
       }
     };
 
     const handleWheel = (e) => {
-      if (e.deltaY > 100) {
+      if (e.deltaY > swipeThreshold) {
         handleSwipe('up');
-      } else if (e.deltaY < -100) {
+      } else if (e.deltaY < -swipeThreshold) {
         handleSwipe('down');
       }
     };
@@ -148,24 +157,22 @@ function ExploreFurther() {
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('wheel', handleWheel);
     };
-  }, [navigate]);
+  }, [navigate, swipeEnabled]); // Add swipeEnabled as a dependency
 
   return (
-      <div className="explore-further-container">
-        <div className="main-content">
-          {/* Render content-heading outside ContentSection for mobile screens */}
-          {windowWidth <= 768 && (
-            <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
-          )}
-          <div className="video-tab-container">
-            <video ref={videoRef} className="video-js" />
-          </div>
-          <ContentSection windowWidth={windowWidth} />
+    <div className="explore-further-container">
+      <div className="main-content">
+        {windowWidth <= 768 && (
+          <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
+        )}
+        <div className="video-tab-container">
+          <video ref={videoRef} className="video-js" />
         </div>
-        {isLoading && <div className="text-center mt-3">Loading...</div>}
-        {error && <div className="text-danger text-center mt-3">{error}</div>}
+        <ContentSection windowWidth={windowWidth} />
       </div>
-
+      {isLoading && <div className="text-center mt-3">Loading...</div>}
+      {error && <div className="text-danger text-center mt-3">{error}</div>}
+    </div>
   );
 }
 
