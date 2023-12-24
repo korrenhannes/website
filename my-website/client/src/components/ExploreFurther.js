@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
-import { apiFlask } from '../api'; // Assuming this is the correct import for your Flask API
-import NavigationBar from './NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/NavigationBar.css';
 import '../styles/ExploreFurther.css';
+import { PAGE_CONTEXT } from './constants'; // Import the constants
+import ShowVideo from './ShowVideo';
+
 
 
 const ContentSection = ({ windowWidth }) => (
@@ -35,77 +35,18 @@ function ExploreFurther() {
   const playerRef = useRef(null);
   const touchStartRef = useRef(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState(''); // State for the current video URL
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const fetchVideosFromGCloud = async () => {
-    setIsLoading(true);
-    setError(null);
-
-    // Retrieve userEmail from localStorage or another secure method
-    const userEmail = localStorage.getItem('userEmail'); // Replace with actual method
-    if (!userEmail) {
-      setError('User email not found. Please log in again.');
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const response = await apiFlask.get(`/signed-urls?email=${encodeURIComponent(userEmail)}`);
-      const signedUrls = response.data.signedUrls;
-      if (signedUrls && signedUrls.length > 0) {
-        setVideos(signedUrls);
-        setTimeout(() => {
-          if (videoRef.current && !playerRef.current) {
-            playerRef.current = videojs(videoRef.current, {
-              autoplay: true,
-              muted: true,
-              controls: true,
-              fluid: true,
-              sources: [{ src: signedUrls[0], type: 'video/mp4' }]
-            });
-
-            playerRef.current.on('ended', () => {
-              const nextVideoIndex = (currentVideoIndex + 1) % signedUrls.length;
-              setCurrentVideoIndex(nextVideoIndex);
-            });
-          }
-        }, 0);
-      } else {
-        setError('No videos found in Google Cloud Storage.');
-      }
-    } catch (err) {
-      setError(`Error fetching videos: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+  const updateCurrentVideoUrl = (url) => {
+    setCurrentVideoUrl(url);
   };
 
-
-  useEffect(() => {
-    fetchVideosFromGCloud();
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.dispose();
-        playerRef.current = null;
-      }
-    };
-  }, [navigate]);
-
-  useEffect(() => {
-    // Whenever the currentVideoIndex changes, load the new video
-    if (videos.length > 0 && playerRef.current) {
-      playerRef.current.src({ src: videos[currentVideoIndex], type: 'video/mp4' });
-      playerRef.current.load();
-      playerRef.current.play();
-    }
-  }, [currentVideoIndex, videos]);
-
+  
   // Swipe event handlers
   const handleSwipe = (direction) => {
     // Placeholder functions - replace these with actual navigation logic
@@ -157,12 +98,9 @@ function ExploreFurther() {
           {windowWidth <= 768 && (
             <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
           )}
-          <div className="video-tab-container">
-            <video ref={videoRef} className="video-js" />
-          </div>
+          <ShowVideo pageContext={PAGE_CONTEXT.EXPLORE_FURTHER} updateVideoUrl={updateCurrentVideoUrl} />
           <ContentSection windowWidth={windowWidth} />
         </div>
-        {isLoading && <div className="text-center mt-3">Loading...</div>}
         {error && <div className="text-danger text-center mt-3">{error}</div>}
       </div>
 
