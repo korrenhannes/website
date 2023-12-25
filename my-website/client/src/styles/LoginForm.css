@@ -31,7 +31,7 @@ body {
   .card h2 {
     color: #000; /* Dark color for headings */
     font-size: 24px; /* Adjust the font size */
-    font-weight: 500; /* Medium font weight */
+    font-weight: 700; /* Medium font weight */
     margin-bottom: 1rem; /* Space below the heading */
   }
   
@@ -52,6 +52,14 @@ body {
     padding: 10px; /* Padding inside input fields */
     margin-bottom: 1rem; /* Space after each input field */
   }
+
+  .logo-img {
+    display: block;
+    margin: 0 auto;
+    max-width: 150px; /* Adjust the size as needed */
+    padding-bottom: 40px;
+  }
+  
   
   /* Styles for primary buttons */
   .btn-primary {

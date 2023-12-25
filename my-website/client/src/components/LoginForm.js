@@ -4,6 +4,7 @@ import { api } from '../api'; // Importing the Axios instance for Flask
 import '../styles/NavigationBar.css';
 import '../styles/LoginForm.css'; // Import the new CSS styles
 import { MESSAGES } from '../messages/messages'; // Import the language file
+import logo from '../assets/Untitled.png'; // Adjust the path as per your directory structure
 
 
 // Import the Google and Facebook login components
@@ -65,9 +66,11 @@ function LoginForm({ onLoginSuccess }) {
     }
   };
   
+
   return (
     <div className="main-container">
       <div className="card">
+        <img src={logo} alt="Logo" className="logo-img" /> {/* Add this line */}
         <h2 className="text-center">{MESSAGES.loginHeader}</h2>
         {loginError && <div className="alert alert-danger">{loginError}</div>}
         <form onSubmit={handleSubmit}>
