@@ -1,18 +1,19 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from simple_websocket import Server, ConnectionClosed
 from pymongo import MongoClient
 import os
 import threading
 import datetime
 import tempfile
 from werkzeug.utils import secure_filename
-from google.cloud import storage
+from google.cloud import storage, pubsub_v1
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
 import logging
+import time
 
-
-from best_clips import BestClips
+from best_clips import BestClips, get_pubsub_client
 
 # Load .env file if it exists, useful for local development
 if os.path.exists('.env'):
@@ -26,6 +27,7 @@ db = mongo_client['test']
 google_cloud_key_file = os.environ.get('GOOGLE_CLOUD_KEY_FILE')
 if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
     raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_cloud_key_file
 
 app = Flask(__name__)
 
@@ -34,6 +36,49 @@ app.logger.setLevel(logging.INFO)
 
 # Enable CORS with support for credentials and specific origins
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3001"}})
+
+# Initialize WebSocket list
+websockets = []
+
+@app.route('/websocket', websocket=True)
+def websocket():
+    ws = Server.accept(request.environ)
+    websockets.append(ws)
+    try:
+        while True:
+            message = ws.receive()  # This can be a blocking call
+            # Handle received message if needed
+    except ConnectionClosed:
+        websockets.remove(ws)
+    return ''
+
+def broadcast_message(message):
+    for ws in websockets:
+        try:
+            ws.send(message)
+        except ConnectionClosed:
+            websockets.remove(ws)
+
+
+# Adjusted listen_for_messages function
+def listen_for_messages():
+    subscriber = pubsub_v1.SubscriberClient()
+    subscription_path = subscriber.subscription_path("flash-yen-406511", "making-shorts-sub")
+
+    def callback(message):
+        progress_update = message.data.decode('utf-8')
+        broadcast_message(progress_update)  # Broadcast to all connected WebSocket clients
+        message.ack()
+
+    while True:
+        try:
+            streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
+            streaming_pull_future.result(timeout=300)
+        except (TimeoutError, Exception) as e:
+            time.sleep(5)
+
+pubsub_thread = threading.Thread(target=listen_for_messages, daemon=True)
+pubsub_thread.start()
 
 def generate_signed_url(bucket_name, blob_name):
     try:
@@ -111,12 +156,18 @@ def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_
 
 
 def process_youtube_video(video_info, userEmail, temp_dir_path):
+    
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
 
     try:
-        best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
-        
-        set_upload_complete(userEmail, True)
+        with app.app_context():
+            pubsub_publisher = get_pubsub_client()
+            best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, pubsub_publisher=pubsub_publisher, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
+
+            set_upload_complete(userEmail, True)
+
+            if best_clips.vids_in_cloud:
+                pass
 
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
