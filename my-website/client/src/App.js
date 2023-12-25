@@ -29,22 +29,19 @@ import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 import MyVideosPage from './components/MyVideosPage';
 
 
-
-
-
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [socket, setSocket] = useState(null);
+  const [socketIO, setSocketIO] = useState(null);
+  const [webSocket, setWebSocket] = useState(null);
 
   useEffect(() => {
     // Establish Socket.IO connection
-    const newSocket = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001' );
-    setSocket(newSocket);
+    const newSocketIO = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001');
+    setSocketIO(newSocketIO);
 
     return () => {
       // Disconnect Socket.IO when the app unmounts
-      if (newSocket) newSocket.disconnect();
+      if (newSocketIO) newSocketIO.disconnect();
     };
   }, []);
 
@@ -60,6 +57,45 @@ function App() {
       setIsLoggedIn(!!token);
     }
     
+  }, []);
+
+  useEffect(() => {
+    function connectWebSocket() {
+      const ws = new WebSocket('ws://localhost:5000/websocket');
+
+      ws.onopen = () => {
+        console.log('Connected to WebSocket');
+        setWebSocket(ws); // Set the WebSocket in state when connected
+      };
+
+      ws.onmessage = (event) => {
+        console.log('Received:', event.data);
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket Error:', error);
+      };
+
+      ws.onclose = (e) => {
+        console.log('WebSocket Disconnected. Attempting to reconnect...', e.reason);
+        setWebSocket(null); // Clear the WebSocket in state when disconnected
+
+        if (!e.wasClean) {
+          setTimeout(() => {
+            console.log('Reconnecting WebSocket...');
+            connectWebSocket();
+          }, 3000);
+        }
+      };
+
+      return ws;
+    }
+
+    const ws = connectWebSocket();
+
+    return () => {
+      if (ws) ws.close(); // Clean up WebSocket connection when component unmounts
+    };
   }, []);
 
   const [complaints, setComplaints] = useState([]);
@@ -78,7 +114,7 @@ function App() {
   const handleLogoutSuccess = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    if (socket) socket.disconnect();
+    if (socketIO) socketIO.disconnect();
     console.log('logging out');
   };
 
