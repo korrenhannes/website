@@ -61,7 +61,7 @@ function App() {
 
   useEffect(() => {
     function connectWebSocket() {
-      const wsUrl = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:5000/websocket';
+      const wsUrl = process.env.REACT_APP_WEBSOCKET_URL || 'wss://localhost:5000/websocket';
       const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {

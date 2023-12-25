@@ -37,7 +37,7 @@ const allowedOrigins = [
   "http://localhost:3001/Media",
   "http://localhost:3001/Media/stream-video",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/cloud-api",
-  "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video"
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video",
 
 ];
 
