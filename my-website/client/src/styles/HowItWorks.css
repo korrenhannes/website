@@ -1,0 +1,205 @@
+/* HowItWorks.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+.how-it-works-container {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+  padding-top: 70px;
+  padding-bottom: 1rem;
+  text-align: left;
+  overflow: hidden;
+}
+
+
+.card-little {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #000;
+  border-radius: 8px;
+  margin: 0.3em  auto;
+  height: 300px; /* Adjust this value to your preference */
+  flex-basis: 30%; /* Adjust card width for side by side layout */
+  justify-content: center;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding: 1rem;
+}
+
+ .card-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.card-text {
+  color: #000; /* Dark color for headings */
+  font-size: 20px; /* Adjust the font size */
+  font-weight: 500; /* Medium font weight */
+  margin-bottom: 1rem; /* Space below the heading */
+}
+
+.container {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.container h1 {
+  color: #4A90E2;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.container .lead {
+  font-weight: normal;
+  color: #555;
+  margin-bottom: 0.1rem;
+  font-size: 1.2rem;
+}
+
+.how-does-it-work {
+  font-size: 1.8rem;
+  color: #4A90E2;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.step h3 {
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.step p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.icon {
+  width: 50px;
+  height: auto;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .step {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .step {
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 3rem;
+  }
+
+  .step {
+    width: 33.3333%;
+  }
+}
+/* Existing CSS code */
+
+/* ... your existing CSS ... */
+
+/* Existing CSS code */
+
+/* ... your existing CSS ... */
+
+/* Media Query for Max Width 768 Pixels */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem; /* Reduce container padding */
+  }
+
+  .card-little {
+    flex-basis: 28%; /* Adjust card width for side by side layout */
+    margin: 0.5rem; /* Adjust margin */
+    padding: 0.5rem; /* Reduce padding inside card */
+    width: 20%;
+    height: 90%;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+
+  .icon {
+    width: 30px; /* Smaller icons */
+    position: relative;
+    align-self: center;
+  }
+
+  .row {
+    flex-wrap: wrap; /* Allow cards to wrap onto next line if needed */
+    justify-content: space-around; /* Space out cards evenly */
+  }
+
+  /* Other adjustments for max-width 768px */
+}
+
+/* Media Query for Max Width 480 Pixels */
+@media (max-width: 480px) {
+  
+
+  .container {
+    padding: 0.25rem; /* Even smaller padding */
+  }
+
+  .card-little {
+    flex-basis: 28%; /* Adjust card width for full width in small screens */
+    margin: 0.25rem; /* Smaller margin */
+    padding: 0.25rem; /* Reduce padding inside card */
+    width: 20%;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card-title{
+    font-size: 90%;
+  }
+
+  .icon {
+    width: 25px; /* Further smaller icons */
+  }
+
+  .row {
+    justify-content: center; /* Center cards on small screens */
+  }
+
+  /* Other adjustments for max-width 480px */
+}

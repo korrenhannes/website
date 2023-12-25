@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* Apply Montserrat to all text */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
+  .plan-selection {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      color: #333;
+      padding-top: 120px;
+    }
+    
+    .plan-selection h1 {
+      font-size: 24px;
+      margin-bottom: 30px;
+    }
+    
+    .plan-selection ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 30px;
+    }
+    
+    .plan-selection ul li {
+      font-size: 16px;
+      padding: 5px 0;
+      position: relative;
+    }
+    
+    .plan-selection ul li:before {
+      content: '✓';
+      color: green;
+      font-weight: bold;
+      position: absolute;
+      left: -25px;
+    }
+    
+    .plans {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 30px;
+    }
+    
+    .plan {
+      border: 1px solid #ddd;
+      padding: 20px;
+      text-align: center;
+      width: 30%;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+      margin-bottom: 30px;
+    }
+    
+    .plan:hover,
+    .plan.selected {
+      transform: translateY(-5px);
+      border-color: #3897f0;
+    }
+    
+    .plan-name {
+      font-size: 20px;
+      color: #3897f0;
+      margin-bottom: 10px;
+    }
+    
+    .plan-price {
+      font-size: 28px;
+      font-weight: bold;
+    }
+    
+    .plan-details {
+      border-top: 1px solid #ddd;
+      padding-top: 20px;
+    }
+    
+    .next-button {
+      background-color: #3897f0; /* Vibrant purple, matching your reference */
+      color: #ffffff; /* White color for text on buttons */
+      padding: 12px;
+      border: none;
+      border-radius: 20px; /* More rounded corners as per the reference */
+      width: 100%; /* Full width for the button */
+      font-size: 16px; /* Same font size for consistency */
+      margin-bottom: 1rem; /* Space after the button */
+      cursor: pointer;
+    }
+    
+    .next-button:hover {
+      background-color: #2878b5;
+    }
+    @media (max-width: 480px) {
+      .plan-selection {
+        max-width: max-content;
+      }
+      .plans {
+        align-items: center;
+      }
+      .plan-name {
+        font-size: 18px;
+        color: #3897f0;
+        margin-bottom: 10px;
+        align-self: center;
+        margin-right: 15%;
+      }
+      
+      .plan-price {
+        font-size: 26px;
+        font-weight: bold;
+        align-self: center;
+        margin-right: 10%;
+      }
+      
+      .plan-selection ul li {
+        margin-left: 5%;
+      }
+    }
