@@ -6,7 +6,6 @@ import { jwtDecode } from 'jwt-decode';
 import { PAGE_CONTEXT } from './constants'; // Import the constants
 import styles from '../styles/FreeUserPage.module.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import expStyles from '../styles/ExploreFurther.css'
 
 
 function ShowVideo({pageContext, updateVideoUrl }){
@@ -37,8 +36,9 @@ function ShowVideo({pageContext, updateVideoUrl }){
           preload: true
         }, () => {
           console.log('Player is ready');
-          
           fetchVideosFromGCloud();
+          playerRef.current.addClass('vjs-waiting'); // Add waiting class when setting up player
+          playerRef.current.bigPlayButton.hide();
           playerRef.current.controlBar.hide();
           const controlBarChildren = playerRef.current.controlBar.children();
           controlBarChildren.forEach(component => {
@@ -171,15 +171,19 @@ function ShowVideo({pageContext, updateVideoUrl }){
       console.error('Invalid video URL');
       return;
     }
-  
+    setIsLoading(true); // Start loading
     console.log("Loading video URL:", videoUrl);
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
     updateVideoUrl(videoUrl);
+    playerRef.current.on('loadeddata', () => {
+      setIsLoading(false); // Video is loaded
+    });
     const playPromise = playerRef.current.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         console.log('Automatic playback started successfully.');
+        playerRef.current.removeClass('vjs-waiting'); // Remove waiting class when playback starts
       }).catch(error => {
         console.error('Error attempting to play video:', error);
       });

@@ -36,6 +36,31 @@ body {
   width: 50%; /* Adjust width as needed */
   height: auto; /* Height auto for maintaining aspect ratio */
 }
+/* Add this to your CSS file */
+.video-js .vjs-loading-spinner {
+  display: block; /* This makes sure the spinner is displayed */
+}
+/* Hide the big play button when the player is waiting */
+.video-js.vjs-waiting .vjs-big-play-button {
+  display: none !important;
+}
+
+/* Alternatively, you can always hide the big play button if you never want to see it */
+.video-js .vjs-big-play-button {
+  display: none !important;
+}
+
+/* If the player is dynamically added, you may need to hide the button after the player is initialized */
+.video-js.vjs-has-started .vjs-big-play-button {
+  display: none !important; /* Use !important as a last resort */
+}
+
+
+/* This will make sure the spinner shows when the player has the vjs-waiting class */
+.video-js.vjs-waiting .vjs-loading-spinner {
+  display: block;
+}
+
 
 /* ... (other styles) */
 

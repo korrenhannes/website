@@ -15,6 +15,7 @@ body {
   align-items: center; /* Center content vertically */
   justify-content: center; /* Center content horizontally */
   background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  background-size: cover;
 
 }
 
