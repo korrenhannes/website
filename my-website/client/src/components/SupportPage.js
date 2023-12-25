@@ -92,7 +92,7 @@ function SupportPage() {
               <li>
                 <button onClick={toggleWritingTab} className="contact-link">Contact us</button>
               </li>
-              <li><a href="/contact">Become an affiliate</a></li>
+              <li><a href="/partner">Become an affiliate</a></li>
             </ul>
           </div>
           <div className="footer-section best-practices">
