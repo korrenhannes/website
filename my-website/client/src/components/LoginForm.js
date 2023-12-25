@@ -4,7 +4,7 @@ import { api } from '../api'; // Importing the Axios instance for Flask
 import '../styles/NavigationBar.css';
 import '../styles/LoginForm.css'; // Import the new CSS styles
 import { MESSAGES } from '../messages/messages'; // Import the language file
-import logo from '../assets/Untitled.png'; // Adjust the path as per your directory structure
+import logo from '../assets/log.png'; // Adjust the path as per your directory structure
 
 
 // Import the Google and Facebook login components
