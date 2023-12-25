@@ -62,4 +62,5 @@ EXPOSE 5000
 USER nonroot
 
 # Run app.py when the container launches
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "-w", "1", "--threads", "100", "-b", "0.0.0.0:5000", "app:app"]
+

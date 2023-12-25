@@ -5,7 +5,7 @@ import os
 import re
 import random
 from datetime import datetime
-from google.cloud import storage
+from google.cloud import storage, pubsub_v1
 from moviepy.editor import *
 from pytube import YouTube
 import yt_dlp as youtube_dl
@@ -43,6 +43,9 @@ FONT_PATH = "Montserrat-Black.ttf"
 FACE_MODEL_CONFIDENCE_THRESH = 0.5
 MIN_AREA_RATIO_FACES = 4
 FPS_USED = None
+
+Y_res = 1920
+X_res = int(9 * Y_res / 16)
 
 google_cloud_key_file = os.environ.get('GOOGLE_CLOUD_KEY_FILE')
 if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
@@ -133,10 +136,10 @@ def text_clip(text: str, duration: int, start_time: int = 0, one_person_on_scree
     color = 'white' if random.random() < 0.25 else 'Yellow'
     stroke_color = 'black'
     font = FONT_PATH
-    font_size = 50
-    placement = ('center', (1280 * (2/3))) if one_person_on_screen else ('center')
+    font_size = int(X_res/14)
+    placement = ('center', (Y_res * (2/3))) if one_person_on_screen else ('center')
 
-    return (TextClip(text.upper(), font=font, fontsize=font_size, size=(640, None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
+    return (TextClip(text.upper(), font=font, fontsize=font_size, size=(int(X_res*0.9), None), color=color, stroke_color=stroke_color, stroke_width=2.5, method='caption')
             .set_duration(duration).set_position(placement)
             .set_start(start_time))
 
@@ -152,7 +155,7 @@ def add_subs_video(new_start_time, people_times, vid, df):
         grouped_words = group_words(df, max_char_count, one_person_times, two_people_times)
         txt_clips = [text_clip(group[0], group[2] - group[1], group[1] - relevant_time_shift, group[3]) for group in grouped_words]
         audio = vid.audio
-        vid = CompositeVideoClip([vid] + txt_clips, use_bgclip=True, size=(720, 1280))
+        vid = CompositeVideoClip([vid] + txt_clips, use_bgclip=True, size=(X_res, Y_res))
         vid = vid.set_audio(audio)
         return vid
 
@@ -251,15 +254,30 @@ def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_
         print(f"Failed to upload {video_file_name} or {json_file_name}: {e}")
         return False
     
+# Initialize Pub/Sub client
+def get_pubsub_client():
+    return pubsub_v1.PublisherClient()
+
+# Publish messages to a specified topic
+def publish_message(publisher, user_id, topic_name, message):
+    topic_path = publisher.topic_path('flash-yen-406511', topic_name)
+    data = f"{user_id}: {message}".encode("utf-8")
+    future = publisher.publish(topic_path, data)
+    return future.result()
+    
 
 class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, username, temp_dir, use_gpt=False, audio_dest='audio.mp3',
-                  full_word_transcript_dest="full_word_transcript.csv", num_of_shorts=5):
+    def __init__(self, video_str, username, temp_dir, pubsub_publisher, use_gpt=False,
+                 audio_dest='audio.mp3', num_of_shorts=5):
         try:
             self.num_of_shorts = num_of_shorts
+            self.vids_in_cloud = False
+            self.pubsub_publisher = pubsub_publisher
+            self.user_name = username
+            publish_message(self.pubsub_publisher, self.user_name, "making-shorts", "Starting process in best_clips.py")
             
             # Set run-cost at 0
             self.use_gpt = use_gpt
@@ -271,7 +289,6 @@ class BestClips:
             print(f"Run path is {self.run_path}")
             date_time = datetime.now()
             self.date_time_str = date_time.strftime("%d_%m_%Y__%H_%M_%S")
-            self.user_name = username
             self.create_run_folder() # Creates user folder if it doesn't exist and current run folder
 
 
@@ -284,9 +301,9 @@ class BestClips:
                 raise InvalidVideoError("Invalid video URL or path")
 
             self.audio_dest = os.path.join(self.run_path, audio_dest)
-            self.full_word_transcript_dest = os.path.join(self.run_path, full_word_transcript_dest)
             self.full_audio, self.full_video = self.audio_video(self.video_path)
             self.full_audio.write_audiofile(self.audio_dest)
+            publish_message(self.pubsub_publisher, self.user_name, "making-shorts", "Saved audio and video")
 
             full_words_df_tiny = self.transcribe()
             self.full_words_df_tiny = full_words_df_tiny.where(pd.notnull(full_words_df_tiny), 'None')
@@ -726,9 +743,6 @@ class BestClips:
                         else:
                             print("upside")
 
-
-
-
                     faces_indexes_sorted_by_conf = np.argsort(iter_confs)[::-1]
 
                     for i in faces_indexes_sorted_by_conf:
@@ -844,6 +858,8 @@ class BestClips:
         # cuts_times = np.array(cuts_times)[final_inds]
         #
 
+        # Converts to resultion 1080 X 1920
+
         for i in range(len(cuts_times)):
             if i == len(cuts_times) - 1:
                 if dur == times[cuts_times_inds[i]]:
@@ -853,53 +869,53 @@ class BestClips:
                 sub_vid = vid.subclip(times[max(cuts_times_inds[i] - 1, 0)], times[cuts_times_inds[i+1] - 1])
 
             if len(cuts_poses[i]) == 1: #Easy fix
-                sub_vid = sub_vid.resize(height=1280)
-                sub_vid = sub_vid.crop(x1=min(max(0,(2275 * cuts_poses[i][0][0] - 360)), 2275 - 720), y1=0,x2=min(max((2275 * cuts_poses[i][0][0]) + 360, 720), 2275),y2=1280)
+                sub_vid = sub_vid.resize(height=Y_res)
+                sub_vid = sub_vid.crop(x1=min(max(0,(int(16 * Y_res / 9) * cuts_poses[i][0][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res), y1=0,x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][0][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),y2=Y_res)
                 new_vids.append(sub_vid)
 
             elif len(cuts_poses[i]) == 2:
                 cuts_poses[i] = sorted(cuts_poses[i], key = lambda x : x[0])
 
-                sub_vid1 = sub_vid.resize(height=1280)
+                sub_vid1 = sub_vid.resize(height=Y_res)
 
-                sub_vid1 = sub_vid1.crop(x1=min(max(0, (2275 * cuts_poses[i][0][0] - 360)), 2275 - 720),
-                                        y1=min(max(0, (1280 * cuts_poses[i][0][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
-                                        x2=min(max((2275 * cuts_poses[i][0][0]) + 360, 720), 2275),
-                                        y2=min(max((1280 * cuts_poses[i][0][1]) + int(1280 / 4), int(1280 / 2)), 1280))
+                sub_vid1 = sub_vid1.crop(x1=min(max(0, (int(16 * Y_res / 9) * cuts_poses[i][0][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res),
+                                        y1=min(max(0, (Y_res * cuts_poses[i][0][1] - int(Y_res / 4))), Y_res - int(Y_res / 2)),
+                                        x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][0][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),
+                                        y2=min(max((Y_res * cuts_poses[i][0][1]) + int(Y_res / 4), int(Y_res / 2)), Y_res))
 
-                sub_vid2 = sub_vid.resize(height=1280)
+                sub_vid2 = sub_vid.resize(height=Y_res)
 
-                sub_vid2 = sub_vid2.crop(x1=min(max(0, (2275 * cuts_poses[i][1][0] - 360)), 2275 - 720),
-                                        y1=min(max(0, (1280 * cuts_poses[i][1][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
-                                        x2=min(max((2275 * cuts_poses[i][1][0]) + 360, 720), 2275),
-                                        y2=min(max((1280 * cuts_poses[i][1][1]) + int(1280 / 4), int(1280 / 2)), 1280))
+                sub_vid2 = sub_vid2.crop(x1=min(max(0, (int(16 * Y_res / 9) * cuts_poses[i][1][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res),
+                                        y1=min(max(0, (Y_res * cuts_poses[i][1][1] - int(Y_res / 4))), Y_res - int(Y_res / 2)),
+                                        x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][1][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),
+                                        y2=min(max((Y_res * cuts_poses[i][1][1]) + int(Y_res / 4), int(Y_res / 2)), Y_res))
 
                 new_vids.append(clips_array([[sub_vid1],
                                     [sub_vid2]]))
 
             # elif len(cuts_poses[i]) == 3:
             #     cuts_poses[i] = sorted(cuts_poses[i], key = lambda x : x[0])
-            #     sub_vid1 = sub_vid.resize(height=1280)
+            #     sub_vid1 = sub_vid.resize(height=Y_res)
             #
-            #     sub_vid1 = sub_vid1.crop(x1=min(max(0, (2275 * cuts_poses[i][0][0] - 360)), 2275 - 720),
-            #                             y1=min(max(0, (1280 * cuts_poses[i][0][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
-            #                             x2=min(max((2275 * cuts_poses[i][0][0]) + 360, 720), 2275),
-            #                             y2=min(max((1280 * cuts_poses[i][0][1]) + int(1280 / 4), int(1280 / 2)), 1280))
+            #     sub_vid1 = sub_vid1.crop(x1=min(max(0, (int(16 * Y_res / 9) * cuts_poses[i][0][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res),
+            #                             y1=min(max(0, (Y_res * cuts_poses[i][0][1] - int(Y_res / 4))), Y_res - int(Y_res / 2)),
+            #                             x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][0][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),
+            #                             y2=min(max((Y_res * cuts_poses[i][0][1]) + int(Y_res / 4), int(Y_res / 2)), Y_res))
             #
-            #     sub_vid2 = sub_vid.resize(height=1280)
+            #     sub_vid2 = sub_vid.resize(height=Y_res)
             #
-            #     sub_vid2 = sub_vid2.crop(x1=min(max(0, (2275 * cuts_poses[i][1][0] - 360)), 2275 - 720),
-            #                             y1=min(max(0, (1280 * cuts_poses[i][1][1] - int(1280 / 4))), 1280 - int(1280 / 2)),
-            #                             x2=min(max((2275 * cuts_poses[i][1][0]) + 360, 720), 2275),
-            #                             y2=min(max((1280 * cuts_poses[i][1][1]) + int(1280 / 4), int(1280 / 2)), 1280))
+            #     sub_vid2 = sub_vid2.crop(x1=min(max(0, (int(16 * Y_res / 9) * cuts_poses[i][1][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res),
+            #                             y1=min(max(0, (Y_res * cuts_poses[i][1][1] - int(Y_res / 4))), Y_res - int(Y_res / 2)),
+            #                             x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][1][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),
+            #                             y2=min(max((Y_res * cuts_poses[i][1][1]) + int(Y_res / 4), int(Y_res / 2)), Y_res))
             #
-            #     sub_vid3 = sub_vid.resize(height=1280)
+            #     sub_vid3 = sub_vid.resize(height=Y_res)
             #
-            #     sub_vid3 = sub_vid3.crop(x1=min(max(0, (2275 * cuts_poses[i][2][0] - 360)), 2275 - 720),
-            #                              y1=min(max(0, (1280 * cuts_poses[i][2][1] - int(1280 / 4))),
-            #                                     1280 - int(1280 / 2)),
-            #                              x2=min(max((2275 * cuts_poses[i][2][0]) + 360, 720), 2275),
-            #                              y2=min(max((1280 * cuts_poses[i][2][1]) + int(1280 / 4), int(1280 / 2)), 1280))
+            #     sub_vid3 = sub_vid3.crop(x1=min(max(0, (int(16 * Y_res / 9) * cuts_poses[i][2][0] - (X_res / 2))), int(16 * Y_res / 9) - X_res),
+            #                              y1=min(max(0, (Y_res * cuts_poses[i][2][1] - int(Y_res / 4))),
+            #                                     Y_res - int(Y_res / 2)),
+            #                              x2=min(max((int(16 * Y_res / 9) * cuts_poses[i][2][0]) + (X_res / 2), X_res), int(16 * Y_res / 9)),
+            #                              y2=min(max((Y_res * cuts_poses[i][2][1]) + int(Y_res / 4), int(Y_res / 2)), Y_res))
             #
             #     new_vids.append(clips_array([[sub_vid1,sub_vid3],
             #                     [sub_vid2]]))
@@ -997,7 +1013,7 @@ class BestClips:
             json_file_path = os.path.join(self.run_path, f"short_{str(i)}.json")
             gcloud_video_destination_name = f"{self.date_time_str}__{os.path.basename(video_file_path)}"
             gcloud_json_destination_name = f"{self.date_time_str}__{os.path.basename(json_file_path)}"
-            upload_to_gcloud(self.bucket, video_file_path, json_file_path, gcloud_video_destination_name, gcloud_json_destination_name, self.user_name)
+            self.vids_in_cloud = upload_to_gcloud(self.bucket, video_file_path, json_file_path, gcloud_video_destination_name, gcloud_json_destination_name, self.user_name)
         storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
         storage_client.close()
 

@@ -31,7 +31,7 @@ body {
   .card h2 {
     color: #000; /* Dark color for headings */
     font-size: 24px; /* Adjust the font size */
-    font-weight: 700; /* Medium font weight */
+    font-weight: 500; /* Medium font weight */
     margin-bottom: 1rem; /* Space below the heading */
   }
   
