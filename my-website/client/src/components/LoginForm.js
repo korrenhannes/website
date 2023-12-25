@@ -70,7 +70,6 @@ function LoginForm({ onLoginSuccess }) {
   return (
     <div className="main-container">
       <div className="card">
-        <img src={logo} alt="Logo" className="logo-img" /> {/* Add this line */}
         <h2 className="text-center">{MESSAGES.loginHeader}</h2>
         {loginError && <div className="alert alert-danger">{loginError}</div>}
         <form onSubmit={handleSubmit}>
