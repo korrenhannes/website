@@ -69,7 +69,7 @@ function OffersPage() {
         {
           selectedPlan !== 'basic' ? (
             <PayPalButton  
-              amount={plans.find(p => p.name.toLowerCase() === selectedPlan).price} 
+              amount={plans.find(p => p.name.toLowerCase() === selectedPlan).price.slice(1)} 
               onSuccessfulPayment={handleSuccessfulPayment} 
               selectedPlan={selectedPlan} 
               userEmail={userEmail}
