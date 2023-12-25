@@ -84,8 +84,14 @@ function CloudAPIPage({ enableScrollHandling = true }) {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      handleSearchSubmit(null, selectedFile); // Automatically submit after file selection
+      // Check if the selected file has a ".mp4" extension
+      if (selectedFile.name.endsWith(".mp4")) {
+        setFile(selectedFile);
+        handleSearchSubmit(null, selectedFile); // Automatically submit after file selection
+      } else {
+        // Display an error message or handle the case where the file is not an MP4 file
+        setError('Only MP4 files are allowed.');
+      }
     }
   };
   
