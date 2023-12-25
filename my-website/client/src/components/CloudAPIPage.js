@@ -231,7 +231,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
 
 
       <div className={styles['foreground-content']}>
-        <h1>Simply ClipIt.</h1>
+        <h1>Get all the content you will ever need.</h1>
         <div className={styles['search-container']}>
           <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
             <div className={styles['input-logo-container']}>
