@@ -36,7 +36,8 @@ function App() {
 
   useEffect(() => {
     // Establish Socket.IO connection
-    const newSocketIO = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001');
+    // const newSocketIO = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001');
+    const newSocketIO = io('http://localhost:3001')
     setSocketIO(newSocketIO);
 
     return () => {
@@ -61,7 +62,10 @@ function App() {
 
   useEffect(() => {
     function connectWebSocket() {
-      const ws = new WebSocket('ws://localhost:5000/websocket');
+      // const wsUrl = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:5000/websocket';
+      const wsUrl = 'ws://localhost:5000/websocket'
+      console.log("WebSocket URL:", wsUrl);
+      const ws = new WebSocket(wsUrl);
 
       ws.onopen = () => {
         console.log('Connected to WebSocket');

@@ -185,7 +185,9 @@ function CloudAPIPage({ enableScrollHandling = true }) {
     try {
       const config = { headers: {'Content-Type': 'multipart/form-data'} };
       console.log('form data',payload, config);
-      const response = await axios.post('http://localhost:5000/api/process-youtube-video', payload, config);
+      // const apiBaseUrl = process.env.REACT_APP_FLASK_API_URL || 'http://localhost:5000';
+      const apiBaseUrl = 'http://localhost:5000';
+      const response = await axios.post(`${apiBaseUrl}/api/process-youtube-video`, payload, config);
       console.log('Video processing started:', response.data);
       userTokens = userTokens - 1;
       await updateTokens(userEmail, userTokens);

@@ -35,7 +35,7 @@ app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
 # Enable CORS with support for credentials and specific origins
-CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:3001"}})
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
 
 # Initialize WebSocket list
 websockets = []
