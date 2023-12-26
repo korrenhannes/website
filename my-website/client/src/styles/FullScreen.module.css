@@ -249,6 +249,9 @@ body {
 }
 
 @media (max-width: 500px) {
+  body{
+    font-size: 1.2em;
+  }
   .search-container{
     margin: auto;
     position: relative;
@@ -261,7 +264,7 @@ body {
     width: 100vw;
     margin: auto;
     margin-bottom: 6%;
-    font-size: 1.1em; /* Starting font size */
+    font-size: 1.2em; /* Starting font size */
   }
   .or-with-lines {
     font-size: 12px; /* Size of the 'OR' text */
