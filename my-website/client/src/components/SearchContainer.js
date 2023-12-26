@@ -16,9 +16,11 @@ function SearchContainer ({isExploreFurther, isMobile}) {
     const [userPaymentPlan, setUserPaymentPlan] = useState('free');
     const [file, setFile] = useState(null); // State to hold the selected file
     const navigate = useNavigate();
-    let SearchContainerStyle = styles['search-container']
+    let SearchContainerStyle = styles['search-container'];
+    let orWithLinesStyle = styles['or-with-lines'];
     if (isExploreFurther){
         SearchContainerStyle='search-container-exp';
+        orWithLinesStyle ='or-with-lines-exp ';
     }
  
     // Ref for the file input
@@ -182,7 +184,7 @@ return(
             />
         </div>
         </form>
-        {!isMobile&&<div className={styles['or-with-lines']}>OR</div>}
+        {!isMobile&&<div className={orWithLinesStyle}>OR</div>}
         {/* New Container for File Input */}
         {!isMobile&&<div className={styles['file-input-container']}>
             <input 

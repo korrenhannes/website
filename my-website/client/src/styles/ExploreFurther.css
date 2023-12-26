@@ -23,15 +23,32 @@ body {
 }
 .search-container-exp {
     position: absolute;
-    top: 71%;
+    top: 78%;
     left: 65%;
     transform: translate(-50%, -50%);
     width: 45%;
     text-align: center;
     margin-top: auto;
-  
+  }
+  .or-with-lines-exp {
+    display: flex; /* Use flexbox to align elements */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center content horizontally */
+    font-size: 16px; /* Size of the 'OR' text */
+    margin: 20px 0; /* Margin around the 'OR' for spacing */
+    font-weight: bold; /* Make the font bold */
+    color:white;
   }
   
+  .or-with-lines-exp::before,
+  .or-with-lines-exp::after {
+    content: ''; /* Pseudo-elements should have content property */
+    flex: 1; /* Flex-grow to take available space */
+    max-width: 100px;
+    height: 1px; /* Height of the line */
+    background: white; /* Color of the line */
+    margin: 0 10px; /* Spacing around the lines */
+  }
 
 /* The navigation bar styles remain the same */
 

@@ -129,19 +129,21 @@ body {
 
 .upload-file-button {
   /* Style this button to look like your desired file input */
-  background-color: #2c98f0;
+  padding: 0.5em 1.5em;
+  font-size: 1.5em;
   color: white;
+  background-color: #3897f0; /* Default button color */
   border: none;
-  padding: 10px 15px;
+  border-radius: 20px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
   /* ... other styles to match your design */
 }
 
 .upload-file-button:hover {
-  background-color: #1a6eb2;
+  background-color: #2878b5; /* Darker shade on hover */
 }
 
-.file-upload-button,
 .foreground-content button {
   padding: 0.5em 1.5em;
   font-size: 1.5em;
@@ -153,7 +155,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.file-upload-button:hover,
 .foreground-content button:hover {
   background-color: #2878b5; /* Darker shade on hover */
 }
