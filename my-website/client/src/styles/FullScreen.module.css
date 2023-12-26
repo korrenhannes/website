@@ -253,12 +253,12 @@ body {
     margin: auto;
     position: relative;
     top: auto;
-    left: auto;
+    left: 31%;
     right: auto;
     width: 60%;
   }
   .foreground-content h1{
-    width: max-content;
+    width: 80%;
     margin: auto;
     margin-bottom: 6%;
     font-size: 1.3em; /* Starting font size */
