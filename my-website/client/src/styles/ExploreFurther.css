@@ -21,6 +21,17 @@ body {
     left: 0;
     overflow: hidden; /* This prevents internal scrolling */
 }
+.search-container-exp {
+    position: absolute;
+    top: 71%;
+    left: 65%;
+    transform: translate(-50%, -50%);
+    width: 45%;
+    text-align: center;
+    margin-top: auto;
+  
+  }
+  
 
 /* The navigation bar styles remain the same */
 
@@ -135,9 +146,25 @@ body {
         margin-left: 15px;
         
     }
+    .search-container-exp{
+        margin: auto;
+        position: relative;
+        margin-top: 15px;
+        top: auto;
+        left: 23.5%;
+        right: auto;
+      }
     
 }
 @media (max-width: 500px) {
+    .search-container-exp{
+        margin: auto;
+        position: relative;
+        margin-top: 15px;
+        top: auto;
+        left: 23.5%;
+        right: auto;
+      }
     .explore-further-container .main-content {
         flex-direction: column-reverse; /* Stack video and content vertically on mobile */
     }
