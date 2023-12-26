@@ -22,7 +22,6 @@ function SearchContainer ({isExploreFurther, isMobile}) {
         SearchContainerStyle='search-container-exp';
         orWithLinesStyle ='or-with-lines-exp ';
     }
- 
     // Ref for the file input
     const fileInputRef = useRef(null);
   
@@ -165,6 +164,47 @@ function SearchContainer ({isExploreFurther, isMobile}) {
     const handleLogoClick = () => {
         handleSearchSubmit();
     };
+    const renderUploadButton=()=>{
+        if(isMobile&&!isExploreFurther){
+            return (
+                <>
+            <div className={orWithLinesStyle}>OR</div>
+            <div className={styles['file-input-container']}>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} // Attach the ref here
+                    className={styles['file-input']}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }} 
+                />
+                <button className={styles['upload-file-button']}
+                    onClick={handleButtonClick} // Use this button to trigger the file input
+                >Upload File</button>
+            </div>
+            </>);
+        } else if (!isMobile){
+            return (
+                <>
+            <div className={orWithLinesStyle}>OR</div>
+            <div className={styles['file-input-container']}>
+                <input 
+                    type="file" 
+                    ref={fileInputRef} // Attach the ref here
+                    className={styles['file-input']}
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }} 
+                />
+                <button className={styles['upload-file-button']}
+                    onClick={handleButtonClick} // Use this button to trigger the file input
+                >Upload File</button>
+            </div>
+            </>);
+        }else{
+            return;
+        }
+    }
+
+
 return(
     <div className={SearchContainerStyle}>
         <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
@@ -184,20 +224,7 @@ return(
             />
         </div>
         </form>
-        {!isMobile&&isExploreFurther&&<div className={orWithLinesStyle}>OR</div>}
-        {/* New Container for File Input */}
-        {!isMobile&&isExploreFurther&&<div className={styles['file-input-container']}>
-            <input 
-                type="file" 
-                ref={fileInputRef} // Attach the ref here
-                className={styles['file-input']}
-                onChange={handleFileChange}
-                style={{ display: 'none' }} 
-            />
-            <button className={styles['upload-file-button']}
-                onClick={handleButtonClick} // Use this button to trigger the file input
-            >Upload File</button>
-        </div>}
+        {renderUploadButton()}
     </div>
 
 );
