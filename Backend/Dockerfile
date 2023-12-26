@@ -62,6 +62,6 @@ EXPOSE $PORT
 USER nonroot
 
 # Run app.py when the container launches
-CMD gunicorn -w 1 --threads 100 -b 0.0.0.0:$PORT app:app
+CMD gunicorn -w 1 -k gthread --threads 100 -b 0.0.0.0:$PORT app:app
 
 
