@@ -70,7 +70,7 @@ body {
 }
 
 .foreground-content h1 {
-  font-size: 5em; /* Starting font size */
+  font-size: 2.5em; /* Starting font size */
   margin-bottom: 0.5em;
   max-width: 90%; /* Restrict width to allow some breathing space */
   word-wrap: break-word; /* Wrap long words */
