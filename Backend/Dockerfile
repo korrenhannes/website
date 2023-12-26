@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.11-slim
+FROM python:3.11
 
 # Set the working directory in the container
 WORKDIR /app
@@ -19,8 +19,11 @@ ENV PYTHONUNBUFFERED=1
 # Copy specific files needed for building
 COPY requirements.txt .
 
-# Install build dependencies required for compiling packages like uvloop
-RUN apt-get update && apt-get install -y --fix-missing --no-install-recommends \
+# Update and upgrade system packages
+RUN apt-get update && apt-get upgrade -y
+
+# Install build dependencies required for compiling packages
+RUN apt-get install -y --fix-missing --no-install-recommends \
     libffi-dev \
     libssl-dev \
     libsm6 \
@@ -33,10 +36,10 @@ RUN apt-get update && apt-get install -y --fix-missing --no-install-recommends \
     libkrb5-dev \
     libsasl2-dev \
     python3-dev \
+    python3-pip \
     cmake \
     build-essential \
     libuv1-dev 
-
 
 # Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
@@ -47,9 +50,7 @@ RUN python -c "import nltk; nltk.download('vader_lexicon')" && \
     python -c "from retinaface import RetinaFace; RetinaFace.build_model()" 
 
 # Clean up to reduce image size
-RUN apt-get remove --purge -y gcc libc-dev libkrb5-dev && \
-    libsasl2-dev python3-dev cmake build-essential apt-get autoremove -y && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get remove --purge -y gcc libc-dev libkrb5-dev libsasl2-dev python3-dev cmake build-essential && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Modify ImageMagick policy for the container environment
 RUN sed -i \
@@ -61,7 +62,7 @@ RUN sed -i \
 RUN chmod 1777 /tmp
 
 # Copy the application files
-COPY . .
+COPY app.py best_clips.py deploy.prototxt res10_300x300_ssd_iter_140000.caffemodel Montserrat-Black.ttf ./
 
 # Expose the port
 EXPOSE $PORT

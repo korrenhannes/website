@@ -4,6 +4,7 @@ import asyncio
 import os
 import datetime
 import tempfile
+import logging
 from werkzeug.utils import secure_filename
 from google.cloud import storage, pubsub_v1
 from google.cloud.exceptions import GoogleCloudError
@@ -24,8 +25,12 @@ if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
     raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_cloud_key_file
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
+
 
 websockets = []
 
@@ -45,7 +50,6 @@ async def broadcast_message(message):
         except asyncio.CancelledError:
             websockets.remove(ws)
 
-# Adjust listen_for_messages function
 async def listen_for_messages():
     subscriber = pubsub_v1.SubscriberClient()
     subscription_path = subscriber.subscription_path("flash-yen-406511", "making-shorts-sub")
@@ -61,8 +65,9 @@ async def listen_for_messages():
         except (TimeoutError, Exception) as e:
             await asyncio.sleep(5)
 
-# Start the pubsub thread
-asyncio.create_task(listen_for_messages())
+@app.before_serving
+async def startup():
+    asyncio.create_task(listen_for_messages())
 
 async def generate_signed_url(bucket_name, blob_name):
     try:
