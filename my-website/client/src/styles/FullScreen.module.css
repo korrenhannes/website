@@ -258,6 +258,7 @@ body {
     width: 60%;
   }
   .foreground-content h1{
+    width: max-content;
     margin: auto;
     margin-bottom: 6%;
     font-size: 1.3em; /* Starting font size */
