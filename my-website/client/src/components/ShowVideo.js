@@ -29,7 +29,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
       if (backgroundVideoRef.current && !playerRef.current) {
         playerRef.current = videojs(backgroundVideoRef.current, {
           autoplay: true,
-          muted: false,
+          muted: true,
           controls: true,
           fluid: true,
           loop: true,
