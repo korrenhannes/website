@@ -1,27 +1,22 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from simple_websocket import Server, ConnectionClosed
-from pymongo import MongoClient
+from quart import Quart, request, jsonify, websocket
+from quart_cors import cors
+import asyncio
 import os
-import threading
 import datetime
 import tempfile
 from werkzeug.utils import secure_filename
 from google.cloud import storage, pubsub_v1
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
-import logging
-import time
+from motor.motor_asyncio import AsyncIOMotorClient  # Corrected import for AsyncIOMotorClient
 
-from best_clips import BestClips, get_pubsub_client
+from best_clips import BestClips, get_pubsub_client  # Ensure these are async-compatible
 
-# Load .env file if it exists, useful for local development
-if os.path.exists('.env'):
-    load_dotenv()
+load_dotenv()
 
 # MongoDB setup
 mongo_uri = os.environ.get('DB_URI')
-mongo_client = MongoClient(mongo_uri)
+mongo_client = AsyncIOMotorClient(mongo_uri)  # Corrected usage of AsyncIOMotorClient
 db = mongo_client['test']
 
 google_cloud_key_file = os.environ.get('GOOGLE_CLOUD_KEY_FILE')
@@ -29,58 +24,47 @@ if not google_cloud_key_file or not os.path.exists(google_cloud_key_file):
     raise ValueError("GOOGLE_CLOUD_KEY_FILE environment variable not set or file does not exist.")
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_cloud_key_file
 
-app = Flask(__name__)
+app = Quart(__name__)
+app = cors(app, allow_origin="*")
 
-# logging.basicConfig(level=logging.DEBUG)
-app.logger.setLevel(logging.INFO)
-
-# Enable CORS with support for credentials and specific origins
-CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
-
-# Initialize WebSocket list
 websockets = []
 
-@app.route('/websocket', websocket=True)
-def websocket():
-    ws = Server.accept(request.environ)
-    websockets.append(ws)
+@app.websocket('/websocket')
+async def handle_websocket():
+    websockets.append(websocket._get_current_object())
     try:
         while True:
-            message = ws.receive()  # This can be a blocking call
-            # Handle received message if needed
-    except ConnectionClosed:
-        websockets.remove(ws)
-    return ''
+            message = await websocket.receive()
+    except asyncio.CancelledError:
+        websockets.remove(websocket._get_current_object())
 
-def broadcast_message(message):
+async def broadcast_message(message):
     for ws in websockets:
         try:
-            ws.send(message)
-        except ConnectionClosed:
+            await ws.send(message)
+        except asyncio.CancelledError:
             websockets.remove(ws)
 
-
-# Adjusted listen_for_messages function
-def listen_for_messages():
+# Adjust listen_for_messages function
+async def listen_for_messages():
     subscriber = pubsub_v1.SubscriberClient()
     subscription_path = subscriber.subscription_path("flash-yen-406511", "making-shorts-sub")
 
     def callback(message):
-        progress_update = message.data.decode('utf-8')
-        broadcast_message(progress_update)  # Broadcast to all connected WebSocket clients
+        asyncio.create_task(broadcast_message(message.data.decode('utf-8')))
         message.ack()
 
     while True:
         try:
             streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
-            streaming_pull_future.result(timeout=300)
+            await streaming_pull_future.result(timeout=300)
         except (TimeoutError, Exception) as e:
-            time.sleep(5)
+            await asyncio.sleep(5)
 
-pubsub_thread = threading.Thread(target=listen_for_messages, daemon=True)
-pubsub_thread.start()
+# Start the pubsub thread
+asyncio.create_task(listen_for_messages())
 
-def generate_signed_url(bucket_name, blob_name):
+async def generate_signed_url(bucket_name, blob_name):
     try:
         storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
         bucket = storage_client.bucket(bucket_name)
@@ -100,10 +84,9 @@ def generate_signed_url(bucket_name, blob_name):
         print(f"Failed to generate signed URL for {blob_name}: {e}")
         return None
 
-def set_upload_complete(userEmail, complete):
+async def set_upload_complete(userEmail, complete):
     try:
-        # The upsert=True option is used to create a new document if one doesn't already exist
-        result = db.users.update_one(
+        result = await db.users.update_one(
             {'email': userEmail},
             {'$set': {'upload_complete': complete}},
             upsert=True
@@ -111,13 +94,13 @@ def set_upload_complete(userEmail, complete):
         print(f"Update result for {userEmail}: {result.matched_count} matched, {result.modified_count} modified, upserted_id: {result.upserted_id}")
     except Exception as e:
         print(f"An error occurred while setting upload_complete for {userEmail}: {e}")
-        raise e  # Reraising the exception will help to identify if there is an issue with the database operation
+        raise e
 
-def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_blob_name, json_destination_blob_name, userEmail):
+async def upload_to_gcloud(bucket_name, video_file_name, json_file_name, video_destination_blob_name, json_destination_blob_name, userEmail):
     if not userEmail:
         print("Error: User ID is None or empty.")
         return False
-    
+
     user_prev_runs_path_video = f"{userEmail}/PreviousRuns/{video_destination_blob_name}"
     user_cur_run_path_video = f"{userEmail}/CurrentRun/{video_destination_blob_name}"
     user_prev_runs_path_json = f"{userEmail}/PreviousRuns/{json_destination_blob_name}"
@@ -126,105 +109,94 @@ def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_
     if not os.path.isfile(video_file_name):
         print(f"The file {video_file_name} does not exist.")
         return False
-    
+
     if not os.path.isfile(json_file_name):
         print(f"The file {json_file_name} does not exist.")
         return False
 
     try:
-        # Upload Video to Previous Runs
-        blob_prev_video = bucket.blob(user_prev_runs_path_video)
-        blob_prev_video.upload_from_filename(video_file_name)
+        storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
+        bucket = storage_client.bucket(bucket_name)
 
-        # Upload JSON to Previous Runs
-        blob_prev_json = bucket.blob(user_prev_runs_path_json)
-        blob_prev_json.upload_from_filename(json_file_name)
+        await asyncio.gather(
+            upload_file(bucket, video_file_name, user_prev_runs_path_video),
+            upload_file(bucket, json_file_name, user_prev_runs_path_json),
+            upload_file(bucket, video_file_name, user_cur_run_path_video),
+            upload_file(bucket, json_file_name, user_cur_run_path_json)
+        )
 
-        # Upload Video to Current Run
-        blob_cur_video = bucket.blob(user_cur_run_path_video)
-        blob_cur_video.upload_from_filename(video_file_name)
-
-        # Upload JSON to Current Run
-        blob_cur_json = bucket.blob(user_cur_run_path_json)
-        blob_cur_json.upload_from_filename(json_file_name)
-
-        print(f"File {video_file_name} and {json_file_name} uploaded to {user_cur_run_path_video}, {user_prev_runs_path_video} and {user_cur_run_path_json}, {user_prev_runs_path_json} respectively.")
+        print(f"Files uploaded to {user_cur_run_path_video}, {user_prev_runs_path_video}, {user_cur_run_path_json}, {user_prev_runs_path_json}.")
         return True
     except Exception as e:
-        print(f"Failed to upload {video_file_name} or {json_file_name}: {e}")
+        print(f"Failed to upload files: {e}")
         return False
 
+async def upload_file(bucket, file_name, blob_path):
+    blob = bucket.blob(blob_path)
+    await asyncio.to_thread(blob.upload_from_filename, file_name)
 
-def process_youtube_video(video_info, userEmail, temp_dir_path):
-    
-    set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
+async def process_youtube_video(video_info, userEmail, temp_dir_path):
+    await set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
 
     try:
-        with app.app_context():
-            pubsub_publisher = get_pubsub_client()
-            best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, pubsub_publisher=pubsub_publisher, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
+        # Assuming BestClips and get_pubsub_client are compatible with async or have been modified accordingly
+        pubsub_publisher = get_pubsub_client()
+        best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, pubsub_publisher=pubsub_publisher, use_gpt=True)
 
-            set_upload_complete(userEmail, True)
+        await set_upload_complete(userEmail, True)
 
-            if best_clips.vids_in_cloud:
-                pass
+        if best_clips.vids_in_cloud:
+            pass  # Handle as needed
 
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
 
-
 @app.route('/api/process-youtube-video', methods=['POST'])
-def handle_youtube_video():
+async def handle_youtube_video():
     app.logger.info('Received request for /api/process-youtube-video')
-    app.logger.info('Form Data: ' + str({key: request.form[key] for key in request.form.keys()}))
-    userEmail = request.form.get('userEmail')
+    form_data = await request.form
+    app.logger.info('Form Data: ' + str({key: form_data[key] for key in form_data.keys()}))
+    userEmail = form_data.get('userEmail')
     if not userEmail:
         return jsonify({'error': 'No user ID provided'}), 400
 
     video_info = None
     user_path = f"/app/temp/{userEmail}"
-
-    # Create the directory if it doesn't exist
     os.makedirs(user_path, exist_ok=True)
-
     temp_dir_path = tempfile.mkdtemp(dir=user_path)
 
-    if 'file' in request.files:
-        file = request.files['file']
+    if 'file' in await request.files:
+        file = await request.files['file']
         if file.filename != '':
             filename = secure_filename(file.filename)
             file_path = os.path.join(temp_dir_path, filename)
             file.save(file_path)
             video_info = file_path
     else:
-        video_info = request.form.get('link')
+        video_info = form_data.get('link')
 
     if not video_info:
         return jsonify({'error': 'Invalid video or YouTube video provided'}), 400
 
     try:
-        thread = threading.Thread(target=process_youtube_video, args=(video_info, userEmail, temp_dir_path))
-        thread.start()
+        asyncio.create_task(process_youtube_video(video_info, userEmail, temp_dir_path))
         return jsonify({'message': 'Video processing started'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
-def get_signed_urls_for_directory(bucket, directory):
+async def get_signed_urls_for_directory(bucket, directory):
     storage_client = storage.Client.from_service_account_json(google_cloud_key_file)
     blobs = storage_client.list_blobs(bucket, prefix=directory)
     signed_urls = []
     for blob in blobs:
-        # Check if the blob name ends with '.mp4'
         if blob.name.lower().endswith('.mp4'):
-            url = generate_signed_url(bucket, blob.name)
+            url = await generate_signed_url(bucket, blob.name)
             if url:
                 signed_urls.append(url)
     return signed_urls
 
-
 @app.route('/api/signed-urls', methods=['GET'])
-def get_signed_urls():
+async def get_signed_urls():
     try:
         email = request.headers.get('User-Email')
         if not email:
@@ -233,12 +205,11 @@ def get_signed_urls():
         directory = request.args.get('directory', default=f'{email}/CurrentRun/')
         bucket_name = 'clipitshorts'
 
-        signed_urls = get_signed_urls_for_directory(bucket_name, directory)
+        signed_urls = await get_signed_urls_for_directory(bucket_name, directory)
 
-        # Check if 'CurrentRun' is empty and fetch from 'undefined' if needed
         if not signed_urls and 'CurrentRun' in directory:
             directory = f'undefined/'
-            signed_urls = get_signed_urls_for_directory(bucket_name, directory)
+            signed_urls = await get_signed_urls_for_directory(bucket_name, directory)
 
         return jsonify({'signedUrls': signed_urls})
     except GoogleCloudError as e:
@@ -246,18 +217,20 @@ def get_signed_urls():
     except Exception as e:
         return jsonify({'error': 'An unexpected error occurred'}), 500
 
-
 @app.route('/api/user/payment-plan', methods=['GET'])
-def get_user_payment_plan():
+async def get_user_payment_plan():
     user_email = request.args.get('email')
 
     if not user_email:
         return jsonify({'error': 'Email is required'}), 400
 
-    user = db.users.find_one({'email': user_email})
+    user = await db.users.find_one({'email': user_email})
 
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
+
+if __name__ == "__main__":
+    app.run()
