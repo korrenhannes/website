@@ -184,9 +184,9 @@ return(
             />
         </div>
         </form>
-        {!isMobile&&<div className={orWithLinesStyle}>OR</div>}
+        {!isMobile&&isExploreFurther&&<div className={orWithLinesStyle}>OR</div>}
         {/* New Container for File Input */}
-        {!isMobile&&<div className={styles['file-input-container']}>
+        {!isMobile&&isExploreFurther&&<div className={styles['file-input-container']}>
             <input 
                 type="file" 
                 ref={fileInputRef} // Attach the ref here
