@@ -13,9 +13,10 @@ import { motion } from 'framer-motion'; // Import motion
 const ContentSection = ({ windowWidth }) => (
   <div className="content-section">
     {windowWidth > 768 && (
-      <h2 className="content-heading">“Content Creation Has Never Been This Easy!”</h2>
+      <h2 className="content-heading">"Effortless Viral Content at Your Fingertips!"</h2>
     )}
-    <p className="content-description">With our innovative algorithm, you will be able to make your favorite podcasts and videos into content for your viewers with a push of a button.</p>
+    <p className="content-description1">Say goodbye to the frustration of time-consuming content creation.</p>
+    <p className="content-description">Our cutting-edge algorithm transforms your favorite podcasts and videos into captivating content for your audience – all with just a simple click.</p>
     <button className="cliplt-button">Cliplt</button>
     <div className="video-thumbnails">
       {[...Array(5)].map((_, index) => (

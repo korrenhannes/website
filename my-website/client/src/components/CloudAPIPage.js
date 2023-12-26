@@ -233,7 +233,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
 
 
       <div className={styles['foreground-content']}>
-        <h1>Never Have Problems Creating Viral Content Again.</h1>
+        <h1>Unlock the Secret to Effortless Viral Content Creation.</h1>
         <div className={styles['search-container']}>
           <form onSubmit={handleSearchSubmit} className={styles['search-form']}>
             <div className={styles['input-logo-container']}>
