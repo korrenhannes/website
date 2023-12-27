@@ -168,7 +168,7 @@ function App() {
                 <Route path="/explore-further" element={<ExploreFurther />} />
                 <Route path="/support" element={<SupportPage />} />
                 <Route path="/complaints" element={<ComplaintsPage />} />
-                <Route path="/offers" element={<OffersPage />} />
+                <Route path="/offers" element={<OffersPage isLoggedIn={isLoggedIn} />} />
                 <Route path="/free-user" element={<FreeUserPage />} />
                 <Route path="/my-videos" element={<MyVideosPage />} />
                 <Route path="/regular-user" element={<RegularUserPage />} />

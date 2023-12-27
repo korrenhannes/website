@@ -12,7 +12,17 @@ body {
   background-attachment: fixed; /* Fixed background */
   background-position: center; /* Center the image */
   position: relative; /* Make sure your content is above the overlay */
+  height: 100vw;
+}
 
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.6); /* White color with 60% opacity */
+  z-index: 1; /* Ensure it's above the background but below the content */
 }
 
   .plan-selection {
@@ -20,7 +30,9 @@ body {
       margin: 0 auto;
       padding: 20px;
       color: #333;
-      padding-top: 120px;      
+      padding-top: 120px;     
+      position: relative; /* Ensure this is above the overlay */
+      z-index: 2; 
     }
     
     .plan-selection h1 {
