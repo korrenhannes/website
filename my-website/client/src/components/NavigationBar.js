@@ -121,13 +121,11 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
       </div>
       {isMobile && (
         <div className="countdown-mobile">
-          <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>{MESSAGES.limitedDeals}</Link>
-          <Countdown targetDate={targetDate} />
+          <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>{MESSAGES.limitedDeals}<Countdown targetDate={targetDate} /></Link>
         </div>
       )}
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>{MESSAGES.limitedDeals}</Link>}
-        {!isMobile && <Countdown targetDate={targetDate} />} 
+        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>{MESSAGES.limitedDeals}<Countdown targetDate={targetDate}/> </Link>}
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
         {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
         {isMobile && renderAuthLinks()}
