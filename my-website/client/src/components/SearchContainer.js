@@ -146,6 +146,7 @@ function SearchContainer ({isExploreFurther, isMobile}) {
         setIsLoading(false);
         }
     };
+    
   
 
     const handleRedirection = () => {

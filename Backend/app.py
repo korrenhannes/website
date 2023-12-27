@@ -34,7 +34,8 @@ app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
 # Enable CORS with support for credentials and specific origins
-CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://young-beach-38748-bf9fd736b27e.herokuapp.com","https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
+
 
 # Adjusted listen_for_messages function
 def listen_for_messages():
