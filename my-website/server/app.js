@@ -117,6 +117,8 @@ app.use(helmet({
         "wss://backend686868k-c9c97cdcbc27.herokuapp.com",
         "https://www.paypal.com",
         "https://www.sandbox.paypal.com", // Add this line
+        "http://localhost:3001", // Allow connections to localhost:3001
+        "ws://localhost:3001"    // Allow WebSocket connections to localhost:3001 (if needed)
         // Add any other endpoints or external sources as needed
       ],
 
