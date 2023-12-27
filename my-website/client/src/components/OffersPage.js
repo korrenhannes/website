@@ -47,6 +47,7 @@ function OffersPage() {
 
   return (
     <div className="container-fluid">
+      <div className="image-overlay"></div> {/* Add this line */}
       <div className="plan-selection">
         <h1>Choose the plan that’s right for you</h1>
         <ul>
