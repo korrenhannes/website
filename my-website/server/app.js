@@ -123,6 +123,8 @@ app.use(helmet({
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
         "wss://young-beach-38748-bf9fd736b27e.herokuapp.com",
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/?EIO=4&transport=polling&t=Oohg1Sl",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io"
       ],
       
 
