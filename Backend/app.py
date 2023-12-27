@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from simple_websocket import Server, ConnectionClosed
 from pymongo import MongoClient
 import os
 import threading
@@ -37,29 +36,6 @@ app.logger.setLevel(logging.INFO)
 # Enable CORS with support for credentials and specific origins
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
 
-# Initialize WebSocket list
-websockets = []
-
-@app.route('/websocket', websocket=True)
-def websocket():
-    ws = Server.accept(request.environ)
-    websockets.append(ws)
-    try:
-        while True:
-            message = ws.receive()  # This can be a blocking call
-            # Handle received message if needed
-    except ConnectionClosed:
-        websockets.remove(ws)
-    return ''
-
-def broadcast_message(message):
-    for ws in websockets:
-        try:
-            ws.send(message)
-        except ConnectionClosed:
-            websockets.remove(ws)
-
-
 # Adjusted listen_for_messages function
 def listen_for_messages():
     subscriber = pubsub_v1.SubscriberClient()
@@ -67,7 +43,7 @@ def listen_for_messages():
 
     def callback(message):
         progress_update = message.data.decode('utf-8')
-        broadcast_message(progress_update)  # Broadcast to all connected WebSocket clients
+        # Process the message as needed
         message.ack()
 
     while True:

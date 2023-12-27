@@ -17,6 +17,5 @@ python-dotenv==1.0.0
 pytube==15.0.0
 redis==4.3.4
 retina_face==0.0.13
-simple-websocket
 tqdm==4.60.0
 yt_dlp==2023.11.16

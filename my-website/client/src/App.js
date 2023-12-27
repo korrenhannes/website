@@ -7,11 +7,10 @@ import {
 } from "@paypal/react-paypal-js";
 import { jwtDecode } from 'jwt-decode';
 
-
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
-import ConfirmationWaitPage from './components/ConfirmationWaitPage'; // Added import for ConfirmationWaitPage
+import ConfirmationWaitPage from './components/ConfirmationWaitPage';
 import CloudAPIPage from './components/CloudAPIPage';
 import OffersPage from './components/OffersPage';
 import FreeUserPage from './components/FreeUserPage';
@@ -23,25 +22,20 @@ import SupportPage from './components/SupportPage';
 import ForgotPasswordForm from './components/ForgotPassword';
 import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
-import ResetPasswordPage from './components/ResetPasswordPage'; // Import ResetPasswordPage
+import ResetPasswordPage from './components/ResetPasswordPage';
 import ComplaintsPage from './components/ComplaintsPage';
 import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 import MyVideosPage from './components/MyVideosPage';
 
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [socketIO, setSocketIO] = useState(null);
-  const [webSocket, setWebSocket] = useState(null);
 
   useEffect(() => {
-    // Establish Socket.IO connection
-    // const newSocketIO = io(process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001');
     const newSocketIO = io('http://localhost:3001')
     setSocketIO(newSocketIO);
 
     return () => {
-      // Disconnect Socket.IO when the app unmounts
       if (newSocketIO) newSocketIO.disconnect();
     };
   }, []);
@@ -54,83 +48,30 @@ function App() {
       if (userEmail.includes('@')){
         setIsLoggedIn(!!token);
       }
-    }else{
+    } else {
       setIsLoggedIn(!!token);
     }
-    
-  }, []);
-
-  useEffect(() => {
-    function connectWebSocket() {
-      // const wsUrl = process.env.REACT_APP_WEBSOCKET_URL || 'ws://localhost:5000/websocket';
-      const wsUrl = 'ws://localhost:5000/websocket'
-      console.log("WebSocket URL:", wsUrl);
-      const ws = new WebSocket(wsUrl);
-
-      ws.onopen = () => {
-        console.log('Connected to WebSocket');
-        setWebSocket(ws); // Set the WebSocket in state when connected
-      };
-
-      ws.onmessage = (event) => {
-        console.log('Received:', event.data);
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket Error:', error);
-      };
-
-      ws.onclose = (e) => {
-        console.log('WebSocket Disconnected. Attempting to reconnect...', e.reason);
-        setWebSocket(null); // Clear the WebSocket in state when disconnected
-
-        if (!e.wasClean) {
-          setTimeout(() => {
-            console.log('Reconnecting WebSocket...');
-            connectWebSocket();
-          }, 3000);
-        }
-      };
-
-      return ws;
-    }
-
-    const ws = connectWebSocket();
-
-    return () => {
-      if (ws) ws.close(); // Clean up WebSocket connection when component unmounts
-    };
   }, []);
 
   const [complaints, setComplaints] = useState([]);
 
   const handleLoginSuccess = (data) => {
-    console.log('Logged in user:', data);
-    localStorage.setItem('token', data.token); // Assuming the token is in the data response
+    localStorage.setItem('token', data.token);
     setIsLoggedIn(true);
   };
 
   const handleSignupSuccess = (data) => {
-    console.log('Signed up user:', data);
-    Navigate('/confirmation-wait'); // Redirect to confirmation-wait page
+    Navigate('/confirmation-wait');
   };
 
   const handleLogoutSuccess = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
     if (socketIO) socketIO.disconnect();
-    console.log('logging out');
   };
 
-  const googleClientId = 'YOUR_GOOGLE_CLIENT_ID'; // Replace with your actual client ID
+  const googleClientId = 'YOUR_GOOGLE_CLIENT_ID';
   const [timeLeft, setTimeLeft] = useState(0);
-
-  // Timer logic
- const getRandomDuration = () => {
-    const minDays = 3;
-    const maxDays = 10;
-    return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
-  };
 
   useEffect(() => {
     setTimeLeft(getRandomDuration() * 24 * 60 * 60 * 1000);
@@ -147,6 +88,12 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  const getRandomDuration = () => {
+    const minDays = 3;
+    const maxDays = 10;
+    return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
+  };
+
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
       <PayPalScriptProvider options={{
@@ -155,7 +102,7 @@ function App() {
         intent: "capture"
       }}>
         <Router>
-          <ComplaintsProvider> {/* Wrap ComplaintsProvider around all components that need access to the complaints context */}
+          <ComplaintsProvider>
             <div className="App">
               <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
               <Routes>
