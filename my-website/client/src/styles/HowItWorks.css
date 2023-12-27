@@ -45,7 +45,7 @@ body {
   border: none;
   border-radius: 8px;
   margin: 0.3em auto;
-  height: 300px; /* Adjust this value to your preference */
+  height: 275px; /* Adjust this value to your preference */
   flex-basis: 30%; /* Adjust card width for side by side layout */
   justify-content: center;
   background-color: rgba(235, 241, 255, 0.7); /* Adjust alpha for transparency */
