@@ -159,7 +159,7 @@ function App() {
             <div className="App">
               <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
               <Routes>
-                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/login"} />} />
+                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/cloud-api"} />} />
                 <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
                 <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
                 <Route path="/forgot-password" element={<ForgotPasswordForm />} />
