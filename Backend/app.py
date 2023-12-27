@@ -37,6 +37,7 @@ websockets = []
 @app.websocket('/websocket')
 async def handle_websocket():
     websockets.append(websocket._get_current_object())
+    logging.info("Here")
     try:
         while True:
             message = await websocket.receive()
