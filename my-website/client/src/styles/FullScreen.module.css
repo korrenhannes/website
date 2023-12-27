@@ -244,22 +244,27 @@ body {
   .foreground-content h1{
     margin:auto;
     margin-bottom: 40%;
-
+    font-size: 2em; /* Starting font size */
   }
 }
 
 @media (max-width: 500px) {
+  body{
+    font-size: 1.2em;
+  }
   .search-container{
     margin: auto;
     position: relative;
     top: auto;
-    left: 23.5%;
+    left: 31%;
     right: auto;
+    width: 60%;
   }
   .foreground-content h1{
-    font-size: 3em; /* Starting font size */
+    width: 100vw;
     margin: auto;
-    margin-bottom: 6%;
+    margin-bottom: 3%;
+    font-size: 1.2em; /* Starting font size */
   }
   .or-with-lines {
     font-size: 12px; /* Size of the 'OR' text */
