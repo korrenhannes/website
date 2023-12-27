@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/NavigationBar.css';
-import { jwtDecode } from 'jwt-decode';
-import Fingerprint2 from 'fingerprintjs2';
 import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.webp'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
@@ -15,11 +12,6 @@ import SearchContainer from './SearchContainer'; // Adjust path as needed
 
 
 function CloudAPIPage({ enableScrollHandling = true }) {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [userPaymentPlan, setUserPaymentPlan] = useState('free');
-  const [file, setFile] = useState(null); // State to hold the selected file
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -78,20 +70,6 @@ function CloudAPIPage({ enableScrollHandling = true }) {
     };
   }, [navigate]);
   
-
-  const handleRedirection = () => {
-    switch(userPaymentPlan) {
-      case 'regular':
-        navigate('/free-user');
-        break;
-      case 'premium':
-        navigate('/free-user');
-        break;
-      default:
-        navigate('/free-user');
-    }
-  };
-
   
 
   return (

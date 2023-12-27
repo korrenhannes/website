@@ -19,6 +19,8 @@ function ShowVideo({pageContext, updateVideoUrl }){
     const backgroundVideoRef = useRef(null);
     const playerRef = useRef(null);
     const navigate = useNavigate(); // Initialize useNavigate
+    const [isMuted, setIsMuted] = useState(true); // New state for mute control
+
 
     let videoContainerStyle= styles.videocontainer1;
     if (pageContext===PAGE_CONTEXT.EXPLORE_FURTHER){
@@ -241,6 +243,9 @@ function ShowVideo({pageContext, updateVideoUrl }){
     }
   };
   const handleVideoPress = (event) => {
+    if (event.target.className.includes('unmuteButton')) {
+      return;
+    }
     // Get the bounding rectangle of the container
     const rect = videoContainerRef.current.getBoundingClientRect();
     
@@ -267,9 +272,25 @@ useEffect(() => {
 }, [currentVideoIndex, videos, userVideosLoaded]);
 
 
+const toggleMute = () => {
+  if (playerRef.current) {
+    const newState = !isMuted;
+    playerRef.current.muted(newState);
+    setIsMuted(newState);
+  }
+};
+const UnmuteButton = ({ isMuted, toggleMute }) => (
+  <button className={styles.unmuteButton} onClick={toggleMute}>
+    {isMuted ? '🔇' : '🔊'}
+  </button>
+);
+
+
+
 return (
     <div className={videoContainerStyle} ref={videoContainerRef} onClick={handleVideoPress}>
         <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
+        <UnmuteButton isMuted={isMuted} toggleMute={toggleMute} />
     </div>
 );
 }
