@@ -119,7 +119,7 @@ app.use(helmet({
         "https://www.sandbox.paypal.com", // Add this line
         "http://localhost:3001", // Allow connections to localhost:3001
         "ws://localhost:3001"    // Allow WebSocket connections to localhost:3001 (if needed)
-        // Add any other endpoints or external sources as needed
+        "http://localhost:3001/socket.io/?EIO=4&transport=polling&t=OohZvQl"
       ],
 
       
