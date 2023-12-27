@@ -12,7 +12,7 @@ body {
   background-attachment: fixed; /* Fixed background */
   background-position: center; /* Center the image */
   position: relative; /* Make sure your content is above the overlay */
-
+  height: 100vw;
 }
 
   .plan-selection {
