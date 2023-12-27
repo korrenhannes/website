@@ -29,6 +29,7 @@ body {
   border-radius: 36px; /* Rounded corners for the 'phone' */
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow for depth */
   overflow: hidden; /* Ensure video doesn't overflow the rounded corners */
+  position: relative;
 }
 
 .video-js.vjs-fluid {
@@ -91,6 +92,17 @@ body {
 
 
 /* ... (other responsive styles) */
+.unmuteButton {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  background: transparent;
+  border: none;
+  font-size: 24px; /* Adjust size as needed */
+  cursor: pointer;
+  z-index: 10; /* Ensure it's above the video layer */
+  color: #007bff;
+}
 
 
 .downloadbutton {
