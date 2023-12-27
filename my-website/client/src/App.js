@@ -31,10 +31,12 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [socketIO, setSocketIO] = useState(null);
 
+  
   useEffect(() => {
-    const newSocketIO = io('http://localhost:3001')
+    const socketUrl = process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001'; // Default to localhost if the variable is not set
+    const newSocketIO = io(socketUrl);
     setSocketIO(newSocketIO);
-
+  
     return () => {
       if (newSocketIO) newSocketIO.disconnect();
     };
