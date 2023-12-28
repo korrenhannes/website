@@ -161,7 +161,9 @@ body {
         position: absolute;
         bottom: 70%;
         margin-left: 15px;
-        
+        text-align: center;
+        font-weight: bold; /* Make the font bold */
+
     }
     .search-container-exp{
         margin: auto;
@@ -213,12 +215,17 @@ body {
        margin-left: 5%;
        top: 37%;
        padding: auto;
+       text-align: center;
     }
     .explore-further-container .main-content .content-heading{
         position: absolute;
         bottom: 70%;
         
     }
+    .highlight {
+        color: blue; /* Change the color as needed */
+      }
+      
 }
 
 

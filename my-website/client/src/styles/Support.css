@@ -17,28 +17,74 @@ body {
   width: 100%;
 }
 
-/* Styles for the video background */
-.support-page .support-background-video {
-  position: absolute; /* Absolute positioning to cover the full screen */
-  right: 0;
-  bottom: 0;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
-  z-index: -1; /* Set to -1 so content goes over the video */
-}
 
 /* Styles for the upper half of the page */
 .support-page .top-half {
   flex: 4; /* Takes up 4 times the space compared to flex: 1 */
   overflow: hidden;
-  display: flex;
+  display:flex;
   align-items: center;
-  justify-content: center;
+  justify-content:center;
   background-color: transparent; /* Since the video is in the background */
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  background-image: url('../chatpic.webp');
+  background-size: cover; /* Cover the entire page */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-attachment: fixed; /* Fixed background */
+  background-position: center; /* Center the image */
+}
+.image-overlay-sup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  z-index: 1; /* Ensure it's above the background but below the content */
+}
+.search-container-sup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 45%;
+  text-align: center;
+  margin-top: auto;
+  z-index: 2;
+}
+.top-half h1 {
+  font-size: 3.5em; /* Starting font size */
+  margin-bottom: 2em;
+  max-width: 90%; /* Restrict width to allow some breathing space */
+  word-wrap: break-word; /* Wrap long words */
+  line-height: 1.2; /* Adequate line height for readability */
+  padding: 0 20px; /* Padding for spacing */
+  box-sizing: border-box; /* Include padding in width calculation */
+  overflow-wrap: break-word; /* Break words that are too long */
+  font-weight: bold; /* Make the font bold */
+  position: relative;
+  color: white;
+  z-index: 2;
+}
+.or-with-lines-sup {
+  display: flex; /* Use flexbox to align elements */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center content horizontally */
+  font-size: 16px; /* Size of the 'OR' text */
+  margin: 20px 0; /* Margin around the 'OR' for spacing */
+  font-weight: bold; /* Make the font bold */
+  color:white;
 }
 
+.or-with-lines-sup::before,
+.or-with-lines-sup::after {
+  content: ''; /* Pseudo-elements should have content property */
+  flex: 1; /* Flex-grow to take available space */
+  max-width: 100px;
+  height: 1px; /* Height of the line */
+  background: white; /* Color of the line */
+  margin: 0 10px; /* Spacing around the lines */
+}
 /* Styles for the support footer */
 .support-page .support-footer {
   background-color: #222; /* Dark background for the footer */
@@ -47,6 +93,7 @@ body {
   overflow: hidden;
   padding: 20px; /* Padding for content within footer */
   position: relative; /* Ensure the footer is positioned correctly */
+  z-index: 3;
 }
 
 /* Styles for content within the footer */
@@ -152,7 +199,26 @@ body {
 }
 
 /* Further adjustments for even smaller screens (e.g., mobile phones) */
-@media (max-width: 480px) {
+@media (max-width: 500px) {
+  .search-container-sup {
+    position: absolute;
+    top: 34%;
+  }
+  .top-half h1 {
+    font-size: 2.5em; /* Starting font size */
+    margin-bottom: 3em;
+  }
+  .support-page .top-half {
+    flex: 3.1; /* Takes up 4 times the space compared to flex: 1 */
+    
+  }
+  
+  /* Styles for the support footer */
+  .support-page .support-footer {
+   
+    flex: 2.5; /* Takes up 1 unit of space */
+   
+  }
   .support-page .footer-content {
     flex-direction: column;
     padding: 15px; /* Add padding for better spacing */

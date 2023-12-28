@@ -12,7 +12,7 @@ body {
   background-attachment: fixed; /* Fixed background */
   background-position: center; /* Center the image */
   position: relative; /* Make sure your content is above the overlay */
-  height: 100vw;
+  height: max-content;
 }
 
 .image-overlay {
@@ -37,7 +37,13 @@ body {
     
     .plan-selection h1 {
       font-size: 24px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+      font-weight: bold;
+
+    }
+    .plan-selection h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
       font-weight: bold;
 
     }
@@ -123,8 +129,17 @@ body {
       background-color: #0070BA;
     }
     @media (max-width: 500px) {
+      .next-button {
+        
+        padding: 6px;
+        width: 100%; /* Full width for the button */
+        font-size: 22px; /* Same font size for consistency */
+        font-weight: bold;
+        margin-bottom: 1rem; /* Space after the button */
+        cursor: pointer;
+      }
       .container-fluid {
-        height:max-content;
+        height:100vh;
       }
       .plan-selection {
         max-width: max-content;
@@ -137,14 +152,16 @@ body {
         color: #3897f0;
         margin-bottom: 10px;
         align-self: center;
-        margin-right: 15%;
+        margin-right: auto;
+        margin-left: auto;
       }
       
       .plan-price {
         font-size: 23px;
         font-weight: bold;
         align-self: center;
-        margin-right: 10%;
+        margin-right: auto;
+        margin-left: auto;
       }
       
       .plan-selection ul li {

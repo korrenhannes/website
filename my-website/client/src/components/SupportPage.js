@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import ComplaintsPage from './ComplaintsPage';
 import { useComplaints } from './contexts/ComplaintsContext'; // Import useComplaints
 import { ComplaintsProvider } from './contexts/ComplaintsContext';
+import SearchContainer from './SearchContainer'; // Adjust path as needed
+
 
 function SupportPage() {
   const navigate = useNavigate();
@@ -77,12 +79,10 @@ function SupportPage() {
 
   return (
     <div className="support-page">
-      <video autoPlay loop muted className="support-background-video">
-        <source src="/path-to-your-video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
       <footer className="top-half">
-        <CloudAPIPage enableScrollHandling={false} />
+      <div className="image-overlay-sup"></div> {/* Add this line */}
+        <h1>Simply ClipIt!</h1>
+        <SearchContainer isExploreFurther={false} isMobile={false} isSupport={true}/>
       </footer>
       <footer className="support-footer">
         <div className="footer-content">

@@ -12,9 +12,12 @@ import updatePlanRequest from './UpdatePlanService'; // Adjust the path as neces
 
 function OffersPage({isLoggedIn}) {
   const [selectedPlan, setSelectedPlan] = useState('basic');
-  const [planDescription1, setPlanDescription1] = useState('This is the Basic plan, you get one additional video with smaller water mark');
+  const [planDescription1, setPlanDescription1] = useState('Complimentary Content Creation: Get started with no costs at all.');
   const [planDescription2, setPlanDescription2] = useState('Why you should choose the Basic plan');
   const [planDescription3, setPlanDescription3] = useState('Let me convince you');
+  const [planHeading, setPlanHeading] = useState('Basic Plan: Start Your Journey – For Free!');
+  const [planSecondary, setplanSecondary] = useState('Dive into the world of content creation without any barriers. Our Basic Plan offers you:');
+
   const navigate = useNavigate();
   let userEmail ='';
   if (isLoggedIn){
@@ -24,18 +27,47 @@ function OffersPage({isLoggedIn}) {
   }
 
   const plans = [
-    { name: 'Basic', price: 'Free', quality: 'Good', title:'you get one additional video with smaller water mark' },
-    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'you get 10 videos to edit' },
-    { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
+    {
+      name: 'Basic',
+      price: 'Free',
+      quality: 'Good',
+      title: 'Start Your Creative Journey - Absolutely Free!',
+      description1: 'Boost Your Brand: Create videos with a professional touch and minimal watermarking.',
+      description2: 'Explore Without Limits: Experiment with content creation, no strings attached.',
+      heading: 'Step into the World of Content Creation with Our Basic Plan - Its on Us!',
+      secondary: 'Embark on your content creation journey with zero cost. The Basic Plan offers you an array of features to get started:'
+    },
+    { 
+      name: 'Regular', 
+      price: '$27.99', 
+      quality: 'Better', 
+      title: 'Enhance Your Impact: Unlock 10 More creationsa for Just $27.99!', 
+      description1: 'Master Your Craft: Gain access to advanced editing tools for premium content creation.',
+      description2: 'Quality that Speaks: Elevate your videos with high-definition output.',
+      heading: 'Take Your Content to the Next Level with the Regular Plan!',
+      secondary: 'Step up your game for only $27.99. The Regular Plan introduces you to advanced features for enhanced content creation:'
+    },
+    { 
+      name: 'Premium', 
+      price: '$79.99', 
+      quality: 'Best', 
+      title: 'Unlimited Possibilities: Create Without Boundaries!',
+      description1: 'Exclusive Features: Be the first to explore cutting-edge tools in content creation.',
+      description2: 'Priority Support: Experience our dedicated customer service, always there to assist you.',
+      heading: 'Join the Elite with Our Premium Plan - The Ultimate Creative Suite!',
+      secondary: 'For just $79.99, gain unlimited access to our most exclusive features. The Premium Plan is designed for those who want to lead in content creation:'
+    },
   ];
 
   const selectPlan = (plan) => {
     //console.log('selected plan:', selectedPlan, 'plan:', plan);
     setSelectedPlan(plan);
     const selected = plans.find(p => p.name.toLowerCase() === plan);
-    setPlanDescription1(`this is the ${selected.name} plan,${selected.title} `);
-    setPlanDescription2(`why you should choose the ${selected.name} plan `);
-    setPlanDescription3(`let me convince you`);
+    setPlanDescription1(selected.title);
+    setPlanDescription2(selected.description1);
+    setPlanDescription3(selected.description2);
+    setPlanHeading(selected.heading);
+    setplanSecondary(selected.secondary);
    // console.log('selected plan2:', selectedPlan, 'plan2:', plan);
   };
 
@@ -74,7 +106,8 @@ function OffersPage({isLoggedIn}) {
     <div className="container-fluid">
       <div className="image-overlay"></div> {/* Add this line */}
       <div className="plan-selection">
-        <h1>Choose the plan that’s right for you</h1>
+        <h1>{planHeading}</h1>
+        <h2>{planSecondary}</h2>
         <ul>
           <li>{planDescription1}</li>
           <li>{planDescription2}</li>
