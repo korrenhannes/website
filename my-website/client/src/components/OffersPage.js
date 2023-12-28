@@ -42,8 +42,8 @@ function OffersPage({isLoggedIn}) {
       price: '$27.99', 
       quality: 'Better', 
       title: 'More Content, More Impact: Create and share more with an increased video limit', 
-      description1: 'Regular description1',
-      description2: 'Regular description2',
+      description1: 'Precision Editing: Access advanced tools for finer edits.',
+      description2: 'Quality Assurance: Benefit from high-quality video outputs that make your content stand out.',
       heading: 'Regular Plan: The Content Creator Companion - Only $27.99' ,
       secondary: 'Dive into the world of content creation without any barriers. Our Regular Plan offers you:'
     },
