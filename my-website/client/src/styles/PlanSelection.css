@@ -123,6 +123,15 @@ body {
       background-color: #0070BA;
     }
     @media (max-width: 500px) {
+      .next-button {
+        
+        padding: 6px;
+        width: 100%; /* Full width for the button */
+        font-size: 22px; /* Same font size for consistency */
+        font-weight: bold;
+        margin-bottom: 1rem; /* Space after the button */
+        cursor: pointer;
+      }
       .container-fluid {
         height:max-content;
       }
@@ -137,14 +146,16 @@ body {
         color: #3897f0;
         margin-bottom: 10px;
         align-self: center;
-        margin-right: 15%;
+        margin-right: auto;
+        margin-left: auto;
       }
       
       .plan-price {
         font-size: 23px;
         font-weight: bold;
         align-self: center;
-        margin-right: 10%;
+        margin-right: auto;
+        margin-left: auto;
       }
       
       .plan-selection ul li {
