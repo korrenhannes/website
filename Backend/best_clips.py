@@ -650,15 +650,16 @@ class BestClips:
     def cut_faces_all_vids(self):
         faced_vids = []
         new_start_times = []
+        retina_face_model = RetinaFace.build_model()
         for short_num in range(len(self.cut_vids)):
-            faced_vid, start_time = self.cut_faces_one_vid(short_num, self.cut_vids[short_num])
+            faced_vid, start_time = self.cut_faces_one_vid(short_num, self.cut_vids[short_num], retina_face_model)
             faced_vids.append(faced_vid)
             new_start_times.append(start_time)
 
         return faced_vids, new_start_times
     
 
-    def cut_faces_one_vid(self, short_num, vid):
+    def cut_faces_one_vid(self, short_num, vid, retina_face_model):
         people_on_screen = {'1_person': [], '2_people': []}
         boxes = []
         confs = []
@@ -667,7 +668,6 @@ class BestClips:
         frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
         dur = vid.duration
         times = [t for t, frame in vid.iter_frames(with_times=True)]
-        retina_face_model = RetinaFace.build_model()
         ind_of_model = []
 
 
