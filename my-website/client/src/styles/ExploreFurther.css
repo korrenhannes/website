@@ -222,6 +222,10 @@ body {
         bottom: 70%;
         
     }
+    .highlight {
+        color: blue; /* Change the color as needed */
+      }
+      
 }
 
 

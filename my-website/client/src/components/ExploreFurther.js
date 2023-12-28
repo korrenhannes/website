@@ -16,8 +16,8 @@ const ContentSection = ({ windowWidth, isMobile }) => (
     {windowWidth > 768 && (
       <h2 className="content-heading">"Effortless Viral Content at Your Fingertips!"</h2>
     )}
-    <p className="content-description1">Say goodbye to the frustration of time-consuming content creation.</p>
-    <p className="content-description">Our cutting-edge algorithm transforms your favorite podcasts and videos into captivating content for your audience – all with just a simple click.</p>
+    <p className="content-description1"><span className="highlight">Say</span> goodbye to the frustration of time-consuming content creation.</p>
+    <p className="content-description"><span className="highlight">Our</span> cutting-edge algorithm transforms your favorite podcasts and videos into <span className="highlight">captivating</span> content for your audience – all with just a simple click.</p>
     <SearchContainer isExploreFurther={true} isMobile={isMobile}/>
     <div className="video-thumbnails">
       {[...Array(5)].map((_, index) => (
