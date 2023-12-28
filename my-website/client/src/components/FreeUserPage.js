@@ -14,6 +14,7 @@ import NextVideoButton from './NextVideoButton'; // Import the custom button
 // Register the custom button with Video.js
 videojs.registerComponent('NextVideoButton', NextVideoButton);
 
+
 function FreeUserPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,7 +22,7 @@ function FreeUserPage() {
   const socket = useRef(null);
 
   useEffect(() => {
-    socket.current = io('http://localhost:3000');
+    socket.current = io('https://young-beach-38748-bf9fd736b27e.herokuapp.com');
     socket.current.on('connect', () => console.log('Connected to socket.io server'));
     return () => {
       if (socket.current) {
