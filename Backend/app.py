@@ -127,7 +127,7 @@ def process_youtube_video(video_info, userEmail, temp_dir_path):
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
 
-@app.route('/health')
+@app.route('/api/health')
 def health_check():
     return 'OK', 200
 
