@@ -37,12 +37,6 @@ app.logger.setLevel(logging.INFO)
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://young-beach-38748-bf9fd736b27e.herokuapp.com","https://backend686868k-c9c97cdcbc27.herokuapp.com"]}})
 
 
-# # Function to add headers after each request
-# @app.after_request
-# def set_csp(response):
-#     response.headers["Content-Security-Policy"] = "default-src 'self'; connect-src 'self' https://backend686868k-c9c97cdcbc27.herokuapp.com"
-#     return response
-
 # Adjusted listen_for_messages function
 def listen_for_messages():
     subscriber = pubsub_v1.SubscriberClient()

@@ -124,10 +124,10 @@ app.use(helmet({
         "wss://young-beach-38748-bf9fd736b27e.herokuapp.com",
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/?EIO=4&transport=polling&t=Oohg1Sl",
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/",
-        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io"
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io",
+        "http://localhost:5000",
+        "https://localhost:5000"                 
       ],
-      
-
       
       fontSrc: [
         "'self'",
