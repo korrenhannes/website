@@ -12,10 +12,12 @@ import updatePlanRequest from './UpdatePlanService'; // Adjust the path as neces
 
 function OffersPage({isLoggedIn}) {
   const [selectedPlan, setSelectedPlan] = useState('basic');
-  const [planDescription1, setPlanDescription1] = useState('This is the Basic plan, you get one additional video with smaller water mark');
+  const [planDescription1, setPlanDescription1] = useState('Complimentary Content Creation: Get started with no costs at all.');
   const [planDescription2, setPlanDescription2] = useState('Why you should choose the Basic plan');
   const [planDescription3, setPlanDescription3] = useState('Let me convince you');
-  const [planHeading, setPlanHeading] = useState('Heading');
+  const [planHeading, setPlanHeading] = useState('Basic Plan: Start Your Journey – For Free!');
+  const [planSecondary, setplanSecondary] = useState('Dive into the world of content creation without any barriers. Our Basic Plan offers you:');
+
   const navigate = useNavigate();
   let userEmail ='';
   if (isLoggedIn){
@@ -25,19 +27,47 @@ function OffersPage({isLoggedIn}) {
   }
 
   const plans = [
-    { name: 'Basic', price: 'Free', quality: 'Good', title:'Complimentary Content Creation: Get started with no costs at all.', heading: 'Basic Plan: Start Your Journey – For Free!' },
-    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'More Content, More Impact: Create and share more with an increased video limit', heading: 'Regular Plan: The Content Creators Companion - Only $27.99' },
-    { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!', heading: 'Premium plan heading' },
+    {
+      name: 'Basic',
+      price: 'Free',
+      quality: 'Good',
+      title:'Complimentary Content Creation: Get started with no costs at all.',
+      description1: 'Basic description1',
+      description2: 'Basic description2',
+      heading: 'Basic Plan: Start Your Journey – For Free!',
+      secondary: 'Dive into the world of content creation without any barriers. Our Basic Plan offers you:'
+    },
+    { 
+      name: 'Regular', 
+      price: '$27.99', 
+      quality: 'Better', 
+      title: 'More Content, More Impact: Create and share more with an increased video limit', 
+      description1: 'Regular description1',
+      description2: 'Regular description2',
+      heading: 'Regular Plan: The Content Creators Companion - Only $27.99' ,
+      secondary: 'Dive into the world of content creation without any barriers. Our Regular Plan offers you:'
+    },
+    { 
+      name: 'Premium', 
+      price: '$79.99', 
+      quality: 'Best', 
+      title: 'you can edit as many videos as you want, unlimited!',
+      description1: 'Premium description1',
+      description2: 'Premium description2', 
+      heading: 'Premium plan heading' ,
+      secondary: 'Dive into the world of content creation without any barriers. Our Premium Plan offers you:'
+    },
   ];
 
   const selectPlan = (plan) => {
     //console.log('selected plan:', selectedPlan, 'plan:', plan);
     setSelectedPlan(plan);
     const selected = plans.find(p => p.name.toLowerCase() === plan);
-    setPlanDescription1(`this is the ${selected.name} plan,${selected.title} `);
-    setPlanDescription2(`why you should choose the ${selected.name} plan `);
-    setPlanDescription3(`let me convince you`);
+    setPlanDescription1(selected.title);
+    setPlanDescription2(selected.description1);
+    setPlanDescription3(selected.description2);
     setPlanHeading(selected.heading);
+    setplanSecondary(selected.secondary);
    // console.log('selected plan2:', selectedPlan, 'plan2:', plan);
   };
 
@@ -77,7 +107,7 @@ function OffersPage({isLoggedIn}) {
       <div className="image-overlay"></div> {/* Add this line */}
       <div className="plan-selection">
         <h1>{planHeading}</h1>
-        <h2>Dive into the world of content creation without any barriers. Our Basic Plan offers you:</h2>
+        <h2>{planSecondary}</h2>
         <ul>
           <li>{planDescription1}</li>
           <li>{planDescription2}</li>
