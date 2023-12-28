@@ -37,6 +37,12 @@ body {
   align-items: center;
   justify-content: center;
   background-color: transparent; /* Since the video is in the background */
+  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  background-image: url('../chatpic.webp');
+  background-size: cover; /* Cover the entire page */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-attachment: fixed; /* Fixed background */
+  background-position: center; /* Center the image */
 }
 
 /* Styles for the support footer */

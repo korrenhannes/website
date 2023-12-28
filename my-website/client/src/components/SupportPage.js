@@ -77,10 +77,6 @@ function SupportPage() {
 
   return (
     <div className="support-page">
-      <video autoPlay loop muted className="support-background-video">
-        <source src="/path-to-your-video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
       <footer className="top-half">
         <CloudAPIPage enableScrollHandling={false} />
       </footer>
