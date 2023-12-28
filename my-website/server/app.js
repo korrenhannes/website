@@ -86,6 +86,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
+        "'unsafe-inline'",
         "https://www.paypal.com",
         "https://accounts.google.com",
         "https://connect.facebook.net",
@@ -109,6 +110,7 @@ app.use(helmet({
       imgSrc: [
         "'self'",
         "data:",
+        "https://www.paypalobjects.com"
         // Add any other image sources as needed
       ],
       connectSrc: [
@@ -136,6 +138,7 @@ app.use(helmet({
       frameSrc: [
         "'self'",
         "https://accounts.google.com", // Allow frames from Google
+        "https://www.sandbox.paypal.com/",
         // Add any other frame sources as needed
 
       
