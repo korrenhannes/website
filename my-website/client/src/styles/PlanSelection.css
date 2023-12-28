@@ -133,7 +133,7 @@ body {
         cursor: pointer;
       }
       .container-fluid {
-        height:auto;
+        height:117vh;
       }
       .plan-selection {
         max-width: max-content;
