@@ -15,6 +15,7 @@ function OffersPage({isLoggedIn}) {
   const [planDescription1, setPlanDescription1] = useState('This is the Basic plan, you get one additional video with smaller water mark');
   const [planDescription2, setPlanDescription2] = useState('Why you should choose the Basic plan');
   const [planDescription3, setPlanDescription3] = useState('Let me convince you');
+  const [planHeading, setPlanHeading] = useState('Heading');
   const navigate = useNavigate();
   let userEmail ='';
   if (isLoggedIn){
@@ -24,9 +25,9 @@ function OffersPage({isLoggedIn}) {
   }
 
   const plans = [
-    { name: 'Basic', price: 'Free', quality: 'Good', title:'you get one additional video with smaller water mark' },
-    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'you get 10 videos to edit' },
-    { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!' },
+    { name: 'Basic', price: 'Free', quality: 'Good', title:'you get one additional video with smaller water mark', heading: 'Basic plan heading' },
+    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'you get 10 videos to edit', heading: 'Regular plan heading' },
+    { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!', heading: 'Premium plan heading' },
   ];
 
   const selectPlan = (plan) => {
@@ -36,6 +37,7 @@ function OffersPage({isLoggedIn}) {
     setPlanDescription1(`this is the ${selected.name} plan,${selected.title} `);
     setPlanDescription2(`why you should choose the ${selected.name} plan `);
     setPlanDescription3(`let me convince you`);
+    setPlanHeading(selected.heading);
    // console.log('selected plan2:', selectedPlan, 'plan2:', plan);
   };
 
@@ -74,7 +76,8 @@ function OffersPage({isLoggedIn}) {
     <div className="container-fluid">
       <div className="image-overlay"></div> {/* Add this line */}
       <div className="plan-selection">
-        <h1>Choose the plan that’s right for you</h1>
+        <h1>{planHeading}</h1>
+        <h2>secondary</h2>
         <ul>
           <li>{planDescription1}</li>
           <li>{planDescription2}</li>
