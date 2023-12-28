@@ -5,7 +5,7 @@ import os
 import re
 import random
 from datetime import datetime
-from google.cloud import storage, pubsub_v1
+from google.cloud import storage
 from moviepy.editor import *
 from pytube import YouTube
 import yt_dlp as youtube_dl
@@ -252,32 +252,18 @@ def upload_to_gcloud(bucket, video_file_name, json_file_name, video_destination_
         return True
     except Exception as e:
         print(f"Failed to upload {video_file_name} or {json_file_name}: {e}")
-        return False
-    
-# Initialize Pub/Sub client
-def get_pubsub_client():
-    return pubsub_v1.PublisherClient()
-
-# Publish messages to a specified topic
-def publish_message(publisher, user_id, topic_name, message):
-    topic_path = publisher.topic_path('flash-yen-406511', topic_name)
-    data = f"{user_id}: {message}".encode("utf-8")
-    future = publisher.publish(topic_path, data)
-    return future.result()
-    
+        return False    
 
 class InvalidVideoError(Exception):
     pass
 
 class BestClips:
-    def __init__(self, video_str, username, temp_dir, pubsub_publisher, use_gpt=False,
+    def __init__(self, video_str, username, temp_dir, use_gpt=False,
                  audio_dest='audio.mp3', num_of_shorts=5):
         try:
             self.num_of_shorts = num_of_shorts
             self.vids_in_cloud = False
-            self.pubsub_publisher = pubsub_publisher
             self.user_name = username
-            publish_message(self.pubsub_publisher, self.user_name, "making-shorts", "Starting process in best_clips.py")
             
             # Set run-cost at 0
             self.use_gpt = use_gpt
@@ -303,7 +289,6 @@ class BestClips:
             self.audio_dest = os.path.join(self.run_path, audio_dest)
             self.full_audio, self.full_video = self.audio_video(self.video_path)
             self.full_audio.write_audiofile(self.audio_dest)
-            publish_message(self.pubsub_publisher, self.user_name, "making-shorts", "Saved audio and video")
 
             full_words_df_tiny = self.transcribe()
             self.full_words_df_tiny = full_words_df_tiny.where(pd.notnull(full_words_df_tiny), 'None')

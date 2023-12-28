@@ -61,7 +61,5 @@ EXPOSE $PORT
 # Change to nonroot system user
 USER nonroot
 
-# Run app.py when the container launches
-CMD gunicorn -w 1 -k gthread --threads 100 -b 0.0.0.0:$PORT app:app
-
-
+# Run app.py when the container launches. Might need to make timeout longer
+CMD gunicorn -w 1 -k gthread --threads 5 --timeout 120 -b 0.0.0.0:$PORT app:app

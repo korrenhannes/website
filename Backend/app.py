@@ -6,13 +6,13 @@ import threading
 import datetime
 import tempfile
 from werkzeug.utils import secure_filename
-from google.cloud import storage, pubsub_v1
+from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
 import logging
 import time
 
-from best_clips import BestClips, get_pubsub_client
+from best_clips import BestClips
 
 # Load .env file if it exists, useful for local development
 if os.path.exists('.env'):
@@ -36,25 +36,6 @@ app.logger.setLevel(logging.INFO)
 # Enable CORS with support for credentials and specific origins
 CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://young-beach-38748-bf9fd736b27e.herokuapp.com","https://backend686868k-c9c97cdcbc27.herokuapp.com", "https://www.cliplt.com"]}})
 
-# Adjusted listen_for_messages function
-def listen_for_messages():
-    subscriber = pubsub_v1.SubscriberClient()
-    subscription_path = subscriber.subscription_path("flash-yen-406511", "making-shorts-sub")
-
-    def callback(message):
-        progress_update = message.data.decode('utf-8')
-        # Process the message as needed
-        message.ack()
-
-    while True:
-        try:
-            streaming_pull_future = subscriber.subscribe(subscription_path, callback=callback)
-            streaming_pull_future.result(timeout=300)
-        except (TimeoutError, Exception) as e:
-            time.sleep(5)
-
-pubsub_thread = threading.Thread(target=listen_for_messages, daemon=True)
-pubsub_thread.start()
 
 def generate_signed_url(bucket_name, blob_name):
     try:
@@ -136,18 +117,19 @@ def process_youtube_video(video_info, userEmail, temp_dir_path):
     set_upload_complete(userEmail, False)  # Set the upload_complete flag to False at the start
 
     try:
-        with app.app_context():
-            pubsub_publisher = get_pubsub_client()
-            best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, pubsub_publisher=pubsub_publisher, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
+        best_clips = BestClips(video_info, userEmail, temp_dir=temp_dir_path, use_gpt=True) # Change use_gpt to True if you're not debugging and want to see the best parts
 
-            set_upload_complete(userEmail, True)
+        set_upload_complete(userEmail, True)
 
-            if best_clips.vids_in_cloud:
-                pass
+        if best_clips.vids_in_cloud:
+            pass
 
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
 
+@app.route('/health')
+def health_check():
+    return 'OK', 200
 
 @app.route('/api/process-youtube-video', methods=['POST'])
 def handle_youtube_video():
