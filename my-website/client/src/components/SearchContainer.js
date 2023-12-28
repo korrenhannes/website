@@ -9,7 +9,7 @@ import chatPic from '../chatpic.webp'; // Update the path according to your file
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
-function SearchContainer ({isExploreFurther, isMobile}) {
+function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
@@ -21,6 +21,9 @@ function SearchContainer ({isExploreFurther, isMobile}) {
     if (isExploreFurther){
         SearchContainerStyle='search-container-exp';
         orWithLinesStyle ='or-with-lines-exp ';
+    } else if (isSupport){
+        SearchContainerStyle='search-container-sup';
+        orWithLinesStyle ='or-with-lines-sup';
     }
     // Ref for the file input
     const fileInputRef = useRef(null);
