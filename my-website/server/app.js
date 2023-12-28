@@ -116,9 +116,17 @@ app.use(helmet({
         "https://backend686868k-c9c97cdcbc27.herokuapp.com",
         "wss://backend686868k-c9c97cdcbc27.herokuapp.com",
         "https://www.paypal.com",
-        "https://www.sandbox.paypal.com", // Add this line
-        // Add any other endpoints or external sources as needed
+        "https://www.sandbox.paypal.com",
+        "http://localhost:3001",
+        "ws://localhost:3001",
+        "http://localhost:3001/socket.io/?EIO=4&transport=polling&t=OohZvQl",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
+        "wss://young-beach-38748-bf9fd736b27e.herokuapp.com",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/?EIO=4&transport=polling&t=Oohg1Sl",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/",
+        "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io"
       ],
+      
 
       
       fontSrc: [

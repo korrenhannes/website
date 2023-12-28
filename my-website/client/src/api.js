@@ -21,6 +21,7 @@ const apiFlask = axios.create({
   withCredentials: true
 });
 
+
 // Function to handle forgot password request
 api.postForgotPassword = async (email) => {
   return await api.post('/auth/forgot-password', { email });
