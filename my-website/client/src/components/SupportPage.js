@@ -35,7 +35,7 @@ function SupportPage() {
     const distance = touchEndRef.current - touchStartRef.current;
 
     if (distance < -50) {
-      navigate('/next-page');
+      navigate('/support');
     } else if (distance > 50) {
       navigate('/how-it-works');
     }

@@ -177,9 +177,9 @@ body {
     .search-container-exp{
         margin: auto;
         position: relative;
-        margin-top: 15px;
+        margin-top: 35px;
         top: auto;
-        left: 100%;
+        left:100%;
         right: auto;
         width: 100%;
       }
@@ -211,7 +211,7 @@ body {
        display: flex;
        right: 50%;
        margin-left: 5%;
-       top: 38%;
+       top: 37%;
        padding: auto;
     }
     .explore-further-container .main-content .content-heading{

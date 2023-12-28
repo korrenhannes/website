@@ -208,7 +208,6 @@ body {
 /* Media Query for Max Width 480 Pixels */
 @media (max-width: 500px) {
   .how-it-works-container {
-    height: 90vh;
     overflow: hidden;
   }
 
