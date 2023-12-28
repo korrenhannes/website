@@ -31,31 +31,31 @@ function OffersPage({isLoggedIn}) {
       name: 'Basic',
       price: 'Free',
       quality: 'Good',
-      title:'Complimentary Content Creation: Get started with no costs at all.',
-      description1: 'Enhanced Branding: Enjoy one additional video with a less intrusive watermark, ensuring your content looks clean and professional.',
-      description2: 'Freedom to Explore: Test the waters of content creation with zero commitment.',
-      heading: 'Basic Plan: Start Your Journey – For Free!',
-      secondary: 'Dive into the world of content creation without any barriers. Our Basic Plan offers you:'
+      title: 'Start Your Creative Journey - Absolutely Free!',
+      description1: 'Boost Your Brand: Create videos with a professional touch and minimal watermarking.',
+      description2: 'Explore Without Limits: Experiment with content creation, no strings attached.',
+      heading: 'Step into the World of Content Creation with Our Basic Plan - Its on Us!',
+      secondary: 'Embark on your content creation journey with zero cost. The Basic Plan offers you an array of features to get started:'
     },
     { 
       name: 'Regular', 
       price: '$27.99', 
       quality: 'Better', 
-      title: 'More Content, More Impact: Create and share more with an increased video limit', 
-      description1: 'Precision Editing: Access advanced tools for finer edits.',
-      description2: 'Quality Assurance: Benefit from high-quality video outputs that make your content stand out.',
-      heading: 'Regular Plan: The Content Creator Companion - Only $27.99' ,
-      secondary: 'Dive into the world of content creation without any barriers. Our Regular Plan offers you:'
+      title: 'Enhance Your Impact: Unlock 10 More creationsa for Just $27.99!', 
+      description1: 'Master Your Craft: Gain access to advanced editing tools for premium content creation.',
+      description2: 'Quality that Speaks: Elevate your videos with high-definition output.',
+      heading: 'Take Your Content to the Next Level with the Regular Plan!',
+      secondary: 'Step up your game for only $27.99. The Regular Plan introduces you to advanced features for enhanced content creation:'
     },
     { 
       name: 'Premium', 
       price: '$79.99', 
       quality: 'Best', 
-      title: 'Unlimited Creative Freedom: No limits on video creation – if you can imagine it, you can create it.',
-      description1: 'Exclusive Access: First dibs on new features and tools, putting you ahead of the curve.',
-      description2: 'Priority Support: Get your questions answered with priority customer service.', 
-      heading: 'Premium Plan: The Ultimate Creator Suite - Just $79.99' ,
-      secondary: 'Dive into the world of content creation without any barriers. Our Premium Plan offers you:'
+      title: 'Unlimited Possibilities: Create Without Boundaries!',
+      description1: 'Exclusive Features: Be the first to explore cutting-edge tools in content creation.',
+      description2: 'Priority Support: Experience our dedicated customer service, always there to assist you.',
+      heading: 'Join the Elite with Our Premium Plan - The Ultimate Creative Suite!',
+      secondary: 'For just $79.99, gain unlimited access to our most exclusive features. The Premium Plan is designed for those who want to lead in content creation:'
     },
   ];
 
