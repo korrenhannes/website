@@ -126,7 +126,8 @@ app.use(helmet({
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io/",
         "https://young-beach-38748-bf9fd736b27e.herokuapp.com/socket.io",
         "http://localhost:5000",
-        "https://localhost:5000"                 
+        "https://localhost:5000",
+        "https://clipit-ghiltw5oka-ue.a.run.app"                 
       ],
       
       fontSrc: [

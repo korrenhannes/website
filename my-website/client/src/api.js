@@ -16,8 +16,7 @@ api.interceptors.request.use((config) => {
 
 // Axios instance for the Flask server running on port 5000
 const apiFlask = axios.create({
-  // baseURL: process.env.REACT_APP_FLASK_API_URL || 'http://localhost:5000/api',
-  baseURL: 'http://localhost:5000/api',
+  baseURL: process.env.REACT_APP_FLASK_API_URL,
   withCredentials: true
 });
 
