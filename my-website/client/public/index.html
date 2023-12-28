@@ -3,8 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' http://localhost:5000;">
-  <title>ClipIt</title>
+  <meta http-equiv="Content-Security-Policy" content="
+  default-src 'self' https: http:;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https: http:;
+  style-src 'self' 'unsafe-inline' https: http:;
+  img-src 'self' data: https: http:;
+  font-src 'self' data: https: http:;
+  connect-src 'self' https: http:;
+">  <title>ClipIt</title>
 </head>
 <body>
   <noscript>You need to enable JavaScript to run this app.</noscript>
