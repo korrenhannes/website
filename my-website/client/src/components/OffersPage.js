@@ -26,7 +26,7 @@ function OffersPage({isLoggedIn}) {
 
   const plans = [
     { name: 'Basic', price: 'Free', quality: 'Good', title:'Complimentary Content Creation: Get started with no costs at all.', heading: 'Basic Plan: Start Your Journey – For Free!' },
-    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'More Content, More Impact: Create and share more with an increased video limit', heading: 'Regular Plan: The Content Creator's Companion - Only $27.99' },
+    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'More Content, More Impact: Create and share more with an increased video limit', heading: 'Regular Plan: The Content Creators Companion - Only $27.99' },
     { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!', heading: 'Premium plan heading' },
   ];
 
