@@ -86,7 +86,7 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
-        "'unsafe-inline'",
+        "'unsafe-inline'", // Might need to change later as it weakens the security of the site
         "https://www.paypal.com",
         "https://accounts.google.com",
         "https://connect.facebook.net",
