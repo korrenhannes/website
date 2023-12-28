@@ -147,8 +147,9 @@ app.use(helmet({
         // If you know the exact bucket, you can specify it directly:
         "https://storage.googleapis.com/clipitshorts",
         "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video", // Add this line
-
-        
+        "https://storage.googleapis.com",
+        "https://storage.googleapis.com/clipitshorts",
+        "https://storage.googleapis.com/clipitshorts/undefined"        
       ],
       // Add other directives as necessary
     },
