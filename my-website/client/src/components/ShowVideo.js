@@ -158,6 +158,20 @@ function ShowVideo({pageContext, updateVideoUrl }){
       loadVideo(signedUrls[0]); // Load the first video
       console.log('videos loaded, setting usersvideosloade to true');
       setUserVideosLoaded(true);
+
+      // Schedule health check calls at 10, 20, 30, 40, and 50 minutes. Don't remove as this keeps the cloud container up
+      for (let i = 1; i <= 5; i++) {
+        setTimeout(async () => {
+            try {
+                console.log(`Calling health endpoint at ${i * 10} minutes`);
+                const healthResponse = await apiFlask.get('/health');
+                console.log('Health check response:', healthResponse);
+            } catch (error) {
+                console.error('Error calling health endpoint:', error);
+            }
+        }, 600000 * i); // 600000 milliseconds = 10 minutes
+    }
+
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
       console.error('Error fetching videos:', err);
