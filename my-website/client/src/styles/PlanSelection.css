@@ -37,7 +37,13 @@ body {
     
     .plan-selection h1 {
       font-size: 24px;
-      margin-bottom: 30px;
+      margin-bottom: 10px;
+      font-weight: bold;
+
+    }
+    .plan-selection h2 {
+      font-size: 20px;
+      margin-bottom: 20px;
       font-weight: bold;
 
     }
@@ -133,7 +139,7 @@ body {
         cursor: pointer;
       }
       .container-fluid {
-        height:117vh;
+        height:110vh;
       }
       .plan-selection {
         max-width: max-content;
