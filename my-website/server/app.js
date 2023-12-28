@@ -38,6 +38,8 @@ const allowedOrigins = [
   "http://localhost:3001/Media/stream-video",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/cloud-api",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video",
+  "https://clipit-ghiltw5oka-ue.a.run.app",
+  "https://clipit-ghiltw5oka-ue.a.run.app/api",
 
 ];
 
