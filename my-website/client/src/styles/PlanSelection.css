@@ -107,12 +107,12 @@ body {
     }
     
     .next-button {
-      background-color: #3897f0; /* Vibrant purple, matching your reference */
+      background-color: #0070BA; /* Vibrant purple, matching your reference */
       color: #ffffff; /* White color for text on buttons */
-      padding: 12px;
+      padding: 10px;
       border: none;
-      border-radius: 20px; /* More rounded corners as per the reference */
-      width: 100%; /* Full width for the button */
+      border-radius: 30px; /* More rounded corners as per the reference */
+      width: 98.7%; /* Full width for the button */
       font-size: 24px; /* Same font size for consistency */
       font-weight: bold;
       margin-bottom: 1rem; /* Space after the button */
@@ -120,9 +120,12 @@ body {
     }
     
     .next-button:hover {
-      background-color: #2878b5;
+      background-color: #0070BA;
     }
-    @media (max-width: 480px) {
+    @media (max-width: 500px) {
+      .container-fluid {
+        height:max-content;
+      }
       .plan-selection {
         max-width: max-content;
       }
@@ -138,7 +141,7 @@ body {
       }
       
       .plan-price {
-        font-size: 26px;
+        font-size: 23px;
         font-weight: bold;
         align-self: center;
         margin-right: 10%;
