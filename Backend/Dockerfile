@@ -55,6 +55,9 @@ RUN chmod 1777 /tmp
 # Copy the application files
 COPY app.py best_clips.py deploy.prototxt res10_300x300_ssd_iter_140000.caffemodel Montserrat-Black.ttf ./
 
+# Copy SSL certificates into the image
+COPY localhost.pem localhost-key.pem ./
+
 # Expose the Flask
 EXPOSE $PORT
 
@@ -62,6 +65,6 @@ EXPOSE $PORT
 USER nonroot
 
 # Run app.py when the container launches
-CMD gunicorn -w 1 -k gthread --threads 100 -b 0.0.0.0:$PORT app:app
+CMD gunicorn -w 1 -k gthread --threads 100 --certfile localhost.pem --keyfile localhost-key.pem -b 0.0.0.0:$PORT app:app
 
 

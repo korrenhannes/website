@@ -9,4 +9,4 @@ server/node_modules/
 *.mp4
 *.lps
 *.mp3
-
+*.pem
