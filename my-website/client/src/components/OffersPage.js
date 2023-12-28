@@ -25,8 +25,8 @@ function OffersPage({isLoggedIn}) {
   }
 
   const plans = [
-    { name: 'Basic', price: 'Free', quality: 'Good', title:'you get one additional video with smaller water mark', heading: 'Basic plan heading' },
-    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'you get 10 videos to edit', heading: 'Regular plan heading' },
+    { name: 'Basic', price: 'Free', quality: 'Good', title:'Complimentary Content Creation: Get started with no costs at all.', heading: 'Basic Plan: Start Your Journey – For Free!' },
+    { name: 'Regular', price: '$27.99', quality: 'Better', title: 'More Content, More Impact: Create and share more with an increased video limit', heading: 'Regular Plan: The Content Creator's Companion - Only $27.99' },
     { name: 'Premium', price: '$79.99', quality: 'Best', title: 'you can edit as many videos as you want, unlimited!', heading: 'Premium plan heading' },
   ];
 
@@ -77,7 +77,7 @@ function OffersPage({isLoggedIn}) {
       <div className="image-overlay"></div> {/* Add this line */}
       <div className="plan-selection">
         <h1>{planHeading}</h1>
-        <h2>secondary</h2>
+        <h2>Dive into the world of content creation without any barriers. Our Basic Plan offers you:</h2>
         <ul>
           <li>{planDescription1}</li>
           <li>{planDescription2}</li>
