@@ -160,7 +160,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
       setUserVideosLoaded(true);
 
       // Schedule health check calls at 10, 20, 30, 40, and 50 minutes. Don't remove as this keeps the cloud container up
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= 10; i++) {
         setTimeout(async () => {
             try {
                 console.log(`Calling health endpoint at ${i * 10} minutes`);
