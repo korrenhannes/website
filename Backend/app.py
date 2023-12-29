@@ -219,3 +219,16 @@ def get_user_payment_plan():
 
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
+
+@app.route('/api/check-upload-status', methods=['GET'])
+def check_upload_status():
+    user_email = request.args.get('email')
+    if not user_email:
+        return jsonify({'error': 'Email is required'}), 400
+
+    user = db.users.find_one({'email': user_email})
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    upload_complete = user.get('upload_complete', False)
+    return jsonify({'uploadComplete': upload_complete})
