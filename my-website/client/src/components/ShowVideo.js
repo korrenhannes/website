@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import { PAGE_CONTEXT } from './constants'; // Import the constants
 import styles from '../styles/FreeUserPage.module.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import axios from 'axios';
+
 
 
 function ShowVideo({pageContext, updateVideoUrl }){
