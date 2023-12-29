@@ -79,7 +79,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
   // Function to check the upload status
   const checkUploadStatus = async () => {
     try {
-      const response = await apiFlask.get('/api/check-upload-status', {
+      const response = await axios.get('/api/check-upload-status', {
         params: { email: userEmail }
       });
       return response.data.uploadComplete;
@@ -179,7 +179,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
             const uploadComplete = await checkUploadStatus();
             if (!uploadComplete) {
               console.log(`Calling health endpoint at ${i * 10} minutes`);
-              const healthResponse = await apiFlask.get('/health');
+              const healthResponse = await axios.get('/api/health');
               console.log('Health check response:', healthResponse);
             } else {
               console.log('Upload completed, skipping health check');

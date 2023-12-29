@@ -337,6 +337,30 @@ router.get('/user/payment-plan', async (req, res) => {
   }
 });
 
+// Route to check upload_complete status
+router.get('/check-upload-status', async (req, res) => {
+  const userEmail = req.query.email;
+
+  if (!userEmail) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const uploadComplete = user.upload_complete || false;
+    res.json({ uploadComplete });
+  } catch (error) {
+    console.error('Error in /check-upload-status:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+module.exports = router;
+
 // Update Tokens
 router.post('/update-tokens', async (req, res) => {
   try {
