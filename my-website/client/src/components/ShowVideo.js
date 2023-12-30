@@ -6,6 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import { PAGE_CONTEXT } from './constants'; // Import the constants
 import styles from '../styles/FreeUserPage.module.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import axios from 'axios';
+
 
 
 function ShowVideo({pageContext, updateVideoUrl }){
@@ -75,6 +77,19 @@ function ShowVideo({pageContext, updateVideoUrl }){
       }
     };
   }, [backgroundVideoRef]);
+
+  // Function to check the upload status
+  const checkUploadStatus = async () => {
+    try {
+      const response = await axios.get('/api/check-upload-status', {
+        params: { email: userEmail }
+      });
+      return response.data.uploadComplete;
+    } catch (error) {
+      console.error('Error checking upload status:', error);
+      return true; // Default to true to avoid continuous checks in case of an error
+    }
+  };
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
@@ -159,19 +174,23 @@ function ShowVideo({pageContext, updateVideoUrl }){
       console.log('videos loaded, setting usersvideosloade to true');
       setUserVideosLoaded(true);
 
-      // Schedule health check calls at 10, 20, 30, 40, and 50 minutes. Don't remove as this keeps the cloud container up
-      for (let i = 1; i <= 5; i++) {
+      // Modified health check logic
+      for (let i = 1; i <= 10; i++) {
         setTimeout(async () => {
-            try {
-                console.log(`Calling health endpoint at ${i * 10} minutes`);
-                const healthResponse = await apiFlask.get('/health');
-                console.log('Health check response:', healthResponse);
-            } catch (error) {
-                console.error('Error calling health endpoint:', error);
+          try {
+            const uploadComplete = await checkUploadStatus();
+            if (!uploadComplete) {
+              console.log(`Calling health endpoint at ${i * 10} minutes`);
+              const healthResponse = await axios.get('/api/health');
+              console.log('Health check response:', healthResponse);
+            } else {
+              console.log('Upload completed, skipping health check');
             }
+          } catch (error) {
+            console.error('Error calling health endpoint:', error);
+          }
         }, 600000 * i); // 600000 milliseconds = 10 minutes
-    }
-
+      }
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
       console.error('Error fetching videos:', err);

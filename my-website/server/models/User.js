@@ -17,6 +17,8 @@ const userSchema = new mongoose.Schema({
   isConfirmed: { type: Boolean, default: false }, // Add this line to include the isConfirmed field
   confirmationCode: { type: String, required: false }, // New field for confirmation code
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  upload_complete: { type: Boolean, default: true },
+
   // Additional affiliate-specific fields can be added here
 });
 
