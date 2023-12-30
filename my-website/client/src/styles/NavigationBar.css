@@ -18,6 +18,11 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-weight: bold; /* Make the font bold */
 }
+.nav-container {
+  display: flex;
+  align-items: center;
+}
+
 
 .nav-logo img {
   height: 40px;
@@ -30,6 +35,22 @@ body {
   font-weight: bold; /* Make the font bold */
 
 }
+.deal-countdown-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0; /* Remove space between elements */
+}
+
+.deals-link:hover, .deal-countdown-wrapper:hover {
+  text-decoration: underline;
+}
+
+/* Additional styling for Countdown if necessary */
+.countdown {
+  margin-left: 0px; /* Optional: Adjust if needed to align properly */
+  margin-right: 0px;
+}
+
 
 .nav-actions a, .nav-actions button {
   text-decoration: none;

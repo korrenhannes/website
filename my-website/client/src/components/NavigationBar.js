@@ -37,7 +37,7 @@ const Countdown = ({ targetDate }) => {
 
   return (
     <span className="countdown">
-      {timeLeft > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s` : "Time's up!"}
+      {timeLeft > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s  ` : "Time's up!"}
     </span>
   );
 };
@@ -121,11 +121,22 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
       </div>
       {isMobile && (
         <div className="countdown-mobile">
-          <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>{MESSAGES.limitedDeals}<Countdown targetDate={targetDate} /></Link>
+          <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>
+            <span className="deal-countdown-wrapper">
+              <Countdown targetDate={targetDate} />
+              {MESSAGES.limitedDeals}
+            </span>
+          </Link>
         </div>
       )}
+     
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-        {!isMobile && <Link to="/offers" onClick={handleLinkClick}>{MESSAGES.limitedDeals}<Countdown targetDate={targetDate}/> </Link>}
+       {!isMobile && (
+        <Link to="/offers" onClick={handleLinkClick} className="deal-countdown-wrapper">
+          <Countdown targetDate={targetDate}/>
+          {MESSAGES.limitedDeals}
+        </Link>
+       )}
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
         {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
         {isMobile && renderAuthLinks()}

@@ -23,7 +23,7 @@ body {
 }
 .search-container-exp {
     position: absolute;
-    top: 78%;
+    top: 70%;
     left: 65%;
     transform: translate(-50%, -50%);
     width: 45%;
@@ -92,6 +92,7 @@ body {
     flex-direction: column;
     justify-content: center;
     text-align: left; /* Align text to the left */
+    margin-bottom: 10%;
 }
 
 /* Button styling */

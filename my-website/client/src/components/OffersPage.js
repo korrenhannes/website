@@ -12,9 +12,9 @@ import updatePlanRequest from './UpdatePlanService'; // Adjust the path as neces
 
 function OffersPage({isLoggedIn}) {
   const [selectedPlan, setSelectedPlan] = useState('basic');
-  const [planDescription1, setPlanDescription1] = useState('Complimentary Content Creation: Get started with no costs at all.');
-  const [planDescription2, setPlanDescription2] = useState('Why you should choose the Basic plan');
-  const [planDescription3, setPlanDescription3] = useState('Let me convince you');
+  const [planDescription1, setPlanDescription1] = useState('Start Your Creative Journey - Absolutely Free!');
+  const [planDescription2, setPlanDescription2] = useState('Boost Your Brand: Create videos with a professional touch and minimal watermarking.');
+  const [planDescription3, setPlanDescription3] = useState('Explore Without Limits: Experiment with content creation, no strings attached.');
   const [planHeading, setPlanHeading] = useState('Basic Plan: Start Your Journey – For Free!');
   const [planSecondary, setplanSecondary] = useState('Dive into the world of content creation without any barriers. Our Basic Plan offers you:');
 
@@ -70,7 +70,14 @@ function OffersPage({isLoggedIn}) {
     setplanSecondary(selected.secondary);
    // console.log('selected plan2:', selectedPlan, 'plan2:', plan);
   };
-
+  const renderBoldBeforeColon = (text) => {
+    const splitText = text.split(':');
+    return (
+      <>
+        <strong>{splitText[0]}:</strong>{splitText[1]}
+      </>
+    );
+  };
   const handleNextClick = () => {
     if (isLoggedIn){
     console.log('email:',userEmail);
