@@ -665,15 +665,14 @@ class BestClips:
         confs = []
         # ADD fps = X to run faster
         vid = vid.set_fps(FPS_USED) if FPS_USED else vid
-        frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
+        # frames = [cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR) for frame in list(vid.iter_frames())]
         dur = vid.duration
         times = [t for t, frame in vid.iter_frames(with_times=True)]
-        ind_of_model = []
 
 
         # call for recognize faces model
-        for ind_0 in tqdm(list(range(len(times)))):
-            frame = frames[ind_0]
+        for frame in tqdm(vid.iter_frames()):
+            frame = cv2.cvtColor(frame.astype('uint8'),cv2.COLOR_RGB2BGR)
 
             # resize it to have a maximum width of 400 pixels
             image = imutils.resize(frame, width=400)
