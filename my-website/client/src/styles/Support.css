@@ -216,10 +216,11 @@ body {
   
   /* Styles for the support footer */
   .support-page .support-footer {
-   height: auto;
+   height: 90%;
     flex: 2.5; /* Takes up 1 unit of space */
    overflow: hidden;
    margin-bottom: 0px;   
+
   }
   .support-page .footer-content {
     flex-direction: column;

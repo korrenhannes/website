@@ -210,8 +210,7 @@ body {
 @media (max-width: 500px) {
   .how-it-works-container {
     overflow: hidden;
-    background-size:auto; /* Cover the entire page */
-    height: 95vh;
+    height: 90vh;
   }
 
   .container {
