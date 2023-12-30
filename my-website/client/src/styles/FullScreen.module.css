@@ -299,7 +299,7 @@ body {
   .foreground-content h1{
     width: 100vw;
     margin: auto;
-    margin-bottom: 1%;
+    margin-bottom: 0%;
     font-size: 1.2em; /* Starting font size */
   }
   .or-with-lines {
