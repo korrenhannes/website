@@ -210,13 +210,17 @@ body {
   }
   .support-page .top-half {
     flex: 3.1; /* Takes up 4 times the space compared to flex: 1 */
-    
+    overflow: hidden;
+    height: auto;
   }
   
   /* Styles for the support footer */
   .support-page .support-footer {
-   
+   height: auto;
     flex: 2.5; /* Takes up 1 unit of space */
+   overflow: hidden;
+   margin-bottom: auto;
+   padding: auto;
    
   }
   .support-page .footer-content {

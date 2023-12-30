@@ -22,6 +22,7 @@ body {
   background-repeat: no-repeat; /* Do not repeat the image */
   background-attachment: fixed; /* Fixed background */
   background-position: center; /* Center the image */
+  
 }
 .how-it-works-container::before {
   content: '';
@@ -209,6 +210,8 @@ body {
 @media (max-width: 500px) {
   .how-it-works-container {
     overflow: hidden;
+    background-size:auto; /* Cover the entire page */
+
   }
 
   .container {
