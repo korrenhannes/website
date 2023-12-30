@@ -9,6 +9,7 @@ export const MESSAGES = {
     loginError: 'Login failed. Please check your credentials.',
     confirmEmailError: 'Please confirm your email before logging in.',
     limitedDeals: '-New Year Sale',
+    limitedDealsMob: '-Our Offers',
     whyUs: 'Why Us',
     partnerWithUs: 'Partner With Us',
     support: 'Support',

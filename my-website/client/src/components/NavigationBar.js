@@ -124,7 +124,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
           <Link className='deals-link' to="/offers" style={{ textDecoration: 'none' }}>
             <span className="deal-countdown-wrapper">
               <Countdown targetDate={targetDate} />
-              {MESSAGES.limitedDeals}
+              {MESSAGES.limitedDealsMob}
             </span>
           </Link>
         </div>
