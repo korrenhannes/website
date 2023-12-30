@@ -225,6 +225,7 @@ body {
     }
     .highlight {
         color: blue; /* Change the color as needed */
+        font-weight: bold;
       }
       
 }
