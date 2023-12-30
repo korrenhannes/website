@@ -8,7 +8,7 @@ export const MESSAGES = {
     signUpLink: 'Don’t have an account? ',
     loginError: 'Login failed. Please check your credentials.',
     confirmEmailError: 'Please confirm your email before logging in.',
-    limitedDeals: '- For Limited Offer',
+    limitedDeals: ' For Holiday Sale',
     whyUs: 'Why Us',
     partnerWithUs: 'Partner With Us',
     support: 'Support',
