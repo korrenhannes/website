@@ -80,7 +80,7 @@ const HowItWorks = () => {
   return (
       <div className="how-it-works-container">
         <div className="container">
-          <h1 className="text-white">ClipIt: Your Shortcut to Perfect Content.</h1>
+          <h1 className="text-white">ClipIt: Your Shortcut to Viral Content.</h1>
           <p className="lead text-white">Crafted by a blend of AI specialists and seasoned content creators, our tool delivers your dream content in minutes.</p>
           <p className="lead text-white">Discover the magic in three easy steps. Transform your content effortlessly with ClipIt.</p>
           <h2 className="how-does-it-work">How does it work?</h2>
@@ -101,8 +101,8 @@ const HowItWorks = () => {
               </div>
               <div className="card-little">
                 <div className="card-body">
-                  <img src={shareIcon} alt="Share It" className="icon" />
-                  <h3 className="card-title">Share It</h3>
+                  <img src={shareIcon} alt="Share" className="icon" />
+                  <h3 className="card-title">Share</h3>
                   {windowWidth >= 768 && (<p className="card-text">Simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>)}
                 </div>
               </div>

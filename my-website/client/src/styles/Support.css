@@ -203,6 +203,7 @@ body {
   .search-container-sup {
     position: absolute;
     top: 34%;
+    width: 65%;
   }
   .support-page{
     height: 90vh;

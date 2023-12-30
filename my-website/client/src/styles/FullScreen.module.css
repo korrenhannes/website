@@ -282,18 +282,24 @@ body {
   body{
     font-size: 1.2em;
   }
+  #google-like-search {
+    width: 100%;
+  }
   .search-container{
     margin: auto;
     position: relative;
     top: auto;
-    left: 31%;
+    left: 34%;
     right: auto;
-    width: 60%;
+    width: 65%;
+  }
+  .input-logo-container {
+    width: 100%;
   }
   .foreground-content h1{
     width: 100vw;
     margin: auto;
-    margin-bottom: 3%;
+    margin-bottom: 2%;
     font-size: 1.2em; /* Starting font size */
   }
   .or-with-lines {
