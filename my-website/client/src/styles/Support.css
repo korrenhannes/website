@@ -219,9 +219,7 @@ body {
    height: auto;
     flex: 2.5; /* Takes up 1 unit of space */
    overflow: hidden;
-   margin-bottom: auto;
-   padding: auto;
-   
+   margin-bottom: 0px;   
   }
   .support-page .footer-content {
     flex-direction: column;
