@@ -52,6 +52,13 @@ body {
   background-color: rgba(235, 241, 255, 0.7); /* Adjust alpha for transparency */
 }
 
+.card-little:hover {
+  /* Add your desired hover styles here */
+  transform: scale(1.05); /* Slightly increase the size of the card */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+  cursor: pointer; /* Change cursor to indicate the card is interactive */
+}
+
 
 
 .card-body {
