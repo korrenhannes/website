@@ -34,14 +34,14 @@ function OffersPage({isLoggedIn}) {
       title: 'Start Your Creative Journey - Absolutely Free!',
       description1: 'Boost Your Brand: Create videos with a professional touch and minimal watermarking.',
       description2: 'Explore Without Limits: Experiment with content creation, no strings attached.',
-      heading: 'Step into the World of Content Creation with Our Basic Plan - Its on Us!',
+      heading: 'Step into the World of Content Creation with Our Basic Plan - It’s on Us!',
       secondary: 'Embark on your content creation journey with zero cost. The Basic Plan offers you an array of features to get started:'
     },
     { 
       name: 'Regular', 
       price: '$27.99', 
       quality: 'Better', 
-      title: 'Enhance Your Impact: Unlock 10 More creationsa for Just $27.99!', 
+      title: 'Enhance Your Impact: Unlock More Creations for Just $27.99!', 
       description1: 'Master Your Craft: Gain access to advanced editing tools for premium content creation.',
       description2: 'Quality that Speaks: Elevate your videos with high-definition output.',
       heading: 'Take Your Content to the Next Level with the Regular Plan!',
@@ -58,6 +58,7 @@ function OffersPage({isLoggedIn}) {
       secondary: 'For just $79.99, gain unlimited access to our most exclusive features. The Premium Plan is designed for those who want to lead in content creation:'
     },
   ];
+
 
   const selectPlan = (plan) => {
     //console.log('selected plan:', selectedPlan, 'plan:', plan);
