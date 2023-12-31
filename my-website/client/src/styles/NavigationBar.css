@@ -171,7 +171,6 @@ body {
     width: 40%; /* Slightly wider than on mobile */
     padding: 2em;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10%; /* Less rounded than on mobile */
   }
 
   /* Hide login and signup buttons on medium screens */
@@ -225,13 +224,26 @@ body {
     top: 50px; /* Adjust based on your nav bar height */
     background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
     width: 100%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 1em 1em;
-    box-sizing: border-box; /* To include padding in width */
   }
+  /* Adjustments for nav-links in the active menu */
+.nav-links.active a {
+  display: block; /* Ensures each link is on its own line */
+  margin-bottom: 10px; /* Adds more space between the links */
+  padding: 5px 0; /* Adds padding above and below the text for better touch targets */
+  border-bottom: 1px solid #ddd; /* Adds a line below each link */
+  text-align: center;
+}
+
+/* Optional: To remove the line from the last link */
+.nav-links.active a:last-child {
+  border-bottom: none;
+  margin-bottom: 0px;
+  padding-bottom: 0%;
+}
+
   .nav-links.active .nav-signup{
     color: #3897f0;
-    background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
     border: none;
     cursor: pointer;
     font-weight: bold;
