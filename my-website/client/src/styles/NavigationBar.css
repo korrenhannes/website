@@ -231,7 +231,7 @@ body {
   display: block; /* Ensures each link is on its own line */
   margin-bottom: 10px; /* Adds more space between the links */
   padding: 5px 0; /* Adds padding above and below the text for better touch targets */
-  border-bottom: 1px solid #ddd; /* Adds a line below each link */
+  border-bottom: 1.5px solid #ddd; /* Adds a line below each link */
   text-align: center;
 }
 
