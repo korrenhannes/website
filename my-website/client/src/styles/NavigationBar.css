@@ -68,6 +68,13 @@ body {
   border: none;
   cursor: pointer;
 }
+.nav-links.active .nav-signup-button{
+  color: #3897f0;
+  background-color:none; /* White with transparency */
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+ }
 
 .nav-actions .nav-signup:hover {
   background-color: #2878b5;
@@ -312,7 +319,7 @@ padding-top: 0%;
     }
     .nav-links.active .nav-signup-button{
       color: #3897f0;
-      background-color: rgba(255, 255, 255, 0.9); 
+      background-color: none; 
       border: none;
       cursor: pointer;
       font-weight: bold;
