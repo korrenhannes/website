@@ -255,7 +255,7 @@ body {
   /* Adjust the position of the hamburger icon */
  
 }
-@media (max-width: 480px) {
+@media (max-width: 500px) {
   .hamburger {
     margin-left: 0px;
     margin-right: 0px; /* Adjust right margin to move closer to edge */
@@ -285,10 +285,11 @@ body {
   }
   .logo-button {
     margin-left: 0;
+    width: 40px;
   }
   .logo-button img {
     height: 40px; /* Adjust for mobile as necessary */
-    width: 75px;
+    width: 40px;
     margin-left: 0px;
     }
 }
