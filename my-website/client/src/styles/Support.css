@@ -87,6 +87,7 @@ body {
 }
 /* Styles for the support footer */
 .support-page .support-footer {
+  font-family: 'Montserrat', sans-serif;
   background-color: #222; /* Dark background for the footer */
   color: white;
   flex: 1; /* Takes up 1 unit of space */
