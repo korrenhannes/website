@@ -10,7 +10,7 @@ export const MESSAGES = {
     confirmEmailError: 'Please confirm your email before logging in.',
     limitedDeals: 'New Year Sale',
     limitedDealsMob: 'Our Offers',
-    whyUs: 'Why Us',
+    whyUs: 'Our Product',
     partnerWithUs: 'Partner With Us',
     support: 'Support',
     myVideos: 'My Videos',
