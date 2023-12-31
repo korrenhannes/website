@@ -68,13 +68,6 @@ body {
   border: none;
   cursor: pointer;
 }
-.nav-links.active .nav-signup-button{
-  color: #3897f0;
-  background-color:none; /* White with transparency */
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
- }
 
 .nav-actions .nav-signup:hover {
   background-color: #2878b5;
@@ -262,7 +255,6 @@ padding-top: 0%;
     cursor: pointer;
     font-weight: bold;
    }
-   
 
   /* Restyle the logo for mobile */
   .nav-logo img {
@@ -317,11 +309,4 @@ padding-top: 0%;
     width: 38px;
     margin-left: 0px;
     }
-    .nav-links.active .nav-signup-button{
-      color: #3897f0;
-      background-color: none; 
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-     }
 }

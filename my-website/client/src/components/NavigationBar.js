@@ -97,7 +97,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
 
   const renderAuthLinks = () => {
     return isLoggedIn
-      ? <button onClick={handleLogout} className="nav-signup-button">Logout</button>
+      ? <Link to="/login" onClick={handleLogout} className="nav-signup">Logout</Link>
       : (
         <>
           <Link to="/login" onClick={handleLinkClick} className="nav-login">Log in</Link>
