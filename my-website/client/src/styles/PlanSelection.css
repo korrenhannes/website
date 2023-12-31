@@ -94,7 +94,9 @@ body {
     .plan.selected {
       transform: translateY(-5px);
       border-color: #3897f0;
+      background-color: #a0c0e0; /* A subtly darker shade of the original color */
     }
+    
     
     .plan-name {
       font-size: 20px;
