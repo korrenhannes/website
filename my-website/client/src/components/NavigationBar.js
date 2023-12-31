@@ -88,6 +88,9 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
 
   const handleLogout = () => {
     onLogoutSuccess();
+    if (isMobile) {
+      setShowMobileMenu(false);
+    }
     navigate('/login');
   };
 
@@ -97,7 +100,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
 
   const renderAuthLinks = () => {
     return isLoggedIn
-      ? <button onClick={handleLogout} className="nav-signup">Logout</button>
+      ? <Link to="/login" onClick={handleLogout} className="nav-signup">Logout</Link>
       : (
         <>
           <Link to="/login" onClick={handleLinkClick} className="nav-login">Log in</Link>
