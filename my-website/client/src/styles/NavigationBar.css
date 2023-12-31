@@ -127,7 +127,7 @@ body {
 
   /* Adjust the logo size */
   .nav-logo img {
-    height: 35px; /* Slightly larger than on mobile, smaller than desktop */
+    height: 15px; /* Slightly larger than on mobile, smaller than desktop */
   }
 
   /* Adjust the hamburger icon */
@@ -242,7 +242,7 @@ body {
 
   /* Restyle the logo for mobile */
   .nav-logo img {
-    height: 30px; /* Smaller logo on mobile */
+    height: 15px; /* Smaller logo on mobile */
     position: relative;
   }
 
