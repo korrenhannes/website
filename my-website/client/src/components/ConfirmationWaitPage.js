@@ -36,7 +36,7 @@ function ConfirmationWaitPage() {
         className={styles['background-image']}
         style={{ backgroundImage: 'url("/waitinga.png")' }} // Replace with your image path
       ></div>
-      <div className={styles['foreground-content']}>
+      <div className={styles['foreground-content2']}>
         <h1>Welcome to ClipIt!</h1>
         <p>Thank you for signing up. We're currently confirming your email address.</p>
         <p>Please check your inbox for a confirmation link to activate your ClipIt account.</p>

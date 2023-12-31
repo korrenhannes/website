@@ -234,10 +234,11 @@ body {
     border-radius: 20%;
   }
   .nav-links.active .nav-signup{
-
-    color: #3897f0;
+    background-color: #3897f0;
+    color: white;
     border: none;
-    cursor: pointer;  }
+    cursor: pointer;
+   }
 
   /* Restyle the logo for mobile */
   .nav-logo img {
