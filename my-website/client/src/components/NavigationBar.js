@@ -88,6 +88,9 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
 
   const handleLogout = () => {
     onLogoutSuccess();
+    if (isMobile) {
+      setShowMobileMenu(false);
+    }
     navigate('/login');
   };
 
