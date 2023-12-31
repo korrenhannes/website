@@ -174,25 +174,23 @@ function ShowVideo({pageContext, updateVideoUrl }){
       console.log('videos loaded, setting usersvideosloade to true');
       setUserVideosLoaded(true);
 
-      // Modified health check logic with initial delay
-      setTimeout(() => {
-        for (let i = 1; i <= 10; i++) {
-          setTimeout(async () => {
-            try {
-              const uploadComplete = await checkUploadStatus();
-              if (!uploadComplete) {
-                console.log(`Calling health endpoint at ${i * 10} minutes`);
-                const healthResponse = await axios.get('/api/health');
-                console.log('Health check response:', healthResponse);
-              } else {
-                console.log('Upload completed, skipping health check');
-              }
-            } catch (error) {
-              console.error('Error calling health endpoint:', error);
+      // Modified health check logic
+      for (let i = 1; i <= 10; i++) {
+        setTimeout(async () => {
+          try {
+            const uploadComplete = await checkUploadStatus();
+            if (!uploadComplete) {
+              console.log(`Calling health endpoint at ${i * 10} minutes`);
+              const healthResponse = await axios.get('/api/health');
+              console.log('Health check response:', healthResponse);
+            } else {
+              console.log('Upload completed, skipping health check');
             }
-          }, 600000 * i); // 600000 milliseconds = 10 minutes
-        }
-      }, 120000); // 120000 milliseconds = 2 minutes
+          } catch (error) {
+            console.error('Error calling health endpoint:', error);
+          }
+        }, 600000 * i); // 600000 milliseconds = 10 minutes
+      }
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
       console.error('Error fetching videos:', err);
