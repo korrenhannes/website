@@ -234,8 +234,7 @@ body {
     border-radius: 20%;
   }
   .nav-links.active .nav-signup{
-    background-color: #3897f0;
-    color: white;
+    color: #3897f0;
     border: none;
     cursor: pointer;
    }
@@ -268,6 +267,7 @@ body {
   .countdown-mobile{
     font-size: smaller;
     margin: 0;
+    margin-left: 10%;
     padding: 0;
     align-items: center;
     justify-items: center;
@@ -279,9 +279,9 @@ body {
   }
   .countdown{
     margin: 0px;
-    margin-left: 1px;
+    margin-left: auto;
     padding: 0px;
-    margin-right: 1px;
+    margin-right: 0px;
   }
   .logo-button {
     margin-left: 0;

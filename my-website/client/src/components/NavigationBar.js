@@ -37,7 +37,7 @@ const Countdown = ({ targetDate }) => {
 
   return (
     <span className="countdown">
-      {timeLeft > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s  ` : "Time's up!"}
+      {timeLeft > 0 ? `${days}d ${hours}h ${minutes}m ${seconds}s- ` : "Time's up!"}
     </span>
   );
 };
@@ -131,12 +131,11 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
       )}
      
       <div className={`nav-links ${showMobileMenu ? 'active' : ''}`}>
-       {!isMobile && (
+       
         <Link to="/offers" onClick={handleLinkClick} className="deal-countdown-wrapper">
-          <Countdown targetDate={targetDate}/>
-          {MESSAGES.limitedDeals}
+        {!isMobile && ( <Countdown targetDate={targetDate}/>)}
+          {MESSAGES.limitedDealsMob}
         </Link>
-       )}
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
         {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
         {isMobile && renderAuthLinks()}
