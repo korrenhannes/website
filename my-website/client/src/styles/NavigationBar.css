@@ -223,19 +223,15 @@ body {
     flex-direction:column;
     position:fixed;
     top: 50px; /* Adjust based on your nav bar height */
-    right: 0;
-    margin-top: 10px;
-    margin-right: 2%;
-    background-color: #ffffff;
-    width: 37%;
+    background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
+    width: 100%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     padding: 1em 1em;
     box-sizing: border-box; /* To include padding in width */
-    border-radius: 20%;
   }
   .nav-links.active .nav-signup{
     color: #3897f0;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.8); /* White with transparency */
     border: none;
     cursor: pointer;
     font-weight: bold;
