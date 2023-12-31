@@ -88,6 +88,8 @@ body {
       cursor: pointer;
       transition: transform 0.2s ease-in-out;
       margin-bottom: 30px;
+      border-radius: 15px; /* Adjust this value to achieve the desired roundness */
+
     }
     
     .plan:hover,
