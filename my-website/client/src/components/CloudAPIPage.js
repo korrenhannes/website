@@ -86,7 +86,7 @@ function CloudAPIPage({ enableScrollHandling = true }) {
 
 
       <div className={styles['foreground-content']}>
-        <h1>Effortlessly Convert Long Videos Into Viral Shorts.</h1>
+        <h1>Transform Long Videos into Viral Shorts with Ease.</h1>
         <SearchContainer isExploreFurther={false} isMobile={isMobile}/>
       </div>
     </div>
