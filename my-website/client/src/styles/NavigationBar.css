@@ -221,7 +221,7 @@ body {
     display: flex;
     flex-direction:column;
     position:fixed;
-    top: 53px; /* Adjust based on your nav bar height */
+    top: 54px; /* Adjust based on your nav bar height */
     background-color: rgba(255, 255, 255, 0.9); /* White with transparency */
     width: 100%;
     padding: 1em 1em;
@@ -255,6 +255,7 @@ padding-top: 0%;
     cursor: pointer;
     font-weight: bold;
    }
+   
 
   /* Restyle the logo for mobile */
   .nav-logo img {
@@ -309,4 +310,11 @@ padding-top: 0%;
     width: 38px;
     margin-left: 0px;
     }
+    .nav-links.active .nav-signup-button{
+      color: #3897f0;
+      background-color: rgba(255, 255, 255, 0.9); 
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+     }
 }
