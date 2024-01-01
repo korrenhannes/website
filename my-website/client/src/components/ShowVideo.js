@@ -179,7 +179,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
         setTimeout(async () => {
           try {
             const uploadComplete = await checkUploadStatus();
-            if (!uploadComplete) {
+            if (1==1) {
               console.log(`Calling health endpoint at ${i * 10} minutes`);
               const healthResponse = await axios.get('/api/health');
               console.log('Health check response:', healthResponse);
