@@ -195,7 +195,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
           } catch (error) {
             console.error('Error calling health endpoint:', error);
           }
-        }, 60000 * i); // 600000 milliseconds = 10 minutes
+        }, 600000 * i); // 600000 milliseconds = 10 minutes
       }
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
