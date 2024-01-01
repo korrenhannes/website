@@ -9,22 +9,11 @@ import SearchContainer from './SearchContainer'; // Adjust path as needed
 
 
 
-
-
-function CloudAPIPage({ enableScrollHandling = true }) {
+function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // State for video source URL
-  const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
 
-
-  useEffect(() => {
-    const loadImage = new Image();
-    loadImage.src = chatPic; // URL of your background image
-    loadImage.onload = () => setBackgroundImageLoaded(true);
-  }, []);
-  
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -33,19 +22,16 @@ function CloudAPIPage({ enableScrollHandling = true }) {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
+
   useEffect(() => {
-    if (!enableScrollHandling) {
-      return;
-    }
+    if (!enableScrollHandling) return;
+
     const handleTouchStart = (e) => {
       touchStartRef.current = e.touches[0].clientY;
     };
 
     const handleTouchMove = (e) => {
-      if (!touchStartRef.current) {
-        return;
-      }
+      if (!touchStartRef.current) return;
 
       const touchEndY = e.touches[0].clientY;
       if (touchStartRef.current > touchEndY + 50) {
@@ -69,18 +55,17 @@ function CloudAPIPage({ enableScrollHandling = true }) {
       window.removeEventListener('wheel', handleWheel);
     };
   }, [navigate]);
-  
-  
 
   return (
     <div className={styles['full-screen-container']}>
-      <LazyLoadImage
-        alt="background"
-        effect="blur"
-        src={chatPic}
-        wrapperClassName={styles['background-image']}
-        onLoad={() => setBackgroundImageLoaded(true)}
-      />
+      {backgroundImageLoaded && (
+        <LazyLoadImage
+          alt="background"
+          effect="blur"
+          src={chatPic}
+          wrapperClassName={styles['background-image']}
+        />
+      )}
 
       {backgroundImageLoaded && (
         <div className={styles['foreground-content']}>

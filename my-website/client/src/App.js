@@ -27,6 +27,7 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 import ComplaintsPage from './components/ComplaintsPage';
 import MyVideosPage from './components/MyVideosPage';
 import LoadingScreen from './components/LoadingScreen'; // Import the LoadingScreen component
+import chatPic from './chatpic.webp';
 
 import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 
@@ -34,6 +35,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [socketIO, setSocketIO] = useState(null);
   const [isLoading, setIsLoading] = useState(true); // New state for loading
+  const [backgroundImageLoaded, setBackgroundImageLoaded] = useState(false);
 
   
   useEffect(() => {
@@ -57,6 +59,12 @@ function App() {
     } else {
       setIsLoggedIn(!!token);
     }
+  }, []);
+
+  useEffect(() => {
+    const loadImage = new Image();
+    loadImage.src = chatPic; // URL of your background image
+    loadImage.onload = () => setBackgroundImageLoaded(true);
   }, []);
 
   useEffect(() => {
@@ -130,7 +138,7 @@ function App() {
                 <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
                 <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
                 <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-                <Route path="/cloud-api" element={<CloudAPIPage />} />
+                <Route path="/cloud-api" element={<CloudAPIPage backgroundImageLoaded={backgroundImageLoaded} />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/explore-further" element={<ExploreFurther />} />
                 <Route path="/support" element={<SupportPage />} />
