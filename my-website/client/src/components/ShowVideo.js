@@ -181,7 +181,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
           try {
             const uploadComplete = await checkUploadStatus();
             console.log("Just before function:", uploadComplete)
-            if (True) { // !uploadComplete
+            if (true) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);
               const healthResponse = await axios.get('/api/health', {
                 headers: {
