@@ -84,6 +84,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
       const response = await axios.get('/api/check-upload-status', {
         params: { email: userEmail }
       });
+      console.log("Inside function:", response.data.uploadComplete) // Added
       return response.data.uploadComplete;
     } catch (error) {
       console.error('Error checking upload status:', error);
@@ -179,7 +180,8 @@ function ShowVideo({pageContext, updateVideoUrl }){
         setTimeout(async () => {
           try {
             const uploadComplete = await checkUploadStatus();
-            if (!uploadComplete) {
+            console.log("Just before function:", uploadComplete)
+            if (True) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);
               const healthResponse = await axios.get('/api/health', {
                 headers: {
