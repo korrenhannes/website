@@ -7,7 +7,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  background-color: white; /* Or any color you prefer */
+  background-color: #E5F0FF; /* Light blue background */
   z-index: 1000; /* Ensure it's above everything else */
 }
 
