@@ -176,7 +176,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
       setUserVideosLoaded(true);
 
       // Modified health check logic
-      for (let i = 1; i <= 10; i++) {
+      for (let i = 1; i <= 6; i++) {
         setTimeout(async () => {
           try {
             const uploadComplete = await checkUploadStatus();
