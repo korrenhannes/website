@@ -1,3 +1,14 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import '../styles/NavigationBar.css';
+import styles from '../styles/FullScreen.module.css';
+import chatPic from '../chatpic.webp'; // Update the path according to your file structure
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import SearchContainer from './SearchContainer'; // Adjust path as needed
+
+
+
 function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   const navigate = useNavigate();
   const touchStartRef = useRef(null);

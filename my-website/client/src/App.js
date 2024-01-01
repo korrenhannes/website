@@ -27,7 +27,7 @@ import ResetPasswordPage from './components/ResetPasswordPage';
 import ComplaintsPage from './components/ComplaintsPage';
 import MyVideosPage from './components/MyVideosPage';
 import LoadingScreen from './components/LoadingScreen'; // Import the LoadingScreen component
-import chatPic from './assets/chatpic.webp';
+import chatPic from './chatpic.webp';
 
 import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 
@@ -71,7 +71,7 @@ function App() {
     // Simulate a loading process, replace with actual loading logic
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 6000); // 3000 ms for example
+    }, 3000); // 3000 ms for example
 
     return () => clearTimeout(timer);
   }, []);
