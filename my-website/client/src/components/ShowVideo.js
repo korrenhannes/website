@@ -183,7 +183,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
             console.log("Just before function:", uploadComplete)
             if (true) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);
-              const healthResponse = await axios.get('/api/health', {
+              const healthResponse = await apiFlask.get('/api/health', {
                 headers: {
                   'Cache-Control': 'no-cache',
                 },
