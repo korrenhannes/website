@@ -181,7 +181,11 @@ function ShowVideo({pageContext, updateVideoUrl }){
             const uploadComplete = await checkUploadStatus();
             if (!uploadComplete) {
               console.log(`Calling health endpoint at ${i * 10} minutes`);
-              const healthResponse = await axios.get('/api/health');
+              const healthResponse = await axios.get('/api/health', {
+                headers: {
+                  'Cache-Control': 'no-cache',
+                },
+              });
               console.log('Health check response:', healthResponse);
             } else {
               console.log('Upload completed, skipping health check');
