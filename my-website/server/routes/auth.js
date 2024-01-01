@@ -339,7 +339,7 @@ router.get('/user/payment-plan', async (req, res) => {
 
 // Route to check upload_complete status
 router.get('/check-upload-status', async (req, res) => {
-  const userEmail = req.query.email;
+  const userEmail = req.user.email;
 
   if (!userEmail) {
     return res.status(400).json({ error: 'Email is required' });
