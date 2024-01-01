@@ -74,24 +74,22 @@ function CloudAPIPage({ enableScrollHandling = true }) {
 
   return (
     <div className={styles['full-screen-container']}>
-      {/* Background Video */}
-      <div >
-        <LazyLoadImage
-          alt="background"
-          effect="blur"
-          src={chatPic} // use your imported image here
-          wrapperClassName={styles['background-image']}
-        />
-      </div>
+      <LazyLoadImage
+        alt="background"
+        effect="blur"
+        src={chatPic}
+        wrapperClassName={styles['background-image']}
+        onLoad={() => setBackgroundImageLoaded(true)}
+      />
 
-
-      <div className={styles['foreground-content']}>
-        <h1>refine Long Videos into Viral Shorts with Ease.</h1>
-        <SearchContainer isExploreFurther={false} isMobile={isMobile}/>
-      </div>
+      {backgroundImageLoaded && (
+        <div className={styles['foreground-content']}>
+          <h1>Refine Long Videos into Viral Shorts with Ease.</h1>
+          <SearchContainer isExploreFurther={false} isMobile={isMobile} />
+        </div>
+      )}
     </div>
-
   );
 }
 
-export default CloudAPIPage;
+export default CloudAPIPage;

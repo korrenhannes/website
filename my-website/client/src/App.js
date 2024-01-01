@@ -7,6 +7,7 @@ import {
 } from "@paypal/react-paypal-js";
 import { jwtDecode } from 'jwt-decode';
 
+
 import NavigationBar from './components/NavigationBar';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
@@ -24,12 +25,15 @@ import PartnerWithUsPage from './components/PartnerWithUs';
 import AffiliateDashboardPage from './components/AffiliateDashboardPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import ComplaintsPage from './components/ComplaintsPage';
-import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 import MyVideosPage from './components/MyVideosPage';
+import LoadingScreen from './components/LoadingScreen'; // Import the LoadingScreen component
+
+import { ComplaintsProvider } from './components/contexts/ComplaintsContext';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [socketIO, setSocketIO] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // New state for loading
 
   
   useEffect(() => {
@@ -55,7 +59,17 @@ function App() {
     }
   }, []);
 
+  useEffect(() => {
+    // Simulate a loading process, replace with actual loading logic
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // 3000 ms for example
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const [complaints, setComplaints] = useState([]);
+  const [timeLeft, setTimeLeft] = useState(0);
 
   const handleLoginSuccess = (data) => {
     localStorage.setItem('token', data.token);
@@ -73,7 +87,6 @@ function App() {
   };
 
   const googleClientId = 'YOUR_GOOGLE_CLIENT_ID';
-  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     setTimeLeft(getRandomDuration() * 24 * 60 * 60 * 1000);
@@ -95,6 +108,11 @@ function App() {
     const maxDays = 10;
     return Math.floor(Math.random() * (maxDays - minDays + 1)) + minDays;
   };
+
+  
+  if (isLoading) {
+    return <LoadingScreen logo={`${process.env.PUBLIC_URL}/logo.png`} />;
+  }
 
   return (
     <GoogleOAuthProvider clientId={googleClientId}>
