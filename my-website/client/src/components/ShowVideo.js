@@ -169,9 +169,24 @@ function ShowVideo({pageContext, updateVideoUrl }){
       }
   
       setVideos(signedUrls);
-      //remember to make it show videos randommly and not in order with Math.floor(Math.random()*(signedUrls.length-1))+1
-      setCurrentVideoIndex(0); // Reset the index to start from the first video
-      loadVideo(signedUrls[0]); // Load the first video
+
+
+      // Handle different video loading strategies based on page context
+      if (pageContext === PAGE_CONTEXT.FREE_USER) {
+        // Load from the first video
+        setCurrentVideoIndex(0);
+        loadVideo(signedUrls[0]);
+      } else if (pageContext === PAGE_CONTEXT.MY_VIDEOS) {
+        // Load from the last video
+        const lastIndex = signedUrls.length - 1;
+        setCurrentVideoIndex(lastIndex);
+        loadVideo(signedUrls[lastIndex]);
+      } else {
+        // Load a random video
+        const randomIndex = Math.floor(Math.random() * signedUrls.length);
+        setCurrentVideoIndex(randomIndex);
+        loadVideo(signedUrls[randomIndex]);
+      }
       console.log('videos loaded, setting usersvideosloade to true');
       setUserVideosLoaded(true);
 
@@ -262,7 +277,10 @@ function ShowVideo({pageContext, updateVideoUrl }){
       }
   
       let nextIndex = (prevIndex - 1) % videos.length;
-  
+      if (nextIndex < 0) {
+            // If the new index is negative, loop back to the last video
+            nextIndex = videos.length - 1;
+      }
       const nextVideoUrl = videos[nextIndex];
       if (nextVideoUrl) {
         console.log('Next video URL:', nextVideoUrl);
@@ -283,24 +301,49 @@ function ShowVideo({pageContext, updateVideoUrl }){
   };
   const handleVideoPress = (event) => {
     if (event.target.className.includes('unmuteButton')) {
-      return;
+        return;
     }
     // Get the bounding rectangle of the container
     const rect = videoContainerRef.current.getBoundingClientRect();
     
     // Calculate the midpoint of the container
     const midpoint = rect.left + (rect.width / 2);
-  
+
     // Determine if the click is on the left or right side
-    if (event.clientX < midpoint) {
-      // Left side clicked
-      loadPreviousVideo();
-    } else  {
-      // Right side clicked
-      loadNextVideo();
+    if (pageContext === PAGE_CONTEXT.FREE_USER) {
+        // Original behavior for Free User Page
+        if (event.clientX < midpoint) {
+            loadPreviousVideo();
+        } else {
+            loadNextVideo();
+        }
+    } else if (pageContext === PAGE_CONTEXT.MY_VIDEOS) {
+        // Opposite behavior for My Videos Page
+        if (event.clientX < midpoint) {
+            loadNextVideo(); // Load next (which is actually previous in order)
+        } else {
+            loadPreviousVideo(); // Load previous (which is actually next in order)
+        }
+    } else {
+        // Random video loading for other pages
+        if (event.clientX < midpoint) {
+            loadRandomVideo();
+        } else {
+            loadRandomVideo();
+        }
     }
-  };
-  
+};
+
+const loadRandomVideo = () => {
+    if (videos.length === 0) {
+        console.error('Videos array is empty.');
+        return;
+    }
+    const randomIndex = Math.floor(Math.random() * videos.length);
+    setCurrentVideoIndex(randomIndex);
+    loadVideo(videos[randomIndex]);
+};
+ 
 
 useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
