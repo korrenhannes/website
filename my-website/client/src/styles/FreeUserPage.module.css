@@ -164,7 +164,7 @@ body {
     height:auto;
     overflow: hidden;
     border-radius:0%; /* Rounded corners for the 'phone' */
-    margin-top: 9VH;
+    margin-top: 8VH;
     box-shadow:none /* Shadow for depth */
     
   }
