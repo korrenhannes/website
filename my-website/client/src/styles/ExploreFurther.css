@@ -194,6 +194,8 @@ body {
         flex-basis: auto; /* Auto size for mobile */
         width: 85%; /* Adjust width for smaller screens */
         margin-top: 1rem; /* Space above video on mobile */
+        height: auto; /* Set height to auto for maintaining aspect ratio */
+
     }
 
 
@@ -204,7 +206,7 @@ body {
     }
     .explore-further-container .main-content .video-tab-container{
         width:40%;
-        height:43%;
+        height: auto; /* Set height to auto for maintaining aspect ratio */
         position: absolute;
         left: 55%;
         top: 35%;
