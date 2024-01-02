@@ -212,6 +212,7 @@ body {
         left: 55%;
         top: 35%;
         overflow: hidden; /* Clip anything that goes outside */
+        object-fit: contain;
 
     }
     .explore-further-container .main-content .content-section {
@@ -233,9 +234,8 @@ body {
         font-weight: bold;
       }
       .explore-further-container .video-tab-container .video-js {
-        width: auto !important;
-        height: auto !important;
-        object-fit: contain !important;
+      
+        object-fit:fill !important;
     }
       
 }
