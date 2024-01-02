@@ -206,8 +206,8 @@ body {
         align-self: center; /* Center button on mobile */
     }
     .explore-further-container .main-content .video-tab-container{
-        width:45%;
-        height:45%;
+        width:fit-content;
+        height:fit-content;
         position: absolute;
         left: 55%;
         top: 35%;
@@ -229,12 +229,11 @@ body {
         
     }
     .highlight {
-        color: blue; /* Change the color as needed */
         font-weight: bold;
       }
       .explore-further-container .video-tab-container .video-js {
-        width: auto !important;
-        height: auto !important;
+        width:fit-content !important;
+        height:fit-content !important;
         object-fit: contain !important;
     }
       
