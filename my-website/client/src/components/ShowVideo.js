@@ -37,7 +37,9 @@ function ShowVideo({pageContext, updateVideoUrl }){
           controls: true,
           fluid: true,
           loop: true,
-          preload: true
+          preload: true,
+          responsive: true, // Makes the player responsive
+
         }, () => {
           console.log('Player is ready');
           fetchVideosFromGCloud();

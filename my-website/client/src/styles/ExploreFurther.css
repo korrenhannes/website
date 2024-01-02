@@ -195,6 +195,7 @@ body {
         width: 85%; /* Adjust width for smaller screens */
         margin-top: 1rem; /* Space above video on mobile */
         height: auto; /* Set height to auto for maintaining aspect ratio */
+        overflow: hidden; /* Clip anything that goes outside */
 
     }
 
@@ -210,6 +211,8 @@ body {
         position: absolute;
         left: 55%;
         top: 35%;
+        overflow: hidden; /* Clip anything that goes outside */
+
     }
     .explore-further-container .main-content .content-section {
        position:absolute;
