@@ -234,7 +234,7 @@ body {
     align-items: center;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: auto;
+    margin-bottom: 10px;
   }
   .card-title{
     font-size: 100%;
