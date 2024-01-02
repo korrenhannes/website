@@ -1,4 +1,3 @@
-/* In your CSS file */
 .invite-link-container {
     display: flex;
     justify-content: center;
@@ -8,9 +7,20 @@
   }
   
   .invite-link {
-    background-color: #f2f2f2; /* Example background color */
+    background-color: #f2f2f2; /* Light grey background for contrast */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #000; /* Dark text color for readability */
+    font-family: 'Montserrat', sans-serif; /* Consistent font family */
+    font-size: 16px; /* Adequate font size for readability */
+    max-width: 400px; /* Consistent with the card width */
+    margin: auto; /* Center the link in the container */
+    text-decoration: none; /* Removes underline from the link */
+  }
+  
+  .invite-link:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly larger shadow on hover */
+    background-color: #e6e6e6; /* Slightly darker on hover for interaction feedback */
   }
   
