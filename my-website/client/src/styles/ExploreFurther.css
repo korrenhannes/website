@@ -194,6 +194,11 @@ body {
         flex-basis: auto; /* Auto size for mobile */
         width: 85%; /* Adjust width for smaller screens */
         margin-top: 1rem; /* Space above video on mobile */
+        height: auto; /* Set height to auto for maintaining aspect ratio */
+        position: relative;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%); /* Center the container */
     }
 
 
@@ -227,7 +232,11 @@ body {
         color: blue; /* Change the color as needed */
         font-weight: bold;
       }
-      
+      .explore-further-container .video-tab-container .video-js {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+    }
 }
 
 
