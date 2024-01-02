@@ -17,6 +17,7 @@ const InviteLink = ({ user }) => {
       console.error('Could not copy text: ', err);
     });
   };
+  
 
   return (
     <div className="invite-link-container">
