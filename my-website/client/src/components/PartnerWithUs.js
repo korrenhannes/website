@@ -20,10 +20,14 @@ function PartnerWithUsPage() {
         setError('Registration failed. Please try again.');
       }
     } catch (error) {
-      console.error('Registration error:', error);
-      setError('Registration error. Please try again.');
+      if (error.response && error.response.data === 'Email already in use') {
+        setError('This email is already in use. Please use a different email or log in.');
+      } else {
+        setError('Registration error. Please try again.');
+      }
     }
   };
+  
 
   const handleLogin = async () => {
     try {
