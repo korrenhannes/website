@@ -60,7 +60,7 @@ function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
     <div className={styles['full-screen-container']}>
       {backgroundImageLoaded && (
         <LazyLoadImage
-          alt="background"
+          alt="Engaging short clips creation from long videos - ClipIt"
           effect="blur"
           src={chatPic}
           wrapperClassName={styles['background-image']}
