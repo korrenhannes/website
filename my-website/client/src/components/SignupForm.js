@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api'; // Ensure this is the correct import for your API calls
 import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
@@ -12,7 +12,17 @@ function SignupForm({ onSignupSuccess }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [inviteCode, setInviteCode] = useState(null); // Store invite code here
   const navigate = useNavigate();
+
+    // Capture the invite code from the URL on component mount
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const invite = queryParams.get('invite'); // 'invite' is the query param in the invite link
+    if (invite) {
+      setInviteCode(invite);
+    }
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -24,7 +34,12 @@ function SignupForm({ onSignupSuccess }) {
     }
 
     try {
-      const response = await api.post('/auth/signup', { email, password });
+      // Include invite code in the signup request if available
+      const response = await api.post('/auth/signup', { 
+        email, 
+        password, 
+        inviteCode 
+      });
       localStorage.setItem('userEmail', email); // Store email in local storage
       onSignupSuccess(response.data);
       navigate('/confirmation-wait'); // Navigate to confirmation-wait page
