@@ -1,7 +1,5 @@
-# robots.txt generated at ClipIt
 User-agent: *
 Disallow: /cgi-bin/
 Disallow: /tmp/
 Disallow: /junk/
-Allow: /
 Sitemap: https://www.cliplt.com/sitemap.xml
