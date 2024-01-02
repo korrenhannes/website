@@ -82,31 +82,54 @@ const HowItWorks = () => {
         <div className="container">
           <h1 className="text-white">ClipIt: Your Shortcut to Viral Content.</h1>
           <p className="lead text-white">Crafted by a blend of AI specialists and seasoned content creators, our tool delivers your dream content in minutes.</p>
-          <p className="lead text-white">Discover the magic in three easy steps. Transform your content effortlessly with ClipIt.</p>
-          <h2 className="how-does-it-work">How does it work?</h2>
+          {windowWidth <= 768 && (<h2 className="how-does-it-work">How does it work?</h2>
+          )}
+          {windowWidth <= 768 && (
           <div className="row justify-content-start">
+            <div className="card-little">
+              <div className="card-body">
+                <img src={uploadIcon} alt="Upload" className="icon" />
+                <h3 className="card-title">Upload</h3>
+              </div>
+            </div>
+            <div className="card-little">
+              <div className="card-body">
+                <img src={clipIcon} alt="ClipIt" className="icon" />
+                <h3 className="card-title">ClipIt</h3>
+              </div>
+            </div>
+            <div className="card-little">
+              <div className="card-body">
+                <img src={shareIcon} alt="Share" className="icon" />
+                <h3 className="card-title">Share</h3>
+              </div>
+            </div>
+        </div>)}
+          <p className="lead text-white">Discover the magic in three easy steps. Transform your content effortlessly with ClipIt.</p>
+          {windowWidth >= 768 && (<h2 className="how-does-it-work">How does it work?</h2>)}
+          {windowWidth >= 768 && (<div className="row justify-content-start">
               <div className="card-little">
                 <div className="card-body">
                   <img src={uploadIcon} alt="Upload" className="icon" />
                   <h3 className="card-title">Upload</h3>
-                  {windowWidth >= 768 && (<p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>)}
+                  <p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>
                 </div>
               </div>
               <div className="card-little">
                 <div className="card-body">
                   <img src={clipIcon} alt="ClipIt" className="icon" />
                   <h3 className="card-title">ClipIt</h3>
-                  {windowWidth >= 768 && ( <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it.</p>)}
+                  <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it.</p>
                 </div>
               </div>
               <div className="card-little">
                 <div className="card-body">
                   <img src={shareIcon} alt="Share" className="icon" />
                   <h3 className="card-title">Share</h3>
-                  {windowWidth >= 768 && (<p className="card-text">Simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>)}
+                  <p className="card-text">Simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>
                 </div>
               </div>
-          </div>
+          </div>)}
         </div>
       </div>
   );
