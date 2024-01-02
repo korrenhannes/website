@@ -206,7 +206,7 @@ body {
         align-self: center; /* Center button on mobile */
     }
     .explore-further-container .main-content .video-tab-container{
-        width:fit-content;
+        width:40%;
         height:fit-content;
         position: absolute;
         left: 55%;
