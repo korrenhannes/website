@@ -120,7 +120,7 @@ function App() {
 
   
   if (isLoading) {
-    return <LoadingScreen logo={`${process.env.PUBLIC_URL}/logo.png`} />;
+    return <LoadingScreen logo={`${process.env.PUBLIC_URL}/logo.WebP`} />;
   }
 
   return (

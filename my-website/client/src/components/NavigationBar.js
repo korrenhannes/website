@@ -119,7 +119,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
     <nav className="navigation-bar">
       <div className="nav-logo">
         <button onClick={navigateToCloudAPI} className="logo-button">
-          <img src="/log.png" alt="ClipIt Logo" />
+          <img src="/log.WebP" alt="ClipIt Logo" />
         </button>
       </div>
       {isMobile && (
