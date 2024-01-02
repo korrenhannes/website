@@ -220,7 +220,7 @@ return(
             placeholder="Enter YouTube Url To Try It"
             />
             <img
-            src="\magnifying-glass_2015241.png"
+            src="\magnifying-glass_2015241.WebP"
             alt="Logo"
             className={styles['search-logo']}
             onClick={handleLogoClick}
