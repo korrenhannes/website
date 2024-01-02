@@ -370,8 +370,18 @@ const UnmuteButton = ({ isMuted, toggleMute }) => (
 
 
 return (
-    <div className={videoContainerStyle} ref={videoContainerRef} onClick={handleVideoPress}>
-        <video ref={backgroundVideoRef} className="video-js vjs-big-play-centered vjs-fluid" id="background-video"></video>
+    <div 
+    className={videoContainerStyle} 
+    ref={videoContainerRef} 
+    onClick={handleVideoPress} 
+    onTouchEnd={handleVideoPress}
+    >
+        <video 
+        ref={backgroundVideoRef} 
+        className="video-js vjs-big-play-centered vjs-fluid" 
+        id="background-video"
+        playsInline 
+        ></video>
         <UnmuteButton isMuted={isMuted} toggleMute={toggleMute} />
     </div>
 );
