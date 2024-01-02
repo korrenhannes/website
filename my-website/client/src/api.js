@@ -20,6 +20,11 @@ const apiFlask = axios.create({
   withCredentials: true
 });
 
+// Function to handle user signup with an invite code
+api.signupWithInvite = async ({ email, password, inviteCode }) => {
+  return await api.post('/auth/signup', { email, password, inviteCode });
+};
+
 
 // Function to handle forgot password request
 api.postForgotPassword = async (email) => {
