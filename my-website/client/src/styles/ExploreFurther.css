@@ -206,14 +206,13 @@ body {
         align-self: center; /* Center button on mobile */
     }
     .explore-further-container .main-content .video-tab-container{
-        width:40%;
-        height:43%;
+        width:fit-content;
+        height:fit-content;
         position: absolute;
         left: 55%;
         top: 35%;
         overflow: hidden; /* Clip anything that goes outside */
         object-fit: contain;
-
     }
     .explore-further-container .main-content .content-section {
        position:absolute;
@@ -230,12 +229,12 @@ body {
         
     }
     .highlight {
-        color: blue; /* Change the color as needed */
         font-weight: bold;
       }
       .explore-further-container .video-tab-container .video-js {
-      
-        object-fit:fill !important;
+        width:fit-content !important;
+        height:fit-content !important;
+        object-fit: contain !important;
     }
       
 }
