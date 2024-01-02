@@ -195,6 +195,7 @@ body {
         width: 85%; /* Adjust width for smaller screens */
         margin-top: 1rem; /* Space above video on mobile */
         height: auto; /* Set height to auto for maintaining aspect ratio */
+        overflow: hidden; /* Clip anything that goes outside */
 
     }
 
@@ -206,10 +207,12 @@ body {
     }
     .explore-further-container .main-content .video-tab-container{
         width:40%;
-        height: auto; /* Set height to auto for maintaining aspect ratio */
+        height:43%;
         position: absolute;
         left: 55%;
         top: 35%;
+        overflow: hidden; /* Clip anything that goes outside */
+
     }
     .explore-further-container .main-content .content-section {
        position:absolute;

@@ -158,13 +158,18 @@ body {
       display: none;
   }
 }
-@media (max-width: 480px) {
+@media (max-width: 500px) {
   .videocontainer1 { /* Update this as well */
     width: 100%; /* Adapt width on smaller screens */
     height:100%;
+    margin-top: 3%;
     overflow: hidden;
     border-radius:0%; /* Rounded corners for the 'phone' */
     box-shadow:none /* Shadow for depth */
   }
-
+  .video-js.vjs-fluid {
+    width: auto; /* Make sure the video fills the container */
+    height: auto; /* Make sure the video fills the container */
+    object-fit: cover; /* Adjust how the video fits in the container */
+  }
 }
