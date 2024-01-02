@@ -112,7 +112,8 @@ app.use(helmet({
       imgSrc: [
         "'self'",
         "data:",
-        "https://www.paypalobjects.com"
+        "https://www.paypalobjects.com",
+        "https://t.paypal.com",  // Add this line
         // Add any other image sources as needed
       ],
       connectSrc: [
