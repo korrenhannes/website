@@ -1,0 +1,12 @@
+# robots.txt generated at ClipIt
+User-agent: *
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /junk/
+
+# Allow all agents to access the root directory and any content
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.cliplt.com/sitemap.xml
