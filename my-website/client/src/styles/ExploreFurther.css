@@ -206,7 +206,7 @@ body {
     }
     .explore-further-container .main-content .video-tab-container{
         width:40%;
-        height: auto; /* Set height to auto for maintaining aspect ratio */
+        height:43%;
         position: absolute;
         left: 55%;
         top: 35%;
