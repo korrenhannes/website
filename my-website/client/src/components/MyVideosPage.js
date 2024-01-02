@@ -71,7 +71,6 @@ function MyVideosPage() {
         {/* Elements for video title, user interaction, etc. */}
       </div>
       <button onClick={handleDownloadVideo} className={styles.downloadbutton}>Download Video</button>
-      {isLoading && <p>Loading...</p>}
       {error && <p>Error: {error}</p>}
     </div>
   );

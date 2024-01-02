@@ -227,6 +227,11 @@ body {
         color: blue; /* Change the color as needed */
         font-weight: bold;
       }
+      .explore-further-container .video-tab-container .video-js {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+    }
       
 }
 
