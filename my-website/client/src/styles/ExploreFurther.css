@@ -207,7 +207,7 @@ body {
     }
     .explore-further-container .main-content .video-tab-container{
         width:40%;
-        height:fit-content;
+        height:auto;
         position: absolute;
         left: 55%;
         top: 35%;
