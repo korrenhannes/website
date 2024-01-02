@@ -159,39 +159,54 @@ router.get('/data', passport.authenticate('jwt', { session: false }), async (req
   }
 });
 
+
 // User Signup Route
 router.post('/signup', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).send('Email already in use');
-    }
+      const { email, password, inviteCode } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+          return res.status(400).send('Email already in use');
+      }
 
-    // Generate a confirmation code
-    const confirmationCode = crypto.randomBytes(20).toString('hex');
+      // Generate a confirmation code
+      const confirmationCode = crypto.randomBytes(20).toString('hex');
 
-    // Create a new user with the confirmation code
-    const user = new User({
-      email,
-      password, // Password is hashed in the User model pre-save hook
-      paymentPlan: 'free',
-      isConfirmed: false,
-      confirmationCode
-    });
+      // Create a new user with the confirmation code
+      const newUser = new User({
+          email,
+          password, // Password is hashed in the User model pre-save hook
+          paymentPlan: 'free',
+          isConfirmed: false,
+          confirmationCode,
+          // other fields if necessary
+      });
 
-    await user.save();
+      await newUser.save();
 
-    // Send a confirmation email
-    await sendConfirmationEmail(email, confirmationCode);
+      // Send a confirmation email
+      await sendConfirmationEmail(email, confirmationCode);
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, 'your_jwt_secret');
-    await new Log({ action: 'User Signup', userEmail: email }).save();
+      // Log the user signup
+      await new Log({ action: 'User Signup', userEmail: email }).save();
 
-    res.status(201).send({ message: 'User created successfully. Please check your email to confirm your account.', token });
+      // If there's an inviteCode, process the referral
+      if (inviteCode) {
+          const referrer = await User.findOne({ affiliateCode: inviteCode });
+          if (referrer) {
+              referrer.referredUsers.push(newUser._id); // Add the new user's ID to the referrer's referredUsers array
+              referrer.referredUserCount = referrer.referredUsers.length; // Update the count
+              await referrer.save();
+          }
+      }
+
+      const token = jwt.sign({ userId: newUser._id, email: newUser.email }, 'your_jwt_secret');
+      res.status(201).send({ message: 'User created successfully. Please check your email to confirm your account.', token });
   } catch (error) {
-    console.error("Signup error:", error);
-    res.status(500).send('Error in user signup');
+      console.error("Signup error:", error);
+      res.status(500).send('Error in user signup');
   }
 });
 
@@ -389,5 +404,25 @@ router.post('/update-tokens', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+
+// Example route where a new user is added as a referral
+router.post('/referral', async (req, res) => {
+  try {
+    const { referrerId } = req.body; // ID of the user who referred the new user
+    // Logic to register the new user
+
+    // Update referrer's referredUserCount and tokens
+    const referrer = await User.findById(referrerId);
+    if (referrer) {
+      referrer.referredUserCount += 1;
+      await referrer.incrementTokenOnReferral();
+    }
+    res.status(200).send('Referral processed successfully');
+  } catch (error) {
+    console.error("Referral processing error:", error);
+    res.status(500).send('Error processing referral');
+  }
+});
+
 
 module.exports = router;

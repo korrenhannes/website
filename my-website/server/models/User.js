@@ -18,18 +18,34 @@ const userSchema = new mongoose.Schema({
   confirmationCode: { type: String, required: false }, // New field for confirmation code
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   upload_complete: { type: Boolean, default: true },
+  referredUserCount: { type: Number, default: 0 },
 
   // Additional affiliate-specific fields can be added here
 });
 
+// Method to increment tokens based on referral count
+userSchema.methods.incrementTokenOnReferral = async function() {
+  if (this.referredUserCount % 1 === 0) { // Every time referredUserCount increases by 1
+    this.tokens = parseInt(this.tokens) + 1; // Increment tokens by 1
+    await this.save();
+  }
+};
+
 // Pre-save hook to hash password
 userSchema.pre('save', async function(next) {
-  if (!this.isModified('password') || this.googleId || this.facebookId) {
-    return next(); // Skip if password isn't changed or it's a social login
+  // If the password has been modified (or is new), hash it
+  if (this.isModified('password') && !this.googleId && !this.facebookId) {
+    this.password = await bcrypt.hash(this.password, 12);
   }
-  this.password = await bcrypt.hash(this.password, 12);
-  next();
+
+  // If the document is new and does not have an affiliateCode, generate one
+  if (this.isNew && !this.affiliateCode) {
+    this.affiliateCode = crypto.randomBytes(20).toString('hex');
+  }
+
+  next(); // Continue with the save operation
 });
+
 
 // Method to compare provided password with hashed password
 userSchema.methods.comparePassword = async function(candidatePassword) {
