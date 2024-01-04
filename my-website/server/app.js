@@ -16,8 +16,11 @@ const passport = require('./passportSetup');
 const cron = require('node-cron');
 const User = require('./models/User');
 const Log = require('./models/logModel'); // Adjust the path to your Log model
+const compression = require('compression');
 
 const app = express();
+app.use(compression());
+
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
 
