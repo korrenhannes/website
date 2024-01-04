@@ -1,0 +1,8 @@
+[
+    {
+        "origin": ["https://www.cliplt.com"],
+        "responseHeader": ["Content-Type"],
+        "method": ["GET", "POST", "HEAD"],
+        "maxAgeSeconds": 3600
+    }
+]
