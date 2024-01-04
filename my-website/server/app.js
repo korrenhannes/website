@@ -40,6 +40,11 @@ const allowedOrigins = [
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video",
   "https://clipit-ghiltw5oka-ue.a.run.app",
   "https://clipit-ghiltw5oka-ue.a.run.app/api",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com/api/auth/signup",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com/api/auth",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com/api",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com",
+
 
 ];
 
