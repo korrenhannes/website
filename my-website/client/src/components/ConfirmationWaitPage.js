@@ -34,7 +34,7 @@ function ConfirmationWaitPage() {
     <div className={styles['full-screen-container']}>
       <div
         className={styles['background-image']}
-        style={{ backgroundImage: 'url("/waitinga.png")' }} // Replace with your image path
+        style={{ backgroundImage: 'url("/waitinga.webp")' }} // Replace with your image path
       ></div>
       <div className={styles['foreground-content2']}>
         <h1>Welcome to ClipIt!</h1>
