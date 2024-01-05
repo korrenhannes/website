@@ -10,6 +10,8 @@ const socketIO = require('socket.io');
 const multer = require('multer');
 const path = require('path');
 const { Storage } = require('@google-cloud/storage');
+const expressSitemapXml = require('express-sitemap-xml');
+const { URL } = require('url');
 const authRoutes = require('./routes/auth');
 const paypalRoutes = require('./routes/paypalserver');
 const passport = require('./passportSetup');
@@ -18,8 +20,36 @@ const User = require('./models/User');
 const Log = require('./models/logModel'); // Adjust the path to your Log model
 const compression = require('compression');
 
+function getUrls() {
+  const baseUrl = 'https://www.cliplt.com';
+  return [
+      `${baseUrl}/`,
+      `${baseUrl}/login`,
+      `${baseUrl}/signup`,
+      `${baseUrl}/cloud-api`,
+      `${baseUrl}/cloud-api/Media`,
+      `${baseUrl}/cloud-api/Media/stream-video`,
+      `${baseUrl}/Media`,
+      `${baseUrl}/Media/stream-video`,
+      `${baseUrl}/how-it-works`,
+      `${baseUrl}/explore-further`,
+      `${baseUrl}/support`,
+      `${baseUrl}/complaints`,
+      `${baseUrl}/offers`,
+      `${baseUrl}/free-user`,
+      `${baseUrl}/regular-user`,
+      `${baseUrl}/premium-user`,
+      `${baseUrl}/partner`,
+      `${baseUrl}/affiliate-dashboard`,
+      // ... add any other specific routes you have
+  ].map(url => new URL(url).pathname);
+}
+
 const app = express();
 app.use(compression());
+
+app.use(expressSitemapXml(getUrls, 'https://www.cliplt.com'));
+
 
 const PORT = process.env.PORT || 3000;
 const server = http.createServer(app);
