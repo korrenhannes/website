@@ -6,6 +6,7 @@ import {
   PayPalScriptProvider
 } from "@paypal/react-paypal-js";
 import { jwtDecode } from 'jwt-decode';
+import { Helmet } from 'react-helmet';
 
 
 import NavigationBar from './components/NavigationBar';
@@ -130,6 +131,14 @@ function App() {
         currency: "USD",
         intent: "capture"
       }}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Your Default Page Title</title>
+          <meta name="description" content="Your default meta description content here." />
+          {/* Additional meta tags and other head elements */}
+        </Helmet>
+
         <Router>
           <ComplaintsProvider>
             <div className="App">
@@ -153,7 +162,7 @@ function App() {
                 <Route path="/partner" element={<PartnerWithUsPage />} />
                 <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-                <Route path="*" element={<ErrorPage />} /> 
+                <Route path="*" element={<ErrorPage />} />
               </Routes>
             </div>
           </ComplaintsProvider>
