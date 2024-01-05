@@ -171,6 +171,8 @@ app.use(helmet({
         "https://clipit-ghiltw5oka-ue.a.run.app",
         "https://storage.googleapis.com",
         "https://storage.googleapis.com/clipitshorts",
+        "http://localhost:5001",
+        "https://localhost:5001",
 
 
                 
