@@ -118,7 +118,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
   return (
     <nav className="navigation-bar">
       <div className="nav-logo">
-        <button onClick={navigateToCloudAPI} className="logo-button">
+        <button onClick={navigateToCloudAPI} className="logo-button" aria-label="Go to Cloud API">
           <img src="/log.WebP" alt="ClipIt Logo" />
         </button>
       </div>
@@ -145,7 +145,10 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
       </div>
       <div className="nav-actions">
         {!isMobile && renderAuthLinks()}
-        <button className={`hamburger ${showMobileMenu ? 'open' : ''}`} onClick={toggleMobileMenu}>
+        <button 
+          className={`hamburger ${showMobileMenu ? 'open' : ''}`} 
+          onClick={toggleMobileMenu} 
+          aria-label={showMobileMenu ? "Close menu" : "Open menu"}>
           <div></div>
           <div></div>
           <div></div>
