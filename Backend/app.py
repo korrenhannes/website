@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from pymongo import MongoClient
 import os
@@ -173,13 +173,11 @@ def get_signed_urls_for_directory(bucket, directory):
     blobs = storage_client.list_blobs(bucket, prefix=directory)
     signed_urls = []
     for blob in blobs:
-        # Check if the blob name ends with '.mp4'
         if blob.name.lower().endswith('.mp4'):
-            url = generate_signed_url(bucket, blob.name)
-            if url:
-                signed_urls.append(url)
+            # Generate a local streaming URL instead of a direct GCS URL
+            streaming_url = f'/video-stream/{blob.name}'
+            signed_urls.append(streaming_url)
     return signed_urls
-
 
 @app.route('/api/signed-urls', methods=['GET'])
 def get_signed_urls():
@@ -219,3 +217,28 @@ def get_user_payment_plan():
 
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
+
+@app.route('api/video-stream/<path:blob_name>')
+def stream_video(blob_name):
+    storage_client = storage.Client()
+    bucket_name = 'clipitshorts'  # Replace with your bucket name
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
+    def generate():
+        # Set the chunk size to read (e.g., 1 MB)
+        chunk_size = 1024 * 1024
+        start = 0
+
+        # While loop to continuously read chunks of the file
+        while True:
+            end = start + chunk_size - 1
+            # Use blob.download_as_bytes to read a specific range of bytes
+            chunk = blob.download_as_bytes(start=start, end=end)
+            if not chunk:
+                break
+            yield chunk
+            start += chunk_size
+
+    # Return the response with the appropriate headers
+    return Response(generate(), mimetype='video/mp4', content_type='video/mp4')
