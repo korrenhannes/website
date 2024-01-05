@@ -218,27 +218,28 @@ def get_user_payment_plan():
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
 
-@app.route('api/video-stream/<path:blob_name>')
+
+@app.route('/api/video-stream/<path:blob_name>')
 def stream_video(blob_name):
     storage_client = storage.Client()
     bucket_name = 'clipitshorts'  # Replace with your bucket name
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(blob_name)
 
-    def generate():
-        # Set the chunk size to read (e.g., 1 MB)
-        chunk_size = 1024 * 1024
-        start = 0
+    range_header = request.headers.get('Range', None)
+    blob_size = blob.size
+    start, end = 0, blob_size - 1
 
-        # While loop to continuously read chunks of the file
-        while True:
-            end = start + chunk_size - 1
-            # Use blob.download_as_bytes to read a specific range of bytes
-            chunk = blob.download_as_bytes(start=start, end=end)
-            if not chunk:
-                break
-            yield chunk
-            start += chunk_size
+    if range_header:
+        match = re.search(r'bytes=(\d+)-(\d*)', range_header)
+        start = int(match.group(1))
+        end = blob_size - 1 if match.group(2) == '' else int(match.group(2))
 
-    # Return the response with the appropriate headers
-    return Response(generate(), mimetype='video/mp4', content_type='video/mp4')
+    length = end - start + 1
+    data = blob.download_as_bytes(start=start, end=end)
+    rv = Response(data, 206, mimetype='video/mp4', content_type='video/mp4')
+    rv.headers['Content-Range'] = f'bytes {start}-{end}/{blob_size}'
+    rv.headers['Accept-Ranges'] = 'bytes'
+    rv.headers['Content-Length'] = str(length)
+    rv.headers['Cache-Control'] = 'no-cache'  # Optional based on use case
+    return rv
