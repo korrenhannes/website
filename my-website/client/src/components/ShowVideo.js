@@ -174,15 +174,10 @@ function ShowVideo({pageContext, updateVideoUrl }){
 
 
       // Handle different video loading strategies based on page context
-      if (pageContext === PAGE_CONTEXT.FREE_USER) {
+      if (pageContext !== PAGE_CONTEXT.EXPLORE_FURTHER) {
         // Load from the first video
         setCurrentVideoIndex(0);
         loadVideo(signedUrls[0]);
-      } else if (pageContext === PAGE_CONTEXT.MY_VIDEOS) {
-        // Load from the last video
-        const lastIndex = signedUrls.length - 1;
-        setCurrentVideoIndex(lastIndex);
-        loadVideo(signedUrls[lastIndex]);
       } else {
         // Load a random video
         const randomIndex = Math.floor(Math.random() * signedUrls.length);
