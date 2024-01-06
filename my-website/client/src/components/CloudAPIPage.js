@@ -7,8 +7,6 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import SearchContainer from './SearchContainer'; // Adjust path as needed
 
-
-
 function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
