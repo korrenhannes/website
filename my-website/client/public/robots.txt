@@ -1,5 +1,11 @@
+# Allow all user agents to access the entire site
 User-agent: *
+Disallow: 
+
+# Disallow access to specific directories
 Disallow: /cgi-bin/
 Disallow: /tmp/
 Disallow: /junk/
+
+# Sitemap location
 Sitemap: https://www.cliplt.com/sitemap.xml

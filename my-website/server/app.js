@@ -107,6 +107,12 @@ app.use((req, res, next) => {
   }
 });
 
+app.use((req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'index, follow');
+  next();
+});
+
+
 // Middleware to log the origin of incoming requests
 app.use((req, res, next) => {
   // Log the value of the Origin header
