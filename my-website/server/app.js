@@ -251,6 +251,11 @@ app.use(passport.initialize());
 app.use('/api/auth', authRoutes);
 app.use('/api/paypal', paypalRoutes);
 
+app.use((error, req, res, next) => {
+  console.error('Unhandled Error:', error);
+  res.status(500).send('Internal Server Error');
+});
+
 
 // Passport initialization
 app.use(passport.initialize());

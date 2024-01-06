@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import '../styles/NavigationBar.css';
 import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.webp'; // Update the path according to your file structure
@@ -56,6 +57,10 @@ function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
 
   return (
     <div className={styles['full-screen-container']}>
+      <Helmet>
+        <title>Cloud API - ClipIt</title> {/* Set the appropriate title */}
+        <link rel="canonical" href="https://www.cliplt.com/home" /> {/* Set the appropriate canonical URL */}
+      </Helmet>
       {backgroundImageLoaded && (
         <LazyLoadImage
           alt="Engaging short clips creation from long videos - ClipIt"
