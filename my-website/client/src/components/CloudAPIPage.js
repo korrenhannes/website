@@ -58,8 +58,8 @@ function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   return (
     <div className={styles['full-screen-container']}>
       <Helmet>
-        <title>Cloud API - ClipIt</title> {/* Set the appropriate title */}
-        <link rel="canonical" href="https://www.cliplt.com/home" /> {/* Set the appropriate canonical URL */}
+        <title>ClipIt AI - Short Social Media Content Editor</title> {/* Set the appropriate title */}
+        <link rel="canonical" href="https://www.cliplt.com" /> {/* Set the appropriate canonical URL */}
       </Helmet>
       {backgroundImageLoaded && (
         <LazyLoadImage
