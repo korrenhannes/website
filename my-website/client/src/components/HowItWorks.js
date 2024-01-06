@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Helmet } from 'react-helmet';
 import NavigationBar from './NavigationBar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/HowItWorks.css';
@@ -79,6 +80,11 @@ const HowItWorks = () => {
   
   return (
       <div className="how-it-works-container">
+        <Helmet>
+          <title>How It Works - ClipIt: Your Shortcut to Viral Content</title>
+          <meta name="description" content="Learn how ClipIt revolutionizes content creation with a simple three-step process: Upload, ClipIt, and Share." />
+          <link rel="canonical" href="https://www.cliplt.com/how-it-works" />
+        </Helmet>
         <div className="container">
           <h1 className="text-white">ClipIt: Your Shortcut to Viral Content.</h1>
           <p className="lead text-white">Crafted by a blend of AI specialists and seasoned content creators, our tool delivers your dream content in minutes.</p>

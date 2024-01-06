@@ -15,6 +15,8 @@ const ErrorPage = () => {
       <Helmet>
         <title>404 Not Found - Revolutionize Your Social Media with ClipIt Shorts AI</title>
         <meta name="description" content="Encountered a 404 error at ClipIt? Discover how our AI-powered tool is changing the game in social media content creation." />
+        <link rel="canonical" href="https://www.cliplt.com/404" /> 
+        <meta name="robots" content="noindex, follow" /> 
       </Helmet>
       
       <h1>404 - ClipIt Shorts AI Page Not Found</h1>
