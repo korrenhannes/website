@@ -1,6 +1,6 @@
 [
     {
-        "origin": ["https://www.cliplt.com"],
+        "origin": ["http://localhost:3001", "https://www.cliplt.com"],
         "responseHeader": ["Content-Type"],
         "method": ["GET", "POST", "HEAD"],
         "maxAgeSeconds": 3600

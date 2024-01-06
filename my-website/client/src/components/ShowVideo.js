@@ -226,22 +226,26 @@ function ShowVideo({pageContext, updateVideoUrl }){
     }
     setIsLoading(true); // Start loading
     console.log("Loading video URL:", videoUrl);
+
+    // Construct the URL for the video stream
     playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
     playerRef.current.load();
     updateVideoUrl(videoUrl);
+  
     playerRef.current.on('loadeddata', () => {
       setIsLoading(false); // Video is loaded
     });
+  
     const playPromise = playerRef.current.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
         console.log('Automatic playback started successfully.');
-        playerRef.current.removeClass('vjs-waiting'); // Remove waiting class when playback starts
       }).catch(error => {
         console.error('Error attempting to play video:', error);
       });
     }
   };
+  
   
 
   const loadNextVideo = () => {
@@ -376,5 +380,6 @@ return (
     </div>
 );
 }
+
 export default ShowVideo;
 

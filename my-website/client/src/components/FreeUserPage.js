@@ -37,31 +37,33 @@ function FreeUserPage() {
   const handleDownloadVideo = async () => {
     const videoUrl = currentVideoUrl;
     if (!videoUrl) {
-      console.error("No video player found");
-      return;
+        console.error("No video URL found");
+        return;
     }
-    if (!currentVideoUrl) {
-      console.error("No video is currently being played");
-      return;
-    }
+
     try {
-      const response = await fetch(currentVideoUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const videoBlob = await response.blob();
-      const localUrl = window.URL.createObjectURL(videoBlob);
-      const a = document.createElement('a');
-      a.href = localUrl;
-      a.download = currentVideoUrl.split('/').pop();
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(localUrl);
+        // Fetch the video in chunks
+        const response = await fetch(videoUrl);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Create a blob from the response stream
+        const videoBlob = await response.blob();
+        const localUrl = window.URL.createObjectURL(videoBlob);
+
+        // Create an anchor element and trigger download
+        const a = document.createElement('a');
+        a.href = localUrl;
+        a.download = 'downloaded_video.mp4'; // You can set a specific file name here
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(localUrl);
     } catch (error) {
-      console.error("Error downloading video:", error);
+        console.error("Error downloading video:", error);
     }
-  };
+};
 
 
   return (

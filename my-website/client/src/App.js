@@ -6,6 +6,7 @@ import {
   PayPalScriptProvider
 } from "@paypal/react-paypal-js";
 import { jwtDecode } from 'jwt-decode';
+import { Helmet } from 'react-helmet';
 
 
 import NavigationBar from './components/NavigationBar';
@@ -130,6 +131,32 @@ function App() {
         currency: "USD",
         intent: "capture"
       }}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>ClipIt - AI-Powered Content Creation for Social Media</title>
+          <meta name="description" content="ClipIt revolutionizes social media content creation with advanced AI technology. Effortlessly transform long videos into engaging, viral shorts." />
+          <meta name="keywords" content="AI, Content Creation, Social Media, Video Editing, Automated Editing, Content Transformation, Short-form Content" />
+          <meta property="og:title" content="ClipIt - AI-Powered Content Creation for Social Media" />
+          <meta property="og:description" content="Effortlessly transform long videos into engaging, viral shorts with ClipIt." />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://www.yourwebsite.com" />
+          <meta property="og:image" content="https://www.yourwebsite.com/og-image.jpg" />
+          <link rel="icon" type="image/png" href="logo.WebP" />
+          <link rel="canonical" href="https://www.yourwebsite.com" />
+          <script type="application/ld+json">
+            {`
+              {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "ClipIt",
+                "description": "AI-powered tool for transforming long videos into engaging short clips for social media platforms."
+              }
+            `}
+          </script>
+        </Helmet>
+
+
         <Router>
           <ComplaintsProvider>
             <div className="App">
@@ -153,7 +180,7 @@ function App() {
                 <Route path="/partner" element={<PartnerWithUsPage />} />
                 <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
-                <Route path="*" element={<ErrorPage />} /> 
+                <Route path="*" element={<ErrorPage />} />
               </Routes>
             </div>
           </ComplaintsProvider>
