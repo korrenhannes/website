@@ -19,6 +19,8 @@ const cron = require('node-cron');
 const User = require('./models/User');
 const Log = require('./models/logModel'); // Adjust the path to your Log model
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
+
 
 function getUrls() {
   const baseUrl = 'https://www.cliplt.com';
@@ -81,6 +83,20 @@ const allowedOrigins = [
 
 
 ];
+
+// Middleware to set secure, SameSite cookies
+app.use(cookieParser());
+app.use((req, res, next) => {
+  if (req.cookies) {
+    Object.keys(req.cookies).forEach(key => {
+      res.cookie(key, req.cookies[key], {
+        sameSite: 'None', 
+        secure: true
+      });
+    });
+  }
+  next();
+});
 
 // Insert right after your app has been initialized
 app.use((req, res, next) => {
