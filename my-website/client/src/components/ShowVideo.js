@@ -314,19 +314,12 @@ function ShowVideo({pageContext, updateVideoUrl }){
     const midpoint = rect.left + (rect.width / 2);
 
     // Determine if the click is on the left or right side
-    if (pageContext === PAGE_CONTEXT.FREE_USER) {
+    if (pageContext !== PAGE_CONTEXT.EXPLORE_FURTHER) {
         // Original behavior for Free User Page
         if (event.clientX < midpoint) {
             loadPreviousVideo();
         } else {
             loadNextVideo();
-        }
-    } else if (pageContext === PAGE_CONTEXT.MY_VIDEOS) {
-        // Opposite behavior for My Videos Page
-        if (event.clientX < midpoint) {
-            loadNextVideo(); // Load next (which is actually previous in order)
-        } else {
-            loadPreviousVideo(); // Load previous (which is actually next in order)
         }
     } else {
         // Random video loading for other pages
