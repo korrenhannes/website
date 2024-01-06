@@ -140,10 +140,10 @@ function App() {
           <meta property="og:title" content="ClipIt - AI-Powered Content Creation for Social Media" />
           <meta property="og:description" content="Effortlessly transform long videos into engaging, viral shorts with ClipIt." />
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://www.yourwebsite.com" />
-          <meta property="og:image" content="https://www.yourwebsite.com/og-image.jpg" />
+          <meta property="og:url" content="https://www.cliplt.com" />
+          <meta property="og:image" content="https://www.cliplt.com/og-image.jpg" />
           <link rel="icon" type="image/png" href="logo.WebP" />
-          <link rel="canonical" href="https://www.yourwebsite.com" />
+          <link rel="canonical" href="https://www.cliplt.com" />
           <script type="application/ld+json">
             {`
               {
