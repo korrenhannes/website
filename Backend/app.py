@@ -233,13 +233,50 @@ def stream_video(blob_name):
     if range_header:
         match = re.search(r'bytes=(\d+)-(\d*)', range_header)
         start = int(match.group(1))
-        end = blob_size - 1 if match.group(2) == '' else int(match.group(2))
+        end = int(match.group(2)) if match.group(2) else blob_size - 1
+
+    # Ensure the start and end are within the size of the blob
+    start = min(max(0, start), blob_size - 1)
+    end = min(max(start, end), blob_size - 1)
 
     length = end - start + 1
-    data = blob.download_as_bytes(start=start, end=end)
-    rv = Response(data, 206, mimetype='video/mp4', content_type='video/mp4')
-    rv.headers['Content-Range'] = f'bytes {start}-{end}/{blob_size}'
-    rv.headers['Accept-Ranges'] = 'bytes'
-    rv.headers['Content-Length'] = str(length)
-    rv.headers['Cache-Control'] = 'no-cache'  # Optional based on use case
-    return rv
+    chunk_size = 262144  # 256 KB; adjust this value as needed for optimal performance
+
+    def generate_chunk():
+        current = start
+        while current <= end:
+            yield blob.download_as_bytes(start=current, end=min(end, current + chunk_size - 1))
+            current += chunk_size
+
+    response = Response(generate_chunk(), 206, mimetype='video/mp4', content_type='video/mp4')
+    response.headers['Content-Range'] = f'bytes {start}-{end}/{blob_size}'
+    response.headers['Accept-Ranges'] = 'bytes'
+    response.headers['Content-Length'] = str(length)
+    response.headers['Cache-Control'] = 'no-cache'  # Optional based on use case
+
+    return response
+
+def parse_range_header(range_header, blob_size):
+    """
+    Parse the 'Range' header and return the start and end byte positions.
+
+    Parameters:
+    range_header (str): The value of the 'Range' header from the HTTP request.
+    blob_size (int): The total size of the blob in bytes.
+
+    Returns:
+    tuple: A tuple containing the start and end byte positions.
+    """
+    range_match = re.match(r'bytes=(\d+)-(\d*)', range_header)
+    if not range_match:
+        return 0, blob_size - 1  # Default to the full range if the header is invalid
+
+    start_str, end_str = range_match.groups()
+    start = int(start_str)
+    end = int(end_str) if end_str else blob_size - 1
+
+    # Ensure the start and end are within the size of the blob
+    start = min(max(0, start), blob_size - 1)
+    end = min(max(start, end), blob_size - 1)
+
+    return start, end

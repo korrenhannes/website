@@ -37,7 +37,7 @@ function ShowVideo({pageContext, updateVideoUrl }){
           controls: true,
           fluid: true,
           loop: true,
-          preload: true,
+          preload: 'auto',
           responsive: true, // Makes the player responsive
 
         }, () => {
@@ -221,31 +221,34 @@ function ShowVideo({pageContext, updateVideoUrl }){
   
   const loadVideo = (videoUrl) => {
     if (!videoUrl) {
-      console.error('Invalid video URL');
-      return;
+        console.error('Invalid video URL');
+        return;
     }
     setIsLoading(true); // Start loading
     console.log("Loading video URL:", videoUrl);
 
-    // Construct the URL for the video stream
-    playerRef.current.src({ src: videoUrl, type: 'video/mp4' });
+    // Modify this part to handle chunked streaming
+    playerRef.current.src({
+        src: videoUrl,
+        type: 'video/mp4',
+    });
+
     playerRef.current.load();
     updateVideoUrl(videoUrl);
-  
+
     playerRef.current.on('loadeddata', () => {
-      setIsLoading(false); // Video is loaded
+        setIsLoading(false); // Video is loaded
     });
-  
+
     const playPromise = playerRef.current.play();
     if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.log('Automatic playback started successfully.');
-      }).catch(error => {
-        console.error('Error attempting to play video:', error);
-      });
+        playPromise.then(() => {
+            console.log('Automatic playback started successfully.');
+        }).catch(error => {
+            console.error('Error attempting to play video:', error);
+        });
     }
   };
-  
   
 
   const loadNextVideo = () => {
