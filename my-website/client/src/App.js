@@ -162,11 +162,11 @@ function App() {
             <div className="App">
               <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
               <Routes>
-                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/cloud-api"} />} />
-                <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
+                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/home" : "/home"} />} />
+                <Route path="/login" element={isLoggedIn ? <Navigate replace to="/home" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
                 <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
                 <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-                <Route path="/cloud-api" element={<CloudAPIPage backgroundImageLoaded={backgroundImageLoaded} />} />
+                <Route path="/home" element={<CloudAPIPage backgroundImageLoaded={backgroundImageLoaded} />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/explore-further" element={<ExploreFurther />} />
                 <Route path="/support" element={<SupportPage />} />

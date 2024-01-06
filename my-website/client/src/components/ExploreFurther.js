@@ -75,7 +75,7 @@ function ExploreFurther() {
     if (!swipeEnabled) return; // Check if swiping is enabled
 
     const navigateUp = () => navigate('/how-it-works');
-    const navigateDown = () => navigate('/cloud-api');
+    const navigateDown = () => navigate('/home');
 
     if (direction === 'up') navigateUp();
     if (direction === 'down') navigateDown();

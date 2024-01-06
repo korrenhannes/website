@@ -7,7 +7,7 @@ const ErrorPage = () => {
   const navigate = useNavigate();
 
   const handleGoBack = () => {
-    navigate('/cloud-api');
+    navigate('/home');
   };
 
   return (

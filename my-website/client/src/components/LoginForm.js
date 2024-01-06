@@ -27,7 +27,7 @@ function LoginForm({ onLoginSuccess }) {
       // Check if the email is confirmed
       if (response.data.isConfirmed) {
         onLoginSuccess(response.data);
-        navigate('/cloud-api');
+        navigate('/home');
       } else {
         setLoginError('Please confirm your email before logging in.');
       }
@@ -44,7 +44,7 @@ function LoginForm({ onLoginSuccess }) {
         token: googleData?.credential,
       });
       onLoginSuccess(response.data);
-      navigate('/cloud-api');
+      navigate('/home');
     } catch (error) {
       console.error("Google login failed:", error);
       setLoginError('Google login failed. Please try again.');
@@ -59,7 +59,7 @@ function LoginForm({ onLoginSuccess }) {
         userID: facebookData.userID
       });
       onLoginSuccess(response.data);
-      navigate('/cloud-api');
+      navigate('/home');
     } catch (error) {
       console.error("Facebook login failed:", error);
       setLoginError('Facebook login failed. Please try again.');
