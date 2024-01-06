@@ -136,8 +136,26 @@ const HowItWorks = () => {
                 </div>
               </div>
           </div>)}
+          <div className="blog-section" style={{ display: 'none' }}>
+          <h2>Revolutionizing Social Media Content Creation with ClipIt</h2>
+          <p>In today's digital era, the landscape of social media is rapidly evolving. Short-form videos have become a staple on platforms like Instagram, TikTok, and YouTube Shorts, capturing the attention of audiences worldwide. With this surge, the demand for quick, engaging, and creative content has skyrocketed.</p>
+          
+          <p>Understanding this need, we developed ClipIt - a state-of-the-art AI tool designed to transform the way content is created for social media. It's not just an editing tool; it's a revolutionary approach to content creation, tailored for the dynamics of today's social media platforms.</p>
+          
+          <h3>The Power of AI in Content Creation</h3>
+          <p>ClipIt harnesses the latest advancements in AI technology to analyze and condense long videos into compelling short clips. Our algorithm intelligently picks out the most captivating moments, ensuring that your content is not only engaging but also resonates with your audience's preferences.</p>
+          
+          <h3>From Novice to Pro: ClipIt for Every Creator</h3>
+          <p>ClipIt is designed for everyone - from individuals just stepping into the world of content creation to seasoned professionals looking for an edge in their work. Its intuitive interface makes it easy for anyone to create high-quality content, while its advanced features offer depth for those who want to dive deeper into creative possibilities.</p>
+
+          <h3>Embracing the Future of Social Media</h3>
+          <p>As social media continues to evolve, ClipIt is at the forefront, continually adapting and improving. Our commitment to innovation ensures that ClipIt remains an essential tool for content creators navigating the ever-changing social media landscape.</p>
+          
+          <h3>Join Our Beta Program</h3>
+          <p>Be part of the future of social media content creation. Our beta program is an opportunity to get early access to ClipIt and contribute to its development. Your feedback and insights are invaluable in shaping a tool that meets the diverse needs of content creators around the globe.</p>
         </div>
       </div>
+    </div>
   );
 };
 
