@@ -143,7 +143,6 @@ function App() {
           <meta property="og:url" content="https://www.cliplt.com" />
           <meta property="og:image" content="https://www.cliplt.com/og-image.jpg" />
           <link rel="icon" type="image/png" href="logo.WebP" />
-          <link rel="canonical" href="https://www.cliplt.com" />
           <script type="application/ld+json">
             {`
               {
