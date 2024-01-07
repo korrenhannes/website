@@ -127,16 +127,17 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         setIsLoading(false);
         return;
         }
-        if (userTokens <= 0 || userTokens === null) {
-            setShowUserAlert(true); // Use prop function
-            setIsLoading(false);
-            return;
-        }
         if (!userEmail.includes('@')){
             setShowGuestAlert(true); // Use prop function
             setIsLoading(false);
             return;
         }
+        if (userTokens <= 0 || userTokens === null) {
+            setShowUserAlert(true); // Use prop function
+            setIsLoading(false);
+            return;
+        }
+    
         // Immediately navigate to the next page
         handleRedirection();
     
