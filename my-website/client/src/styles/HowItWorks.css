@@ -16,7 +16,7 @@ body {
   padding-bottom: 0.1rem;
   text-align: center;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
   background-image: url('../howworkspic.webp');
   background-size: cover; /* Cover the entire page */
   background-repeat: no-repeat; /* Do not repeat the image */
@@ -31,7 +31,7 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5); /* White overlay with 50% opacity */
+  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
   z-index: 1; /* Below the text */
 }
 .how-it-works-container * {

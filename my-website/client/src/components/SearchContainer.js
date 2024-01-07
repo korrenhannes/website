@@ -8,6 +8,7 @@ import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.webp'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { Alert, Button } from 'react-bootstrap';
 
 function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
     const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +17,8 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
     const [userPaymentPlan, setUserPaymentPlan] = useState('free');
     const [file, setFile] = useState(null); // State to hold the selected file
     const navigate = useNavigate();
+    const [showGuestAlert, setShowGuestAlert] = useState(false);
+    const [showUserAlert, setShowUserAlert] = useState(false);
     let SearchContainerStyle = styles['search-container'];
     let orWithLinesStyle = styles['or-with-lines'];
     if (isExploreFurther){
@@ -78,16 +81,22 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         userEmail = tokenData.email;
         userTokens = parseInt(tokenData.tokens);
         console.log('user email:', userEmail, 'user tokens:', userTokens);
+        } else{
+            console.log('no user signed in', userEmail, userTokens);
         }
         if (!userEmail) {
         setError('User ID not found. Please log in again.');
         setIsLoading(false);
         return;
         }
-        if (userTokens <= 0) {
-        setError('No more tokens, need to upgrade subscription');
-        setIsLoading(false);
-        return;
+        if (userTokens <= 0 || userTokens === null) {
+            if (!userEmail.includes('@')){
+                setShowGuestAlert(true); // Use prop function
+            } else {    
+                setShowUserAlert(true); // Use prop function
+            }
+            setIsLoading(false);
+            return;
         }
     
         // Function to update tokens
@@ -226,6 +235,12 @@ return(
             onClick={handleLogoClick}
             />
         </div>
+        {showGuestAlert && (
+            <p className="lead text-white">You already used your guest token, sign up to get more tokens and make more content.</p>
+        )}
+        {showUserAlert && (
+            <p className="lead text-white">You used all your tokens for this month, upgrade your subscription to get more tokens.</p>
+        )}
         </form>
         {renderUploadButton()}
     </div>

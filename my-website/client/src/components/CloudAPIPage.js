@@ -9,10 +9,12 @@ import SearchContainer from './SearchContainer'; // Adjust path as needed
 
 
 
+
 function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   const navigate = useNavigate();
   const touchStartRef = useRef(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -70,7 +72,10 @@ function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
       {backgroundImageLoaded && (
         <div className={styles['foreground-content']}>
           <h1>Refine Long Videos into Viral Shorts with Ease.</h1>
-          <SearchContainer isExploreFurther={false} isMobile={isMobile} />
+          <SearchContainer 
+          isExploreFurther={false} 
+          isMobile={isMobile} 
+          />
         </div>
       )}
     </div>
