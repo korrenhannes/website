@@ -278,8 +278,13 @@ return(
             />
         </div>
         {showGuestAlert && (
-            <p className="lead text-white">Please <Link to="/signup" className="nav-signup">sign up</Link> to recive the content you always wished you had.</p>
+        <div className={styles['guest-alert-overlay']}>
+            <div className={styles['guest-alert']}>
+            <p>Please <Link to="/signup" className={styles['nav-signup']}>sign up</Link> to receive the content you always wished you had.</p>
+            </div>
+        </div>
         )}
+
         {showUserAlert && (
             <p className="lead text-white">You used all your tokens for this month,<Link to="/offers" className="nav-signup">upgrade your subscription</Link> to get more tokens.</p>
         )}
