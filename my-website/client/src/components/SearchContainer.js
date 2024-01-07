@@ -9,6 +9,8 @@ import chatPic from '../chatpic.webp'; // Update the path according to your file
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Alert, Button } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
 
 function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
     const [isLoading, setIsLoading] = useState(true);
@@ -236,10 +238,10 @@ return(
             />
         </div>
         {showGuestAlert && (
-            <p className="lead text-white">You already used your guest token, sign up to get more tokens and make more content.</p>
+            <p className="lead text-white">You already used your guest token, <Link to="/signup" className="nav-signup">sign up</Link> to get more tokens and make more content.</p>
         )}
         {showUserAlert && (
-            <p className="lead text-white">You used all your tokens for this month, upgrade your subscription to get more tokens.</p>
+            <p className="lead text-white">You used all your tokens for this month,<Link to="/offers" className="nav-signup">upgrade your subscription</Link> to get more tokens.</p>
         )}
         </form>
         {renderUploadButton()}
