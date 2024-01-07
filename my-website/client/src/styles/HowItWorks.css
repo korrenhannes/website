@@ -58,7 +58,24 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
   cursor: pointer; /* Change cursor to indicate the card is interactive */
 }
+.card-little2 {
+  display: flex;
+  flex-direction: row;
+  border: none;
+  border-radius: 8px;
+  margin: 0.3em auto;
+  height: 275px; /* Adjust this value to your preference */
+  flex-basis: 30%; /* Adjust card width for side by side layout */
+  justify-content: center;
+  background-color: rgba(31, 89, 223, 0.498); /* Adjust alpha for transparency */
+}
 
+.card-little2:hover {
+  /* Add your desired hover styles here */
+  transform: scale(1.05); /* Slightly increase the size of the card */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+  cursor: pointer; /* Change cursor to indicate the card is interactive */
+}
 
 
 .card-body {
@@ -197,7 +214,16 @@ body {
     margin-right: auto;
     margin-left: auto;
   }
-  
+  .card-little2 {
+    flex-basis: 28%; /* Adjust card width for side by side layout */
+    margin: 0.5rem; /* Adjust margin */
+    padding: 0.4rem; /* Reduce padding inside card */
+    width: 20%;
+    height: 90%;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+  }
 
   .icon {
     width: 30px; /* Smaller icons */
@@ -227,6 +253,16 @@ body {
   }
 
   .card-little {
+    flex-basis: 28%; /* Adjust card width for full width in small screens */
+    margin: 0.3rem; /* Smaller margin */
+    padding: 0.3rem; /* Reduce padding inside card */
+    width: 20%;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+  .card-little2 {
     flex-basis: 28%; /* Adjust card width for full width in small screens */
     margin: 0.3rem; /* Smaller margin */
     padding: 0.3rem; /* Reduce padding inside card */
