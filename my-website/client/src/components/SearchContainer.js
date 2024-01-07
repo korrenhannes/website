@@ -128,11 +128,12 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         return;
         }
         if (userTokens <= 0 || userTokens === null) {
-            if (!userEmail.includes('@')){
-                setShowGuestAlert(true); // Use prop function
-            } else {    
-                setShowUserAlert(true); // Use prop function
-            }
+            setShowUserAlert(true); // Use prop function
+            setIsLoading(false);
+            return;
+        }
+        if (!userEmail.includes('@')){
+            setShowGuestAlert(true); // Use prop function
             setIsLoading(false);
             return;
         }
