@@ -78,7 +78,7 @@ function MyVideosPage() {
 
   return (
     <div className={styles.fullScreenContainer}>
-      <ShowVideo pageContext={PAGE_CONTEXT.MY_VIDEOS} updateVideoUrl={updateCurrentVideoUrl} />
+      <ShowVideo pageContext={PAGE_CONTEXT.MY_VIDEOS} updateVideoUrl={updateCurrentVideoUrl}  isMobilePage={true} />
 
       <div className={styles.videouioverlay}>
         {/* Elements for video title, user interaction, etc. */}

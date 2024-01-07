@@ -10,7 +10,7 @@ import axios from 'axios';
 
 
 
-function ShowVideo({pageContext, updateVideoUrl }){
+function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [videos, setVideos] = useState([]);
@@ -23,7 +23,9 @@ function ShowVideo({pageContext, updateVideoUrl }){
     const navigate = useNavigate(); // Initialize useNavigate
     const [isMuted, setIsMuted] = useState(true); // New state for mute control
 
-
+    const isMobileDevice = () => {
+      return /Mobi|Android|iPhone/i.test(navigator.userAgent);
+    }
     let videoContainerStyle= styles.videocontainer1;
     if (pageContext===PAGE_CONTEXT.EXPLORE_FURTHER){
         videoContainerStyle='video-tab-container ';
@@ -93,6 +95,31 @@ function ShowVideo({pageContext, updateVideoUrl }){
       return true; // Default to true to avoid continuous checks in case of an error
     }
   };
+  const handleScroll = (event) => {
+    if (isMobileDevice()) {
+      if (event.deltaY > 0) {
+        loadNextVideo();
+      } else {
+        loadPreviousVideo();
+      }
+    }
+  };
+
+  useEffect(() => {
+    const videoContainer = videoContainerRef.current;
+    if (isMobilePage && isMobileDevice()) {
+      videoContainer.addEventListener('wheel', handleScroll);
+      videoContainer.removeEventListener('click', handleVideoPress);
+    } else {
+      videoContainer.removeEventListener('wheel', handleScroll);
+      videoContainer.addEventListener('click', handleVideoPress);
+    }
+    return () => {
+      videoContainer.removeEventListener('wheel', handleScroll);
+      videoContainer.removeEventListener('click', handleVideoPress);
+    };
+  }, [isMobilePage]);
+
 
   const fetchVideosFromGCloud = async () => {
     setIsLoading(true);
