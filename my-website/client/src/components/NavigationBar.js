@@ -140,6 +140,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
           {MESSAGES.limitedDealsMob}
         </Link>
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
+        <Link to="/clip-it-shorts" onClick={handleLinkClick}>{MESSAGES.blog}</Link>
         {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
         {isMobile && renderAuthLinks()}
       </div>

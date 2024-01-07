@@ -11,6 +11,7 @@ export const MESSAGES = {
     limitedDeals: 'New Year Sale',
     limitedDealsMob: 'Our Offers',
     whyUs: 'Our Product',
+    blog: 'Our Blog',
     partnerWithUs: 'Partner With Us',
     support: 'Support',
     myVideos: 'My Videos',
