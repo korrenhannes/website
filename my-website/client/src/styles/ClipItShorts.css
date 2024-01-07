@@ -10,7 +10,7 @@ body {
 .clip-how-it-works-container {
   height: 100vh;
   position: relative;
-  color: #131614;
+  color: #24362b; /* Dark color for headings */
   background-color: #E5F0FF; /* Light blue background */
   padding-top: 70px;
   padding-bottom: 0.1rem;
@@ -71,7 +71,7 @@ body {
 }
 
 .card-text1 {
-  color: #fff; /* Dark color for headings */
+  color: #24362b; /* Dark color for headings */
   font-size: 20px; /* Adjust the font size */
   font-weight: 500; /* Medium font weight */
   margin-bottom: 1rem; /* Space below the heading */
