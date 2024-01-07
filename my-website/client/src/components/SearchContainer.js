@@ -8,7 +8,6 @@ import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.webp'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { Alert, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 
 
