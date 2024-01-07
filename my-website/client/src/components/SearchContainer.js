@@ -21,8 +21,13 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
     const navigate = useNavigate();
     const [showGuestAlert, setShowGuestAlert] = useState(false);
     const [showUserAlert, setShowUserAlert] = useState(false);
+    const [lastSubmitTime, setLastSubmitTime] = useState(0);
+
+    let userEmail = '';
+    let userTokens = localStorage.getItem('guestToken');
     let SearchContainerStyle = styles['search-container'];
     let orWithLinesStyle = styles['or-with-lines'];
+
     if (isExploreFurther){
         SearchContainerStyle='search-container-exp';
         orWithLinesStyle ='or-with-lines-exp ';
@@ -50,10 +55,42 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         }
         }
     };
+    // Function to check the upload status
+  const checkUploadStatus = async () => {
+    try {
+      const response = await axios.get('/api/check-upload-status', {
+        params: { email: userEmail }
+      });
+      console.log("Inside function:", response.data.uploadComplete) // Added
+      return response.data.uploadComplete;
+    } catch (error) {
+      console.error('Error checking upload status:', error);
+      return true; // Default to true to avoid continuous checks in case of an error
+    }
+  };
     const handleSearchSubmit = async (e, selectedFile = null) => {
         if (e) e.preventDefault();
+        // Check if 5 minutes have passed since the last submission
+        const currentTime = new Date().getTime();
+        if (currentTime - lastSubmitTime < 5 * 60 * 1000) {
+            console.log('Please wait for 5 minutes before trying again.');
+            return; // Exit the function if 5 minutes haven't passed
+        }
+
+        // Update the last submit time
+        setLastSubmitTime(currentTime);
+
         setIsLoading(true);
-    
+        
+        const uploadComplete = await checkUploadStatus();
+        if (!uploadComplete) {
+            console.log('upload not complete');
+            handleRedirection(); // Redirect the user if the upload is not complete
+            setIsLoading(false);
+            return; // Exit the function early
+        }
+        console.log('upload completed, continue');
+        
         // Function to get unique computer id
         const getUniqueComputerId = async () => {
         let uniqueId = localStorage.getItem('uniqueComputerId');
@@ -72,8 +109,8 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         const token = localStorage.getItem('token');
         
         let tokenData = '';
-        let userEmail = await getUniqueComputerId();
-        let userTokens = localStorage.getItem('guestToken');
+        userEmail = await getUniqueComputerId();
+        userTokens = localStorage.getItem('guestToken');
         console.log('token', token, 'type:', typeof token);
         // Check if the token is a string and not empty
         if (typeof token === 'string' && token !== '') {
@@ -100,6 +137,8 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
             setIsLoading(false);
             return;
         }
+        // Immediately navigate to the next page
+        handleRedirection();
     
         // Function to update tokens
         const updateTokens = async (email, tokens) => {
