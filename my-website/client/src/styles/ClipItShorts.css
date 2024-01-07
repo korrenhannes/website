@@ -10,14 +10,12 @@ body {
 .clip-how-it-works-container {
   height: 100vh;
   position: relative;
-  color: #fff;
-  background-color: #fff;
+  color: #131614;
+  background-color: #E5F0FF; /* Light blue background */
   padding-top: 70px;
   padding-bottom: 0.1rem;
   text-align: center;
-  overflow: visible;
-  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
-  background-image: url('../howworkspic.webp');
+  overflow: auto;
   background-size: cover; /* Cover the entire page */
   background-repeat: no-repeat; /* Do not repeat the image */
   background-attachment: fixed; /* Fixed background */
@@ -31,7 +29,6 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
   z-index: 1; /* Below the text */
 }
 .clip-how-it-works-container * {
@@ -73,7 +70,7 @@ body {
   margin-bottom: 0.3rem;
 }
 
-.card-text {
+.card-text1 {
   color: #fff; /* Dark color for headings */
   font-size: 20px; /* Adjust the font size */
   font-weight: 500; /* Medium font weight */

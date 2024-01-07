@@ -67,21 +67,21 @@ const ClipItShorts = () => {
                 <div className="card-body">
                   <img src={uploadIcon} alt="Upload" className="icon" />
                   <h3 className="card-title">Upload</h3>
-                  <p className="card-text">Choose and upload a video of your choosing with a length of up to 2 hours.</p>
+                  <p className="card-text1">Choose and upload a video of your choosing with a length of up to 2 hours.</p>
                 </div>
               </div>
               <div className="card-little">
                 <div className="card-body">
                   <img src={clipIcon} alt="ClipIt" className="icon" />
                   <h3 className="card-title">ClipIt</h3>
-                  <p className="card-text">Using our advanced AI algorithm you can clip your video and edit it.</p>
+                  <p className="card-text1">Using our advanced AI algorithm you can clip your video and edit it.</p>
                 </div>
               </div>
               <div className="card-little">
                 <div className="card-body">
                   <img src={shareIcon} alt="Share" className="icon" />
                   <h3 className="card-title">Share</h3>
-                  <p className="card-text">Simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>
+                  <p className="card-text1">Simply share your new favorite edits in any platform and let your followers enjoy high-quality content.</p>
                 </div>
               </div>
             </div>
