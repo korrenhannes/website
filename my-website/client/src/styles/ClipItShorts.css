@@ -1,0 +1,252 @@
+/* HowItWorks.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+
+body {
+  font-family: 'Montserrat', sans-serif;
+
+}
+
+.clip-how-it-works-container {
+  height: 100vh;
+  position: relative;
+  color: #fff;
+  background-color: #fff;
+  padding-top: 70px;
+  padding-bottom: 0.1rem;
+  text-align: center;
+  overflow: visible;
+  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
+  background-image: url('../howworkspic.webp');
+  background-size: cover; /* Cover the entire page */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-attachment: fixed; /* Fixed background */
+  background-position: center; /* Center the image */
+  
+}
+.clip-how-it-works-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65); /* White overlay with 50% opacity */
+  z-index: 1; /* Below the text */
+}
+.clip-how-it-works-container * {
+  position: relative;
+  z-index: 2; /* Above the overlay */
+}
+
+
+.card-little {
+  display: flex;
+  flex-direction: row;
+  border: none;
+  border-radius: 8px;
+  margin: 0.3em auto;
+  height: 275px; /* Adjust this value to your preference */
+  flex-basis: 30%; /* Adjust card width for side by side layout */
+  justify-content: center;
+  background-color: rgba(235, 241, 255, 0.7); /* Adjust alpha for transparency */
+}
+
+.card-little:hover {
+  /* Add your desired hover styles here */
+  transform: scale(1.05); /* Slightly increase the size of the card */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow for depth */
+  cursor: pointer; /* Change cursor to indicate the card is interactive */
+}
+
+
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+ .card-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.card-text {
+  color: #fff; /* Dark color for headings */
+  font-size: 20px; /* Adjust the font size */
+  font-weight: 500; /* Medium font weight */
+  margin-bottom: 1rem; /* Space below the heading */
+}
+
+.container {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background-color: transparent; /* Since the video is in the background */
+
+}
+
+.container h1 {
+  color: #4A90E2;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.container .lead {
+  font-weight: normal;
+  color: #555;
+  margin-bottom: 0.1rem;
+  font-size: 1.2rem;
+}
+.clip-it{
+  color: #78a1d4;
+
+}
+
+.how-does-it-work {
+  font-size: 1.8rem;
+  color: #78a1d4;
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  justify-content: space-around;
+  flex-grow: 1;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.step h3 {
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.step p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.icon {
+  width: 50px;
+  height: auto;
+  margin-bottom: 0.5rem;
+  align-self: center;
+
+}
+
+@media (min-width: 576px) {
+  .row {
+    flex-wrap: wrap;
+  }
+
+  .step {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .step {
+    width: 50%;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 3rem;
+  }
+
+  .step {
+    width: 33.3333%;
+  }
+}
+/* Existing CSS code */
+
+/* ... your existing CSS ... */
+
+/* Existing CSS code */
+
+/* ... your existing CSS ... */
+
+/* Media Query for Max Width 768 Pixels */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.5rem; /* Reduce container padding */
+  }
+
+  .card-little {
+    flex-basis: 28%; /* Adjust card width for side by side layout */
+    margin: 0.5rem; /* Adjust margin */
+    padding: 0.4rem; /* Reduce padding inside card */
+    width: 20%;
+    height: 90%;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+
+  .icon {
+    width: 30px; /* Smaller icons */
+    position: relative;
+    align-self: center;
+  }
+
+  .row {
+    flex-wrap: wrap; /* Allow cards to wrap onto next line if needed */
+    justify-content: space-around; /* Space out cards evenly */
+  }
+
+  /* Other adjustments for max-width 768px */
+}
+
+/* Media Query for Max Width 480 Pixels */
+@media (max-width: 500px) {
+  .clip-how-it-works-container {
+    overflow: hidden;
+    height: 90vh;
+  }
+
+  .container {
+    padding: 0.25rem; /* Even smaller padding */  
+    margin-top: 5%;
+    
+  }
+
+  .card-little {
+    flex-basis: 28%; /* Adjust card width for full width in small screens */
+    margin: 0.3rem; /* Smaller margin */
+    padding: 0.3rem; /* Reduce padding inside card */
+    width: 20%;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 10px;
+  }
+  .card-title{
+    font-size: 100%;
+  }
+
+  .icon {
+    width: 25px; /* Further smaller icons */
+  }
+
+  .row {
+    justify-content: center; /* Center cards on small screens */
+  }
+
+  /* Other adjustments for max-width 480px */
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import '../styles/HowItWorks.css';
+import '../styles/ClipItShorts.css';
 import '../styles/NavigationBar.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +20,7 @@ const ClipItShorts = () => {
   }, []);
 
   return (
-    <div className="how-it-works-container">
+    <div className="clip-how-it-works-container">
       <Helmet>
         <title>How It Works - ClipIt: Your Shortcut to Viral Content</title>
         <meta name="description" content="Learn how ClipIt revolutionizes content creation with a simple three-step process: Upload, ClipIt, and Share." />
