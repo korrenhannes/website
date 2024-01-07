@@ -27,6 +27,7 @@ import AffiliateDashboardPage from './components/AffiliateDashboardPage';
 import ResetPasswordPage from './components/ResetPasswordPage';
 import ComplaintsPage from './components/ComplaintsPage';
 import MyVideosPage from './components/MyVideosPage';
+import ClipItShorts from './components/ClipItShorts';
 import ErrorPage from './components/ErrorPage'; // Import the ErrorPage component
 import LoadingScreen from './components/LoadingScreen'; // Import the LoadingScreen component
 import chatPic from './chatpic.webp';
@@ -177,6 +178,7 @@ function App() {
                 <Route path="/premium-user" element={<PremiumUserPage />} />
                 <Route path="/confirmation-wait" element={<ConfirmationWaitPage />} />
                 <Route path="/partner" element={<PartnerWithUsPage />} />
+                <Route path="/clip-it-shorts" element={<ClipItShorts />} />
                 <Route path="/affiliate-dashboard" element={<AffiliateDashboardPage />} />
                 <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                 <Route path="*" element={<ErrorPage />} />
