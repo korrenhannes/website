@@ -278,7 +278,7 @@ return(
             />
         </div>
         {showGuestAlert && (
-            <p className="lead text-white">You already used your guest token, <Link to="/signup" className="nav-signup">sign up</Link> to get more tokens and make more content.</p>
+            <p className="lead text-white">Please <Link to="/signup" className="nav-signup">sign up</Link> to recive the content you always wished you had.</p>
         )}
         {showUserAlert && (
             <p className="lead text-white">You used all your tokens for this month,<Link to="/offers" className="nav-signup">upgrade your subscription</Link> to get more tokens.</p>
