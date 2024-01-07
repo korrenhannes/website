@@ -19,6 +19,8 @@ const cron = require('node-cron');
 const User = require('./models/User');
 const Log = require('./models/logModel'); // Adjust the path to your Log model
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
+
 
 function getUrls() {
   const baseUrl = 'https://www.cliplt.com';
@@ -26,9 +28,9 @@ function getUrls() {
       `${baseUrl}/`,
       `${baseUrl}/login`,
       `${baseUrl}/signup`,
-      `${baseUrl}/cloud-api`,
-      `${baseUrl}/cloud-api/Media`,
-      `${baseUrl}/cloud-api/Media/stream-video`,
+      `${baseUrl}/home`,
+      `${baseUrl}/home/Media`,
+      `${baseUrl}/home/Media/stream-video`,
       `${baseUrl}/Media`,
       `${baseUrl}/Media/stream-video`,
       `${baseUrl}/how-it-works`,
@@ -56,7 +58,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com",
-  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/cloud-api",
+  "https://young-beach-38748-bf9fd736b27e.herokuapp.com/home",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/login",
   "https://young-beach-38748-bf9fd736b27e.herokuapp.com/signup",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com",
@@ -64,12 +66,12 @@ const allowedOrigins = [
   "https://www.cliplt.com",
   "http://www.cliplt.com",
   "http://localhost:3000/stream-video",
-  "http://localhost:3001/cloud-api",
-  "http://localhost:3001/cloud-api/Media",
-  "http://localhost:3001/cloud-api/Media/stream-video",
+  "http://localhost:3001/home",
+  "http://localhost:3001/home/Media",
+  "http://localhost:3001/home/Media/stream-video",
   "http://localhost:3001/Media",
   "http://localhost:3001/Media/stream-video",
-  "https://backend686868k-c9c97cdcbc27.herokuapp.com/cloud-api",
+  "https://backend686868k-c9c97cdcbc27.herokuapp.com/home",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/stream-video",
   "https://clipit-ghiltw5oka-ue.a.run.app",
   "https://clipit-ghiltw5oka-ue.a.run.app/api",
@@ -77,9 +79,24 @@ const allowedOrigins = [
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/api/auth",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com/api",
   "https://backend686868k-c9c97cdcbc27.herokuapp.com",
+  "https://clipit-ghiltw5oka-ue.a.run.app",
 
 
 ];
+
+// Middleware to set secure, SameSite cookies
+app.use(cookieParser());
+app.use((req, res, next) => {
+  if (req.cookies) {
+    Object.keys(req.cookies).forEach(key => {
+      res.cookie(key, req.cookies[key], {
+        sameSite: 'None', 
+        secure: true
+      });
+    });
+  }
+  next();
+});
 
 // Insert right after your app has been initialized
 app.use((req, res, next) => {
@@ -89,6 +106,12 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+app.use((req, res, next) => {
+  res.setHeader('X-Robots-Tag', 'index, follow');
+  next();
+});
+
 
 // Middleware to log the origin of incoming requests
 app.use((req, res, next) => {
@@ -233,6 +256,11 @@ app.use(passport.initialize());
 // Using routers
 app.use('/api/auth', authRoutes);
 app.use('/api/paypal', paypalRoutes);
+
+app.use((error, req, res, next) => {
+  console.error('Unhandled Error:', error);
+  res.status(500).send('Internal Server Error');
+});
 
 
 // Passport initialization

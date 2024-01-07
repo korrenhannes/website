@@ -36,32 +36,45 @@ function MyVideosPage() {
   const handleDownloadVideo = async () => {
     const videoUrl = currentVideoUrl;
     if (!videoUrl) {
-      console.error("No video player found");
+      console.error("No video URL found");
       return;
     }
-    if (!currentVideoUrl) {
-      console.error("No video is currently being played");
-      return;
-    }
+  
     try {
-      const response = await fetch(currentVideoUrl);
+      // Fetch the video
+      const response = await fetch(videoUrl);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+  
+      // Create a blob from the response
       const videoBlob = await response.blob();
-      const localUrl = window.URL.createObjectURL(videoBlob);
+  
+      // Extract the base URL (before any query parameters)
+      const baseUrl = videoUrl.split('?')[0];
+  
+      // Extracting the filename from the base URL
+      let filename = baseUrl.split('/').pop();
+  
+      // Ensure the filename ends with '.mp4'
+      if (!filename.endsWith('.mp4')) {
+        filename += '.mp4';
+      }
+  
+      // Create an anchor element and trigger download
       const a = document.createElement('a');
-      a.href = localUrl;
-      a.download = currentVideoUrl.split('/').pop();
+      a.href = window.URL.createObjectURL(videoBlob);
+      a.download = filename; // Set the download attribute to the filename
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-      window.URL.revokeObjectURL(localUrl);
+  
+      // Clean up the blob URL
+      window.URL.revokeObjectURL(a.href);
     } catch (error) {
       console.error("Error downloading video:", error);
     }
   };
-
 
   return (
     <div className={styles.fullScreenContainer}>

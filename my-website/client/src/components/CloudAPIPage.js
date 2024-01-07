@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import '../styles/NavigationBar.css';
 import styles from '../styles/FullScreen.module.css';
 import chatPic from '../chatpic.webp'; // Update the path according to your file structure
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import SearchContainer from './SearchContainer'; // Adjust path as needed
-
-
-
 
 function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
   const navigate = useNavigate();
@@ -60,6 +58,10 @@ function CloudAPIPage({ backgroundImageLoaded, enableScrollHandling = true }) {
 
   return (
     <div className={styles['full-screen-container']}>
+      <Helmet>
+        <title>ClipIt AI - Short Social Media Content Editor</title> 
+        <link rel="canonical" href="https://www.cliplt.com/home" /> 
+      </Helmet>
       {backgroundImageLoaded && (
         <LazyLoadImage
           alt="Engaging short clips creation from long videos - ClipIt"

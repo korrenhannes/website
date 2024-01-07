@@ -95,7 +95,7 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
   };
 
   const navigateToCloudAPI = () => {
-    navigate('/cloud-api');
+    navigate('/home');
   };
 
   const renderAuthLinks = () => {

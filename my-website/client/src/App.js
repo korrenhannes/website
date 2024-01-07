@@ -140,10 +140,9 @@ function App() {
           <meta property="og:title" content="ClipIt - AI-Powered Content Creation for Social Media" />
           <meta property="og:description" content="Effortlessly transform long videos into engaging, viral shorts with ClipIt." />
           <meta property="og:type" content="website" />
-          <meta property="og:url" content="https://www.yourwebsite.com" />
-          <meta property="og:image" content="https://www.yourwebsite.com/og-image.jpg" />
+          <meta property="og:url" content="https://www.cliplt.com" />
+          <meta property="og:image" content="https://www.cliplt.com/og-image.jpg" />
           <link rel="icon" type="image/png" href="logo.WebP" />
-          <link rel="canonical" href="https://www.yourwebsite.com" />
           <script type="application/ld+json">
             {`
               {
@@ -162,11 +161,11 @@ function App() {
             <div className="App">
               <NavigationBar timeLeft={timeLeft} isLoggedIn={isLoggedIn} onLogoutSuccess={handleLogoutSuccess} />
               <Routes>
-                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/cloud-api" : "/cloud-api"} />} />
-                <Route path="/login" element={isLoggedIn ? <Navigate replace to="/cloud-api" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
+                <Route path="/" element={<Navigate replace to={isLoggedIn ? "/home" : "/home"} />} />
+                <Route path="/login" element={isLoggedIn ? <Navigate replace to="/home" /> : <LoginForm onLoginSuccess={handleLoginSuccess} />} />
                 <Route path="/signup" element={<SignupForm onSignupSuccess={handleSignupSuccess} />} />
                 <Route path="/forgot-password" element={<ForgotPasswordForm />} />
-                <Route path="/cloud-api" element={<CloudAPIPage backgroundImageLoaded={backgroundImageLoaded} />} />
+                <Route path="/home" element={<CloudAPIPage backgroundImageLoaded={backgroundImageLoaded} />} />
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/explore-further" element={<ExploreFurther />} />
                 <Route path="/support" element={<SupportPage />} />

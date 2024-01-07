@@ -83,14 +83,14 @@ function OffersPage({isLoggedIn}) {
     if (isLoggedIn){
     console.log('email:',userEmail);
     updatePlanRequest(userEmail,selectedPlan);
-    navigate('/cloud-api');
+    navigate('/home');
     } else {
       navigate('/signup')
     }
   };
 
   const handleSuccessfulPayment = () => {
-    navigate('/cloud-api');
+    navigate('/home');
   };
   const renderButton = () => {
     if (!isLoggedIn){
