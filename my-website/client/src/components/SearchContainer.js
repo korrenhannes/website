@@ -278,12 +278,13 @@ return(
             />
         </div>
         {showGuestAlert && (
-        <div className={styles['guest-alert-overlay']}>
-            <div className={styles['guest-alert']}>
-            <p>Please <Link to="/signup" className={styles['nav-signup']}>sign up</Link> to receive the content you always wished you had.</p>
+            <div className={styles['guest-alert-overlay']}>
+                <div className={styles['guest-alert']}>
+                    <p>Hey there, amazing explorer of the digital universe! 🌟 We're thrilled you're here and can't wait to show you all the cool stuff ClipIt can do. But, hold on a sec - to get the full dazzling experience, would you mind hopping on board as a registered star traveler? It's super easy! Just <Link to="/signup" className={styles['nav-signup']}>click here to sign up</Link> and unlock a galaxy of content creation tools. Can't wait to see you on the other side! 🚀✨</p>
+                </div>
             </div>
-        </div>
         )}
+
 
         {showUserAlert && (
             <p className="lead text-white">You used all your tokens for this month,<Link to="/offers" className="nav-signup">upgrade your subscription</Link> to get more tokens.</p>

@@ -245,38 +245,52 @@ body {
   background-color: rgba(0,0,0,0.4); /* Semi-transparent background */
 }
 
+.guest-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  background-color: rgba(0,0,0,0.5);
+}
+
 .guest-alert {
-  background: linear-gradient(45deg, #FFB347, #FFCC33); /* Gradient like the yellow card */
-  color: #fff; /* White text for readability */
-  padding: 30px; /* Increased spacing inside the alert */
-  border-radius: 15px; /* Slightly more rounded corners */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Shadow for depth */
-  width: 50%; /* Use a width that's 50% of the viewport */
-  max-width: 600px; /* Maximum width */
-  text-align: center; /* Center text alignment */
+  background: linear-gradient(135deg, #f6d365, #fda085);
+  color: #333;
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  width: auto; /* Allow the width to adjust based on content */
+  max-width: 700px;
+  text-align: center;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  margin-top: 1vh; /* Position the alert higher */
+
 }
 
 .guest-alert p {
-  margin: 0; /* Remove default margin */
-  font-size: 1.5rem; /* Larger font size */
-  line-height: 1.5; /* Space between lines */
-  font-weight: 600; /* Semi-bold font weight */
+  margin-bottom: 15px;
 }
 
 .guest-alert .nav-signup {
-  color: #fff; /* White text color */
-  font-weight: bold; /* Bold text */
-  padding: 10px 20px; /* Larger padding for a button-like appearance */
-  border-radius: 5px; /* Rounded corners for the link/button */
-  background-color: rgba(255,255,255,0.3); /* Slight white overlay for contrast */
-  margin-left: 10px; /* Space before the sign-up link */
-  text-decoration: none; /* No underline */
-  transition: background-color 0.3s; /* Smooth background color transition */
+  display: inline-block;
+  color: #fff;
+  background-color: #007bff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .guest-alert .nav-signup:hover {
-  background-color: rgba(255,255,255,0.5); /* More white on hover for interactivity */
-  text-decoration: underline; /* Underline on hover */
+  background-color: #0056b3;
+  color: #ffd700;
+  text-decoration: underline;
 }
 
 
@@ -317,12 +331,37 @@ body {
   box-shadow: 0 1px 6px 0 rgba(32,33,36,0.28);
 }
 
-/* Responsive font size adjustments for h2 */
+/* Responsive Design for Medium Screens */
+@media (max-width: 1024px) {
+  .guest-alert {
+    font-size: 1.3rem; /* Slightly smaller font size */
+    padding: 25px 35px; /* Adjust padding */
+  }
+}
+
+/* Responsive Design for Smaller Screens */
 @media (max-width: 768px) {
-  .foreground-content h1{
-    margin:auto;
-    margin-bottom: 40%;
-    font-size: 2em; /* Starting font size */
+  .guest-alert {
+    font-size: 1.2rem; /* Further reduced font size */
+    padding: 20px 30px; /* Adjust padding */
+  }
+}
+
+
+/* Responsive Design for Smaller Screens */
+@media (max-width: 600px) {
+  .guest-alert {
+    padding: 15px 20px;
+    font-size: 1rem;
+  }
+
+  .guest-alert p {
+    margin-bottom: 10px;
+  }
+
+  .guest-alert .nav-signup {
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 }
 
