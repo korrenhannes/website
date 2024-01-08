@@ -11,7 +11,7 @@ body {
   height: 100vh;
   position: relative;
   color: #24362b; /* Dark color for headings */
-  background-color: #E5F0FF; /* Light blue background */
+  background-color: #e5f0ff; /* Light blue background */
   padding-top: 70px;
   padding-bottom: 0.1rem;
   text-align: center;
@@ -138,6 +138,7 @@ body {
 
 .icon {
   width: 50px;
+  height: 50px; /* explicit height */
   height: auto;
   margin-bottom: 0.5rem;
   align-self: center;
@@ -198,6 +199,8 @@ body {
 
   .icon {
     width: 30px; /* Smaller icons */
+    height: 30px;
+
     position: relative;
     align-self: center;
   }
@@ -239,6 +242,8 @@ body {
 
   .icon {
     width: 25px; /* Further smaller icons */
+    height: 25px;
+
   }
 
   .row {
@@ -247,3 +252,4 @@ body {
 
   /* Other adjustments for max-width 480px */
 }
+
