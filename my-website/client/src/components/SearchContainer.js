@@ -280,10 +280,11 @@ return(
         {showGuestAlert && (
             <div className={styles['guest-alert-overlay']}>
                 <div className={styles['guest-alert']}>
-                    <p>Hey there, amazing explorer of the digital universe! 🌟 We're thrilled you're here and can't wait to show you all the cool stuff ClipIt can do. But, hold on a sec - to get the full dazzling experience, would you mind hopping on board as a registered star traveler? It's super easy! Just <Link to="/signup" className={styles['nav-signup']}>click here to sign up</Link> and unlock a galaxy of content creation tools. Can't wait to see you on the other side! 🚀✨</p>
+                    <p>Hey there, future Spielberg! 🎬 Noticed you're not signed up yet. Don't worry, we've got your director's chair ready. Just <Link to="/signup" className={styles['nav-signup']}>hop in here</Link> and claim your ticket to the world of epic video creation with ClipIt. Let's turn your vision into viral sensations! 🌟 Psst... signing up is quicker than a popcorn pop! 🍿</p>
                 </div>
             </div>
         )}
+
 
 
         {showUserAlert && (
