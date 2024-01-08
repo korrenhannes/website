@@ -284,11 +284,12 @@ return(
                 </div>
             </div>
         )}
-
-
-
         {showUserAlert && (
-            <p className="lead text-white">You used all your tokens for this month,<Link to="/offers" className="nav-signup">upgrade your subscription</Link> to get more tokens.</p>
+            <div className={styles['user-alert-overlay']}>
+                <div className={styles['user-alert']}>
+                    <p>🌟 Whoa, look at you, a true content wizard! 🎥 You've used all your magic tokens this month. But fear not! Upgrade your spellbook with a <Link to="/offers" className={styles['nav-offers']}>premium subscription</Link> and keep the video potion brewing. More tokens, more epic stories! 🚀 Remember, every great director started with just a dream and a camera. Keep rolling! 🎬</p>
+                </div>
+            </div>
         )}
         </form>
         {renderUploadButton()}
