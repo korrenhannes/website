@@ -22,7 +22,7 @@ const ClipItShorts = () => {
   return (
     <div className="clip-how-it-works-container">
       <Helmet>
-        <title>How It Works - ClipIt: Transform Your Video Content</title>
+        <title>ClipIt: Transform Your Video Content</title>
         <meta name="description" content="ClipIt: Revolutionize your video content creation with our AI-powered tool. Upload, ClipIt, and Share your way to viral success." />
         <link rel="canonical" href="https://www.cliplt.com/clip-it-shorts" />
       </Helmet>
