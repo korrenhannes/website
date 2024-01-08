@@ -28,7 +28,7 @@ router.post("/create-order", async (req, res) => {
   const request = new paypal.orders.OrdersCreateRequest();
   request.requestBody({
     intent: "CAPTURE",
-    purchase_units: [{
+    purchase_units: [{ 
       amount: {
         currency_code: "USD",
         value: req.body.amount // Dynamically receive the amount
