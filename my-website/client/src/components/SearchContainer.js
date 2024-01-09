@@ -81,14 +81,6 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
 
         setIsLoading(true);
         
-        const uploadComplete = await checkUploadStatus();
-        if (!uploadComplete) {
-            console.log('upload not complete');
-            handleRedirection(); // Redirect the user if the upload is not complete
-            setIsLoading(false);
-            return; // Exit the function early
-        }
-        console.log('upload completed, continue');
         
         // Function to get unique computer id
         const getUniqueComputerId = async () => {
@@ -128,6 +120,7 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         return;
         }
         if (!userEmail.includes('@')){
+            console.log('user is guest, need to sign in');
             setShowGuestAlert(true); // Use prop function
             setIsLoading(false);
             return;
@@ -137,6 +130,16 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
             setIsLoading(false);
             return;
         }
+        const uploadComplete = await checkUploadStatus();
+        console.log('update complete?', uploadComplete);
+        if (!uploadComplete) {
+            console.log('upload not complete');
+            handleRedirection(); // Redirect the user if the upload is not complete
+            setIsLoading(false);
+            return; // Exit the function early
+        }
+        console.log('upload completed, continue');
+        
     
         // Immediately navigate to the next page
         handleRedirection();
