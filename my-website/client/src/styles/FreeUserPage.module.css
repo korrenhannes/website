@@ -165,8 +165,7 @@ body {
     overflow: hidden;
     border-radius:0%; /* Rounded corners for the 'phone' */
     margin-top: 7VH;
-    box-shadow:none /* Shadow for depth */
-    
+    box-shadow:none /* Shadow for depth */ 
   }
   .video-js.vjs-fluid {
     width: auto; /* Make sure the video fills the container */

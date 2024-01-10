@@ -22,6 +22,9 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
     const playerRef = useRef(null);
     const navigate = useNavigate(); // Initialize useNavigate
     const [isMuted, setIsMuted] = useState(true); // New state for mute control
+    const [uploadCheckInterval, setUploadCheckInterval] = useState(null);
+    const [loadingProgress, setLoadingProgress] = useState(0);
+
 
     const isMobileDevice = () => {
       return /Mobi|Android|iPhone/i.test(navigator.userAgent);
@@ -119,6 +122,34 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
       videoContainer.removeEventListener('click', handleVideoPress);
     };
   }, [isMobilePage]);
+  
+  useEffect(() => {
+    // Start the upload status check only if on the Free User Page
+    if (pageContext === PAGE_CONTEXT.FREE_USER) {
+        const intervalId = setInterval(async () => {
+          console.log('checking if upload is completed');
+            const uploadComplete = await checkUploadStatus();
+            if (uploadComplete) {
+              console.log('upload is completed, reset the interval, and get videos', uploadComplete);
+                clearInterval(intervalId);
+                setUploadCheckInterval(null);
+                setLoadingProgress(100);
+                fetchVideosFromGCloud(); // Refresh the container
+            } else {
+                // Update loading progress (for a total duration of 5 minutes)
+                setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
+            }
+        }, 10000); // Check every 10 seconds
+
+        setUploadCheckInterval(intervalId);
+    }
+
+    return () => {
+        if (uploadCheckInterval) {
+            clearInterval(uploadCheckInterval);
+        }
+    };
+  }, [pageContext]);
 
 
   const fetchVideosFromGCloud = async () => {
@@ -400,6 +431,11 @@ return (
     onClick={handleVideoPress} 
     onTouchEnd={handleVideoPress}
     >
+      {pageContext === PAGE_CONTEXT.FREE_USER && loadingProgress < 100 && (
+                <div className="loading-bar-container">
+                    <div className="loading-bar" style={{ width: `${loadingProgress}%` }}></div>
+                </div>
+            )}
         <video 
         ref={backgroundVideoRef} 
         className="video-js vjs-big-play-centered vjs-fluid" 
