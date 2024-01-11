@@ -111,33 +111,33 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
     };
   }, [isMobilePage]);
   
-  // useEffect(() => {
-  //   // Start the upload status check only if on the Free User Page
-  //   if (pageContext === PAGE_CONTEXT.FREE_USER) {
-  //       const intervalId = setInterval(async () => {
-  //         console.log('checking if upload is completed');
-  //           const uploadComplete = await checkUploadStatus(userEmail);
-  //           if (uploadComplete) {
-  //             console.log('upload is completed, reset the interval, and get videos', uploadComplete);
-  //               clearInterval(intervalId);
-  //               setUploadCheckInterval(null);
-  //               setLoadingProgress(100);
-  //               fetchVideosFromGCloud(); // Refresh the container
-  //           } else {
-  //               // Update loading progress (for a total duration of 5 minutes)
-  //               setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
-  //           }
-  //       }, 10000); // Check every 10 seconds
+  useEffect(() => {
+    // Start the upload status check only if on the Free User Page
+    if (pageContext === PAGE_CONTEXT.FREE_USER) {
+        const intervalId = setInterval(async () => {
+          console.log('checking if upload is completed');
+            const uploadComplete = await checkUploadStatus(userEmail);
+            if (uploadComplete) {
+              console.log('upload is completed, reset the interval, and get videos', uploadComplete);
+                clearInterval(intervalId);
+                setUploadCheckInterval(null);
+                setLoadingProgress(100);
+                fetchVideosFromGCloud(); // Refresh the container
+            } else {
+                // Update loading progress (for a total duration of 5 minutes)
+                setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
+            }
+        }, 10000); // Check every 10 seconds
 
-  //       setUploadCheckInterval(intervalId);
-  //   }
+        setUploadCheckInterval(intervalId);
+    }
 
-  //   return () => {
-  //       if (uploadCheckInterval) {
-  //           clearInterval(uploadCheckInterval);
-  //       }
-  //   };
-  // }, [pageContext]);
+    return () => {
+        if (uploadCheckInterval) {
+            clearInterval(uploadCheckInterval);
+        }
+    };
+  }, [pageContext]);
 
 
   const fetchVideosFromGCloud = async () => {
@@ -237,8 +237,9 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
       for (let i = 1; i <= 6; i++) {
         setTimeout(async () => {
           try {
+            console.log(" before the Just before");
             const uploadComplete = await checkUploadStatus(userEmail);
-            console.log("Just before function:", uploadComplete)
+            console.log("Just before function:", uploadComplete);
             if (uploadComplete) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);
               const healthResponse = await apiFlask.get('/health', {
