@@ -122,11 +122,14 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         }
         const uploadComplete = await checkUploadStatus(userEmail);
         console.log('update complete?', uploadComplete);
-        if (!uploadComplete) {
+        if (uploadComplete===false) {
             console.log('upload not complete');
             handleRedirection(); // Redirect the user if the upload is not complete
             setIsLoading(false);
             return; // Exit the function early
+        } else if (uploadComplete=== null){
+            setIsLoading(false);
+            return;
         }
         console.log('upload completed, continue');
         
