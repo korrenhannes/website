@@ -356,7 +356,15 @@ router.get('/user/payment-plan', async (req, res) => {
   }
 });
 const corsOptions = {
-  origin: 'https://www.cliplt.com',
+  origin: function (origin, callback) {
+    const allowedOrigins = ['https://www.cliplt.com', 'http://localhost:3001'];
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST'],
   credentials: true,
 };
