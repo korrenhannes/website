@@ -357,7 +357,7 @@ router.get('/user/payment-plan', async (req, res) => {
 // Route to check upload_complete status
 router.get('/check-upload-status', async (req, res) => {
   const userEmail = req.user.email;
-
+  conosole.log('checking upload status for', userEmail);
   if (!userEmail) {
     return res.status(400).json({ error: 'Email is required' });
   }
@@ -365,6 +365,7 @@ router.get('/check-upload-status', async (req, res) => {
   try {
     const user = await User.findOne({ email: userEmail });
     if (!user) {
+      console.log('did not find the right user in the db');
       return res.status(404).json({ error: 'User not found' });
     }
 
