@@ -6,7 +6,8 @@ import { jwtDecode } from 'jwt-decode';
 import { PAGE_CONTEXT } from './constants'; // Import the constants
 import styles from '../styles/FreeUserPage.module.css';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import axios from 'axios';
+import checkUploadStatus from './CheckUploadStatus';
+
 
 
 
@@ -85,19 +86,6 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
     };
   }, [backgroundVideoRef]);
 
-  // Function to check the upload status
-  const checkUploadStatus = async () => {
-    try {
-      const response = await axios.get('/api/check-upload-status', {
-        params: { email: userEmail }
-      });
-      console.log("Inside function:", response.data.uploadComplete) // Added
-      return response.data.uploadComplete;
-    } catch (error) {
-      console.error('Error checking upload status:', error);
-      return true; // Default to true to avoid continuous checks in case of an error
-    }
-  };
   const handleScroll = (event) => {
     if (isMobileDevice()) {
       if (event.deltaY > 0) {
@@ -123,33 +111,33 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
     };
   }, [isMobilePage]);
   
-  useEffect(() => {
-    // Start the upload status check only if on the Free User Page
-    if (pageContext === PAGE_CONTEXT.FREE_USER) {
-        const intervalId = setInterval(async () => {
-          console.log('checking if upload is completed');
-            const uploadComplete = await checkUploadStatus();
-            if (uploadComplete) {
-              console.log('upload is completed, reset the interval, and get videos', uploadComplete);
-                clearInterval(intervalId);
-                setUploadCheckInterval(null);
-                setLoadingProgress(100);
-                fetchVideosFromGCloud(); // Refresh the container
-            } else {
-                // Update loading progress (for a total duration of 5 minutes)
-                setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
-            }
-        }, 10000); // Check every 10 seconds
+  // useEffect(() => {
+  //   // Start the upload status check only if on the Free User Page
+  //   if (pageContext === PAGE_CONTEXT.FREE_USER) {
+  //       const intervalId = setInterval(async () => {
+  //         console.log('checking if upload is completed');
+  //           const uploadComplete = await checkUploadStatus(userEmail);
+  //           if (uploadComplete) {
+  //             console.log('upload is completed, reset the interval, and get videos', uploadComplete);
+  //               clearInterval(intervalId);
+  //               setUploadCheckInterval(null);
+  //               setLoadingProgress(100);
+  //               fetchVideosFromGCloud(); // Refresh the container
+  //           } else {
+  //               // Update loading progress (for a total duration of 5 minutes)
+  //               setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
+  //           }
+  //       }, 10000); // Check every 10 seconds
 
-        setUploadCheckInterval(intervalId);
-    }
+  //       setUploadCheckInterval(intervalId);
+  //   }
 
-    return () => {
-        if (uploadCheckInterval) {
-            clearInterval(uploadCheckInterval);
-        }
-    };
-  }, [pageContext]);
+  //   return () => {
+  //       if (uploadCheckInterval) {
+  //           clearInterval(uploadCheckInterval);
+  //       }
+  //   };
+  // }, [pageContext]);
 
 
   const fetchVideosFromGCloud = async () => {
@@ -249,7 +237,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
       for (let i = 1; i <= 6; i++) {
         setTimeout(async () => {
           try {
-            const uploadComplete = await checkUploadStatus();
+            const uploadComplete = await checkUploadStatus(userEmail);
             console.log("Just before function:", uploadComplete)
             if (true) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);

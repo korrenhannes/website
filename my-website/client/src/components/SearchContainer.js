@@ -9,6 +9,7 @@ import chatPic from '../chatpic.webp'; // Update the path according to your file
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { Link } from 'react-router-dom';
+import checkUploadStatus from './CheckUploadStatus';
 
 
 function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
@@ -55,18 +56,7 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
         }
     };
     // Function to check the upload status
-  const checkUploadStatus = async () => {
-    try {
-      const response = await axios.get('/api/check-upload-status', {
-        params: { email: userEmail }
-      });
-      console.log("Inside function:", response.data.uploadComplete) // Added
-      return response.data.uploadComplete;
-    } catch (error) {
-      console.error('Error checking upload status:', error);
-      return true; // Default to true to avoid continuous checks in case of an error
-    }
-  };
+ 
     const handleSearchSubmit = async (e, selectedFile = null) => {
         if (e) e.preventDefault();
         // Check if 5 minutes have passed since the last submission
@@ -130,7 +120,7 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
             setIsLoading(false);
             return;
         }
-        const uploadComplete = await checkUploadStatus();
+        const uploadComplete = await checkUploadStatus(userEmail);
         console.log('update complete?', uploadComplete);
         if (!uploadComplete) {
             console.log('upload not complete');
