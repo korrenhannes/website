@@ -5,6 +5,9 @@ const checkUploadStatus = async (userEmail) => {
         const response = await api.post(`/auth/check-upload-status`, {userEmail}
         );    
       console.log("Inside function:", response.data.uploadComplete) // Added
+      if (response.data.uploadComplete===null){
+        console.log('response data is null');
+      }
       return response.data?.uploadComplete ?? null;
     } catch (error) {
         console.error('Error checking upload status:', error);
