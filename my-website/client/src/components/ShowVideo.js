@@ -239,7 +239,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage }){
           try {
             const uploadComplete = await checkUploadStatus(userEmail);
             console.log("Just before function:", uploadComplete)
-            if (true) { // !uploadComplete
+            if (uploadComplete) { // !uploadComplete
               console.log(`Calling health endpoint at ${i * 10} minutes`);
               const healthResponse = await apiFlask.get('/health', {
                 headers: {
