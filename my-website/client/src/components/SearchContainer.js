@@ -128,6 +128,7 @@ function SearchContainer ({isExploreFurther, isMobile, isSupport}) {
             setIsLoading(false);
             return; // Exit the function early
         } else if (uploadComplete=== null){
+            console.log('there was a problem with checking the upload status');
             setError('there was a problem with checking the upload status');
             setIsLoading(false);
             return;
