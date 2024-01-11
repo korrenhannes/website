@@ -1,10 +1,9 @@
-import axios from 'axios';
+import { api } from '../api'; // Importing the Axios instance for Flask
 
 const checkUploadStatus = async (userEmail) => {
     try {
-        const response = await axios.get(`/auth/check-upload-status`, {
-            params: { email: userEmail }
-        });    
+        const response = await api.post(`/auth/check-upload-status`, {userEmail}
+        );    
       console.log("Inside function:", response.data.uploadComplete) // Added
       return response.data?.uploadComplete ?? null;
     } catch (error) {
