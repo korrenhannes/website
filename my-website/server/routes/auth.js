@@ -7,6 +7,8 @@ const Log = require('../models/logModel');
 const sendEmail = require('../utils/sendEmail');
 const sendConfirmationEmail = require('../utils/sendConfirmationEmail');
 const router = express.Router();
+const cors = require('cors');
+
 
 // A more complex function to calculate earnings based on sales
 function calculateEarnings(referredUsers) {
@@ -353,11 +355,19 @@ router.get('/user/payment-plan', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
-
+const corsOptions = {
+  origin: 'https://www.cliplt.com',
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
 // Route to check upload_complete status
-router.get('/check-upload-status', async (req, res) => {
-  const userEmail = req.user.email;
-  conosole.log('checking upload status for', userEmail);
+router.get('/check-upload-status',
+passport.authenticate('jwt', { session: false }),
+ cors(corsOptions),
+  async (req, res) => {
+    //console.log('Authenticated user:', req.user); // req.user should now be defined
+    const userEmail = req.user.email;
+    console.log('checking upload status for', userEmail);
   if (!userEmail) {
     return res.status(400).json({ error: 'Email is required' });
   }
