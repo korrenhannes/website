@@ -31,6 +31,50 @@ body {
   overflow: hidden; /* Ensure video doesn't overflow the rounded corners */
   position: relative;
 }
+.verticalLoaderContainer {
+  position: absolute;
+  top: 15%;
+  right: 80%;
+  width: 100px; /* Adjust the width of the loader */
+  height: 700px; /* Adjust the height of the loader */
+  background: rgba(104, 101, 101, 0.244);
+  border-radius: 70px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-end; /* Start from the bottom of the container */
+}
+
+.verticalLoader {
+  height: 0%; /* The height will be animated based on the loading progress */
+  background: linear-gradient(to top, #ff512f, #dd2476); /* Glowing gradient effect */
+  border-radius: 70px;
+  transition: height 0.3s ease;
+  position: relative;
+  box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+}
+
+.verticalLoader::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%; /* Larger than the loader to allow for a spread */
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+  animation: glow 2s infinite;
+  border-radius: 50%;
+}
+
+@keyframes glow {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(360deg); }
+}
+
+/* Add the required CSS to hide the default loading bar if it's not needed */
+
+
+
 
 .video-js.vjs-fluid {
   position: relative; /* Relative positioning */
@@ -129,7 +173,26 @@ body {
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
-  
+  .horizontalLoaderContainer {
+    position: absolute;
+    bottom: 0%; /* Place it at desired position */
+    width: 100%; /* Width of the loader, adjust as needed */
+    height: 30px; /* Height of the loader */
+    background-color: #e0e0e0; /* Background of the loader track */
+    border-radius: 10px; /* Rounded corners for the loader */
+    overflow: hidden; /* Hide the overflow to maintain border radius */
+    z-index: 1000;
+  }
+
+  .horizontalLoader {
+    background-color: #3498db; /* Color of the loading bar */
+    width: 0%; /* Initial width of the loading bar */
+    height: 100%; /* Full height of its container */
+    background: linear-gradient(to top, #ff512f, #dd2476); /* Glowing gradient effect */
+    border-radius: 70px;
+    box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+    transition: width 0.3s ease; /* Smooth transition for the width change */
+  }
   .video-js.vjs-fluid {
     width: 90%; /* Make sure the video fills the container */
     height: 90%; /* Make sure the video fills the container */
@@ -159,6 +222,26 @@ body {
   }
 }
 @media (max-width: 500px) {
+  .horizontalLoaderContainer {
+    position: absolute;
+    bottom: 10%; /* Place it at desired position */
+    width: 100%; /* Width of the loader, adjust as needed */
+    height: 20px; /* Height of the loader */
+    background-color: #e0e0e0; /* Background of the loader track */
+    border-radius: 10px; /* Rounded corners for the loader */
+    overflow: hidden; /* Hide the overflow to maintain border radius */
+    z-index: 1000;
+  }
+
+  .horizontalLoader {
+    background-color: #3498db; /* Color of the loading bar */
+    width: 0%; /* Initial width of the loading bar */
+    height: 100%; /* Full height of its container */
+    background: linear-gradient(to top, #ff512f, #dd2476); /* Glowing gradient effect */
+    border-radius: 70px;
+    box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+    transition: width 0.3s ease; /* Smooth transition for the width change */
+  }
   .videocontainer1 { /* Update this as well */
     width: 100%; /* Adapt width on smaller screens */
     height:85.5vh;

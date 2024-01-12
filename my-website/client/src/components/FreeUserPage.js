@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback  } from 'react';
 import io from 'socket.io-client';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import { PAGE_CONTEXT } from './constants'; // Import the constants
 import ShowVideo from './ShowVideo';
+import checkUploadStatus from './CheckUploadStatus';
+import { jwtDecode } from 'jwt-decode';
 
 
 
@@ -20,6 +22,10 @@ function FreeUserPage() {
   const [error, setError] = useState(null);
   const [currentVideoUrl, setCurrentVideoUrl] = useState(''); // State for the current video URL
   const socket = useRef(null);
+  const [loadingProgress, setLoadingProgress] = useState(0); // New state for loading progress
+  const [uploadCheckInterval, setUploadCheckInterval] = useState(null);
+  const [refreshVideos, setRefreshVideos] = useState(null);
+
 
   useEffect(() => {
     socket.current = io('https://young-beach-38748-bf9fd736b27e.herokuapp.com');
@@ -30,6 +36,55 @@ function FreeUserPage() {
       }
     };
   }, []);
+  const [userEmail, setUserEmail] = useState('');
+  
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserEmail(decoded.email);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setError('Authentication error. Please log in again.');
+        return;
+      }
+    }
+  }, []);
+  const handleSetRefreshFunction = useCallback((refreshFunction) => {
+    setRefreshVideos(() => refreshFunction);
+}, []);
+  useEffect(() => {
+    // Start the upload status check only if on the Free User Page
+    if (userEmail) {
+      const intervalId = setInterval(async () => {
+        console.log('checking if upload is completed');
+        const uploadComplete = await checkUploadStatus(userEmail);
+        if (uploadComplete) {
+          console.log('upload is completed, reset the interval', uploadComplete);
+          clearInterval(intervalId);
+          setUploadCheckInterval(null);
+          setLoadingProgress(100);
+          if (refreshVideos) {
+            refreshVideos(); // Refresh the videos
+        }
+        } else {
+          // Update loading progress (for a total duration of 5 minutes)
+          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
+        }
+      }, 10000); // Check every 10 seconds
+
+      setUploadCheckInterval(intervalId);
+    }
+
+    return () => {
+      if (uploadCheckInterval) {
+        clearInterval(uploadCheckInterval);
+      }
+    };
+  }, [userEmail, refreshVideos]);
+
+
   const updateCurrentVideoUrl = (url) => {
     setCurrentVideoUrl(url);
   };
@@ -80,7 +135,25 @@ function FreeUserPage() {
 
   return (
     <div className={styles.fullScreenContainer}>
-      <ShowVideo pageContext={PAGE_CONTEXT.FREE_USER} updateVideoUrl={updateCurrentVideoUrl} isMobilePage={true} />
+      {loadingProgress < 100 && (
+        <>
+          {window.innerWidth < 768 ? (
+            <div className={styles.horizontalLoaderContainer}>
+              <div className={styles.horizontalLoader} style={{ width: `${loadingProgress}%` }}></div>
+            </div>
+          ) : (
+            <div className={styles.verticalLoaderContainer}>
+              <div className={styles.verticalLoader} style={{ height: `${loadingProgress}%` }}></div>
+            </div>
+          )}
+        </>
+      )}
+      <ShowVideo 
+      pageContext={PAGE_CONTEXT.FREE_USER} 
+      updateVideoUrl={updateCurrentVideoUrl} 
+      isMobilePage={true}
+      onRefresh={handleSetRefreshFunction}
+      />
 
       <div className={styles.videouioverlay}>
         {/* Elements for video title, user interaction, etc. */}
