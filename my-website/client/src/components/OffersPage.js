@@ -61,24 +61,21 @@ function OffersPage({isLoggedIn}) {
 
 
   const selectPlan = (plan) => {
-    //console.log('selected plan:', selectedPlan, 'plan:', plan);
     setSelectedPlan(plan);
-    const selected = plans.find(p => p.name.toLowerCase() === plan);
-    setPlanDescription1(selected.title);
-    setPlanDescription2(selected.description1);
-    setPlanDescription3(selected.description2);
-    setPlanHeading(selected.heading);
-    setplanSecondary(selected.secondary);
-   // console.log('selected plan2:', selectedPlan, 'plan2:', plan);
+    // Other code if necessary
   };
-  const renderBoldBeforeColon = (text) => {
-    const splitText = text.split(':');
-    return (
-      <>
-        <strong>{splitText[0]}:</strong>{splitText[1]}
-      </>
-    );
-  };
+
+  useEffect(() => {
+    const selected = plans.find(p => p.name.toLowerCase() === selectedPlan);
+    if (selected) {
+      setPlanDescription1(selected.title);
+      setPlanDescription2(selected.description1);
+      setPlanDescription3(selected.description2);
+      setPlanHeading(selected.heading);
+      setplanSecondary(selected.secondary);
+    }
+  }, [selectedPlan]); // This hook is dependent on selectedPlan
+
   const handleNextClick = () => {
     if (isLoggedIn){
     console.log('email:',userEmail);

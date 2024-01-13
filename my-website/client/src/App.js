@@ -130,7 +130,8 @@ function App() {
       <PayPalScriptProvider options={{
         "client-id": process.env.REACT_APP_PAYPAL_CLIENT_ID,
         currency: "USD",
-        intent: "capture"
+        intent: "subscription",
+        vault: true
       }}>
         <Helmet>
           <meta charSet="utf-8" />
