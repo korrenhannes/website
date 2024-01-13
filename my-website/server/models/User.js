@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: [function() { return !this.googleId && !this.facebookId; }, 'Password is required'] }, // Password not required if social IDs are present
   paymentPlan: { type: String, default: 'free' },
+  subscriptionID: { type: String, default: '' },
   googleId: { type: String, required: false }, // For Google OAuth
   facebookId: { type: String, required: false }, // For Facebook OAuth
   tokens: { type: String, default: '1' },

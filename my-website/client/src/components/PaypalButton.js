@@ -27,7 +27,7 @@ const PayPalButton = ({ onSuccessfulPayment, selectedPlan, userEmail }) => {
   // Function to handle the successful subscription
   const onApprove = (data, actions) => {
     console.log('Subscription successful:', data.subscriptionID);
-    updatePlanRequest(userEmail, selectedPlan);
+    updatePlanRequest(userEmail, selectedPlan, data.subscriptionID);
     if (onSuccessfulPayment) {
       onSuccessfulPayment(); // Call the passed callback
     }

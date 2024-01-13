@@ -7,6 +7,7 @@ import '../styles/PlanSelection.css'; // Assume you have a corresponding CSS fil
 import { jwtDecode } from 'jwt-decode';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap CSS
 import updatePlanRequest from './UpdatePlanService'; // Adjust the path as necessary
+import { api } from '../api'; // Importing the Axios instance for Flask
 
 
 
@@ -20,8 +21,10 @@ function OffersPage({isLoggedIn}) {
 
   const navigate = useNavigate();
   let userEmail ='';
+  let subscriptionID='';
   if (isLoggedIn){
      userEmail =  jwtDecode(localStorage.getItem('token')).email;
+     subscriptionID= jwtDecode(localStorage.getItem('token')).subscriptionID;
   } else {
      userEmail = 'Guest';
   }
@@ -79,12 +82,35 @@ function OffersPage({isLoggedIn}) {
   const handleNextClick = () => {
     if (isLoggedIn){
     console.log('email:',userEmail);
-    updatePlanRequest(userEmail,selectedPlan);
+    updatePlanRequest(userEmail,selectedPlan,'');
     navigate('/home');
     } else {
       navigate('/signup')
     }
   };
+  const cancelSubscription = async (event) => {
+    console.log("Cancel subscription clicked");
+    if (!isLoggedIn) {
+      alert("Please log in to cancel your subscription.");
+      return;
+    }
+    try{
+    const response = await api.post('/paypal/cancel-subscription', {userEmail,subscriptionID });
+      if (response.data.success) {
+        alert("Subscription cancelled successfully.");
+        console.log("Subscription cancelled successfully.");
+        updatePlanRequest(userEmail,'free', '');
+        navigate('/home');
+        // Handle UI changes or redirection as needed
+      } else {
+        alert("Failed to cancel subscription. Please try again.");
+      }
+    }
+    catch (error) {
+      console.error('Error cancelling subscription:', error);
+    };
+  };
+  
 
   const handleSuccessfulPayment = () => {
     navigate('/home');
@@ -131,6 +157,7 @@ function OffersPage({isLoggedIn}) {
           ))}
         </div>
        {renderButton()}
+       {subscriptionID!==''&&<button onClick={cancelSubscription} className="cancel-button">Cancel Subscription</button>}
       </div>
     </div>
   );

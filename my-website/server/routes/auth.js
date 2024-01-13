@@ -320,7 +320,7 @@ router.get('/check-confirmation', async (req, res) => {
 // Update User's Payment Plan
 router.post('/update-plan', async (req, res) => {
   try {
-    const { email, paymentPlan } = req.body;
+    const { email, paymentPlan, subscriptionID } = req.body;
     const user = await User.findOne({ email });
     let tokens = paymentPlan === 'regular' ? '10' : paymentPlan === 'premium' ? '100' : '1';
     if (!user) {
@@ -329,11 +329,12 @@ router.post('/update-plan', async (req, res) => {
 
     user.paymentPlan = paymentPlan;
     user.tokens = tokens;
+    user.subscriptionID=subscriptionID;
     user.dateOfSubscription = new Date();
     await user.save();
 
-    const newToken = jwt.sign({ userId: user._id, email: user.email, tokens: tokens, dateOfSubscription: user.dateOfSubscription }, 'your_jwt_secret');
-    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan, tokens: tokens, dateOfSubscription: user.dateOfSubscription }).save();
+    const newToken = jwt.sign({ userId: user._id, email: user.email, tokens: tokens, subscriptionID: user.subscriptionID, dateOfSubscription: user.dateOfSubscription }, 'your_jwt_secret');
+    await new Log({ action: 'Update Payment Plan', userEmail: email, paymentPlan: paymentPlan, tokens: tokens,subscriptionID: user.subscriptionID, dateOfSubscription: user.dateOfSubscription }).save();
     res.json({ message: 'Payment plan updated successfully', token: newToken });
   } catch (error) {
     console.error("Update plan error:", error);

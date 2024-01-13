@@ -14,6 +14,10 @@ const logSchema = new mongoose.Schema({
     type: String,
     required: false // Not all logs might have a payment plan associated with them
   },
+  subscriptionID: {
+    type: String,
+    required: false // Not all logs might have a payment plan associated with them
+  },
   dateOfSubscription: {
     type: Date,
     default: Date.now
