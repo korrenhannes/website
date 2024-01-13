@@ -48,14 +48,14 @@ router.post("/paypal-webhook", async (req, res) => {
 
   switch (webhookEvent.event_type) {
       case 'BILLING.SUBSCRIPTION.CREATED':
-          // Handle subscription creation
+          console.log('susbscription created');
           break;
       case 'BILLING.SUBSCRIPTION.CANCELLED':
-          // Handle subscription cancellation
+          console.log('susbscription canceled');
           break;
       // Handle other event types as needed
       case 'BILLING.SUBSCRIPTION.UPDATED':
-        //handle subscription update
+        console.log('susbscription updated');
   }
 
   res.status(200).send('Webhook Received');
