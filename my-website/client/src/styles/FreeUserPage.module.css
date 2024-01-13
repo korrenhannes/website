@@ -225,9 +225,9 @@ body {
   .horizontalLoaderContainer {
     position: absolute;
     bottom: 2%; /* Place it at desired position */
-    left: 20%;
-    right: auto;
-    width: 90%; /* Width of the loader, adjust as needed */
+    left: 10%;
+    right: 10%;
+    width: 80%; /* Width of the loader, adjust as needed */
     height: 20px; /* Height of the loader */
     background-color: #e0e0e0; /* Background of the loader track */
     border-radius: 10px; /* Rounded corners for the loader */
