@@ -224,9 +224,11 @@ body {
 @media (max-width: 500px) {
   .horizontalLoaderContainer {
     position: absolute;
-    bottom: 10%; /* Place it at desired position */
+    bottom: 2%; /* Place it at desired position */
+    left: auto;
+    right: auto;
     width: 90%; /* Width of the loader, adjust as needed */
-    height: 3%; /* Height of the loader */
+    height: 20px; /* Height of the loader */
     background-color: #e0e0e0; /* Background of the loader track */
     border-radius: 10px; /* Rounded corners for the loader */
     overflow: hidden; /* Hide the overflow to maintain border radius */
