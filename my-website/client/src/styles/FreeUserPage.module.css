@@ -224,7 +224,7 @@ body {
 @media (max-width: 500px) {
   .horizontalLoaderContainer {
     position: absolute;
-    bottom: 2%; /* Place it at desired position */
+    bottom: 0%; /* Place it at desired position */
     left: 10%;
     right: 10%;
     width: 80%; /* Width of the loader, adjust as needed */
