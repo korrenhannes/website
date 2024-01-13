@@ -73,6 +73,45 @@ body {
 
 /* Add the required CSS to hide the default loading bar if it's not needed */
 
+.initialLoaderContainer {
+  position: absolute;
+  top: 15%;
+  right: 80%;
+  width: 100px; /* Adjust the width of the loader */
+  height: 80%; /* Adjust the height of the loader */
+  background: rgba(104, 101, 101, 0.244);
+  border-radius: 70px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  justify-content: flex-end; /* Start from the bottom of the container */
+}
+
+.initialLoader {
+  height: 0%; /* The height will be animated based on the loading progress */
+  background: linear-gradient(to top, #a31563, #dd2476); /* Glowing gradient effect */
+  border-radius: 70px;
+  transition: height 0.3s ease;
+  position: relative;
+  box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+}
+
+.initialLoader::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%; /* Larger than the loader to allow for a spread */
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+  animation: glow 2s infinite;
+  border-radius: 50%;
+}
+
+@keyframes glow {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(360deg); }
+}
 
 
 
@@ -240,6 +279,28 @@ body {
     width: 0%; /* Initial width of the loading bar */
     height: 100%; /* Full height of its container */
     background: linear-gradient(to top, #ff512f, #dd2476); /* Glowing gradient effect */
+    border-radius: 70px;
+    box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
+    transition: width 0.3s ease; /* Smooth transition for the width change */
+  }
+  .horizontalLoaderContainer2 {
+    position: absolute;
+    bottom: 0%; /* Place it at desired position */
+    left: 10%;
+    right: 10%;
+    width: 80%; /* Width of the loader, adjust as needed */
+    height: 20px; /* Height of the loader */
+    background-color: #e0e0e0; /* Background of the loader track */
+    border-radius: 10px; /* Rounded corners for the loader */
+    overflow: hidden; /* Hide the overflow to maintain border radius */
+    z-index: 1000;
+  }
+
+  .horizontalLoader2 {
+    background-color: #3498db; /* Color of the loading bar */
+    width: 0%; /* Initial width of the loading bar */
+    height: 100%; /* Full height of its container */
+    background: linear-gradient(to top, #a31563, #dd2476); /* Glowing gradient effect */
     border-radius: 70px;
     box-shadow: inset 0 2px 9px 2px rgba(0, 0, 0, 0.3); /* Inner shadow for depth */
     transition: width 0.3s ease; /* Smooth transition for the width change */

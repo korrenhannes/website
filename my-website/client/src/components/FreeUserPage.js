@@ -25,7 +25,8 @@ function FreeUserPage() {
   const [loadingProgress, setLoadingProgress] = useState(0); // New state for loading progress
   const [uploadCheckInterval, setUploadCheckInterval] = useState(null);
   const [refreshVideos, setRefreshVideos] = useState(null);
-
+  const [initialLoadingProgress, setInitialLoadingProgress] = useState(0);
+  const [showInitialLoader, setShowInitialLoader] = useState(true); // State to control visibility of the initial loader
 
   useEffect(() => {
     socket.current = io('https://young-beach-38748-bf9fd736b27e.herokuapp.com');
@@ -50,13 +51,25 @@ function FreeUserPage() {
         return;
       }
     }
+    const initialLoaderInterval = setInterval(() => {
+      setInitialLoadingProgress((prevProgress) => {
+        const newProgress = prevProgress + 100 / 30; // Update for 30 seconds
+        if (newProgress >= 100) {
+          clearInterval(initialLoaderInterval);
+          setShowInitialLoader(false); // Hide initial loader and show main loader
+        }
+        return newProgress;
+      });
+    }, 1000); // Update every second
+
+    return () => clearInterval(initialLoaderInterval);
   }, []);
   const handleSetRefreshFunction = useCallback((refreshFunction) => {
     setRefreshVideos(() => refreshFunction);
 }, []);
   useEffect(() => {
     // Start the upload status check only if on the Free User Page
-    if (userEmail) {
+    if (!showInitialLoader &&userEmail) {
       const intervalId = setInterval(async () => {
         console.log('checking if upload is completed');
         const uploadComplete = await checkUploadStatus(userEmail);
@@ -70,7 +83,7 @@ function FreeUserPage() {
         }
         } else {
           // Update loading progress (for a total duration of 5 minutes)
-          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 30), 100));
+          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 60), 100)); // Adjust the increment for 10 minutes
         }
       }, 10000); // Check every 10 seconds
 
@@ -82,7 +95,7 @@ function FreeUserPage() {
         clearInterval(uploadCheckInterval);
       }
     };
-  }, [userEmail, refreshVideos]);
+  }, [userEmail, refreshVideos, showInitialLoader]);
 
 
   const updateCurrentVideoUrl = (url) => {
@@ -135,7 +148,20 @@ function FreeUserPage() {
 
   return (
     <div className={styles.fullScreenContainer}>
-      {loadingProgress < 100 && (
+       {showInitialLoader && (
+        <>
+        {window.innerWidth > 768 ? (
+        <div className={styles.initialLoaderContainer}>
+          <div className={styles.initialLoader} style={{ height: `${initialLoadingProgress}%` }}></div>
+        </div>
+        ) : (
+          <div className={styles.horizontalLoaderContainer2}>
+          <div className={styles.horizontalLoader2} style={{ width: `${initialLoadingProgress}%` }}></div>
+        </div>
+        )}
+        </>
+      )}
+      {!showInitialLoader && loadingProgress < 100 && (
         <>
           {window.innerWidth < 768 ? (
             <div className={styles.horizontalLoaderContainer}>
