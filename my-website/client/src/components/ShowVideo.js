@@ -222,6 +222,16 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
               console.log('Health check response:', healthResponse);
             } else {
               console.log('Upload completed, skipping health check');
+              
+              // Trying to override some logic to still call health checks. Need to change later
+              console.log(`Calling health endpoint at ${i * 10} minutes`);
+              const healthResponse = await apiFlask.get('/health', {
+                headers: {
+                  'Cache-Control': 'no-cache',
+                },
+              });
+
+
             }
           } catch (error) {
             console.error('Error calling health endpoint:', error);
