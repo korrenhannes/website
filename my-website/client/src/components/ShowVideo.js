@@ -206,7 +206,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
       setUserVideosLoaded(true);
 
       // Modified health check logic
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 12; i++) {
         setTimeout(async () => {
           try {
             console.log(" before the Just before");
@@ -236,7 +236,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
           } catch (error) {
             console.error('Error calling health endpoint:', error);
           }
-        }, 600000 * i); // 600000 milliseconds = 10 minutes
+        }, 300000 * i); // 600000 milliseconds = 10 minutes
       }
     } catch (err) {
       setError(`Error fetching videos: ${err.message}`);
