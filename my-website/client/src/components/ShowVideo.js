@@ -256,6 +256,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
         type: 'video/mp4',
     });
 
+    
     playerRef.current.load();
     updateVideoUrl(videoUrl);
 

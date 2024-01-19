@@ -11,6 +11,8 @@ from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
 import logging
 import time
+import re
+
 
 from best_clips import BestClips
 
