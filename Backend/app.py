@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 import os
@@ -11,8 +11,6 @@ from google.cloud.exceptions import GoogleCloudError
 from dotenv import load_dotenv
 import logging
 import time
-import re
-
 
 from best_clips import BestClips
 
@@ -36,7 +34,7 @@ app = Flask(__name__)
 app.logger.setLevel(logging.INFO)
 
 # Enable CORS with support for credentials and specific origins
-CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://young-beach-38748-bf9fd736b27e.herokuapp.com","https://backend686868k-c9c97cdcbc27.herokuapp.com", "https://www.cliplt.com", "https://clipit-ghiltw5oka-ue.a.run.app", "https://clipit-ghiltw5oka-ue.a.run.app/api"]}})
+CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": ["http://localhost:3001", "https://young-beach-38748-bf9fd736b27e.herokuapp.com","https://backend686868k-c9c97cdcbc27.herokuapp.com", "https://www.cliplt.com"]}})
 
 
 def generate_signed_url(bucket_name, blob_name):
@@ -129,7 +127,7 @@ def process_youtube_video(video_info, userEmail, temp_dir_path):
     except Exception as e:
         print(f"An error occurred in process_youtube_video: {e}")
 
-@app.route('/api/health')
+@app.route('/health')
 def health_check():
     return 'OK', 200
 
@@ -175,11 +173,13 @@ def get_signed_urls_for_directory(bucket, directory):
     blobs = storage_client.list_blobs(bucket, prefix=directory)
     signed_urls = []
     for blob in blobs:
+        # Check if the blob name ends with '.mp4'
         if blob.name.lower().endswith('.mp4'):
-            # Generate a local streaming URL instead of a direct GCS URL
-            streaming_url = f'/video-stream/{blob.name}'
-            signed_urls.append(streaming_url)
+            url = generate_signed_url(bucket, blob.name)
+            if url:
+                signed_urls.append(url)
     return signed_urls
+
 
 @app.route('/api/signed-urls', methods=['GET'])
 def get_signed_urls():
@@ -219,66 +219,3 @@ def get_user_payment_plan():
 
     payment_plan = user.get('paymentPlan', 'free')
     return jsonify({'paymentPlan': payment_plan})
-
-
-@app.route('/api/video-stream/<path:blob_name>')
-def stream_video(blob_name):
-    storage_client = storage.Client()
-    bucket_name = 'clipitshorts'  # Replace with your bucket name
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(blob_name)
-
-    range_header = request.headers.get('Range', None)
-    blob_size = blob.size
-    start, end = 0, blob_size - 1
-
-    if range_header:
-        match = re.search(r'bytes=(\d+)-(\d*)', range_header)
-        start = int(match.group(1))
-        end = int(match.group(2)) if match.group(2) else blob_size - 1
-
-    # Ensure the start and end are within the size of the blob
-    start = min(max(0, start), blob_size - 1)
-    end = min(max(start, end), blob_size - 1)
-
-    length = end - start + 1
-    chunk_size = 262144  # 256 KB; adjust this value as needed for optimal performance
-
-    def generate_chunk():
-        current = start
-        while current <= end:
-            yield blob.download_as_bytes(start=current, end=min(end, current + chunk_size - 1))
-            current += chunk_size
-
-    response = Response(generate_chunk(), 206, mimetype='video/mp4', content_type='video/mp4')
-    response.headers['Content-Range'] = f'bytes {start}-{end}/{blob_size}'
-    response.headers['Accept-Ranges'] = 'bytes'
-    response.headers['Content-Length'] = str(length)
-    response.headers['Cache-Control'] = 'no-cache'  # Optional based on use case
-
-    return response
-
-def parse_range_header(range_header, blob_size):
-    """
-    Parse the 'Range' header and return the start and end byte positions.
-
-    Parameters:
-    range_header (str): The value of the 'Range' header from the HTTP request.
-    blob_size (int): The total size of the blob in bytes.
-
-    Returns:
-    tuple: A tuple containing the start and end byte positions.
-    """
-    range_match = re.match(r'bytes=(\d+)-(\d*)', range_header)
-    if not range_match:
-        return 0, blob_size - 1  # Default to the full range if the header is invalid
-
-    start_str, end_str = range_match.groups()
-    start = int(start_str)
-    end = int(end_str) if end_str else blob_size - 1
-
-    # Ensure the start and end are within the size of the blob
-    start = min(max(0, start), blob_size - 1)
-    end = min(max(start, end), blob_size - 1)
-
-    return start, end
