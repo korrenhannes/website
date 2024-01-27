@@ -6,6 +6,8 @@ import { PAGE_CONTEXT } from './constants'; // Import the constants
 import ShowVideo from './ShowVideo';
 import checkUploadStatus from './CheckUploadStatus';
 import { jwtDecode } from 'jwt-decode';
+import checkLoadingProcess from './CheckLoading';
+import updateLoadingProcess from './UpdateLoading';
 
 
 
@@ -38,6 +40,22 @@ function FreeUserPage() {
     };
   }, []);
   const [userEmail, setUserEmail] = useState('');
+  useEffect(() => {
+    const initializeLoadingProgress = async () => {
+      console.log("checking loading progress");
+      if (userEmail) {
+        console.log("user is logged in");
+        const progress = await checkLoadingProcess(userEmail);
+        console.log("loading progress:", progress);
+        if (progress !== null) {
+          console.log("setting loading process to ", progress);
+          setLoadingProgress(progress);
+        }
+      }
+    };
+  
+    initializeLoadingProgress();
+  }, [userEmail]);
   
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -53,7 +71,7 @@ function FreeUserPage() {
     }
     const initialLoaderInterval = setInterval(() => {
       setInitialLoadingProgress((prevProgress) => {
-        const newProgress = prevProgress + 100 / 30; // Update for 30 seconds
+        const newProgress = prevProgress + 100 / 60; // Update for 30 seconds
         if (newProgress >= 100) {
           clearInterval(initialLoaderInterval);
           setShowInitialLoader(false); // Hide initial loader and show main loader
@@ -66,7 +84,7 @@ function FreeUserPage() {
   }, []);
   const handleSetRefreshFunction = useCallback((refreshFunction) => {
     setRefreshVideos(() => refreshFunction);
-}, []);
+  }, []);
   useEffect(() => {
     // Start the upload status check only if on the Free User Page
     if (!showInitialLoader &&userEmail) {
@@ -77,13 +95,18 @@ function FreeUserPage() {
           console.log('upload is completed, reset the interval', uploadComplete);
           clearInterval(intervalId);
           setUploadCheckInterval(null);
+          await updateLoadingProcess(userEmail, 100);
           setLoadingProgress(100);
           if (refreshVideos) {
             refreshVideos(); // Refresh the videos
         }
         } else {
-          // Update loading progress (for a total duration of 5 minutes)
-          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 60), 100)); // Adjust the increment for 10 minutes
+          // Update loading progress (for a total duration of 40 minutes)
+          const newProgress = Math.min(loadingProgress + (100 / 240), 100);
+          console.log("loading bar new progress: ", newProgress, loadingProgress);
+          await updateLoadingProcess(userEmail, newProgress);
+          console.log("updated the loading bar");
+          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 240), 100));
         }
       }, 10000); // Check every 10 seconds
 
@@ -95,7 +118,7 @@ function FreeUserPage() {
         clearInterval(uploadCheckInterval);
       }
     };
-  }, [userEmail, refreshVideos, showInitialLoader]);
+  }, [userEmail, refreshVideos, showInitialLoader, loadingProgress]);
 
 
   const updateCurrentVideoUrl = (url) => {

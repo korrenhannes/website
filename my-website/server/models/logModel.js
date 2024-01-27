@@ -10,6 +10,11 @@ const logSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  loadingProgress: { 
+    type: Number, 
+    required: false 
+  },
+
   paymentPlan: {
     type: String,
     required: false // Not all logs might have a payment plan associated with them
@@ -34,6 +39,10 @@ const logSchema = new mongoose.Schema({
   isAffiliateAction: {
     type: Boolean,
     default: false
+  },
+  upload_complete: {
+    type: Boolean,
+    default: true
   },
   affiliateCode: {
     type: String,

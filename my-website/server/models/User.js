@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
   referredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   upload_complete: { type: Boolean, default: true },
   referredUserCount: { type: Number, default: 0 },
+  loadingProgress: { type: Number, default: 0 }
 
   // Additional affiliate-specific fields can be added here
 });

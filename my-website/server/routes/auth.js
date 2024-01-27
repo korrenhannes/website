@@ -22,6 +22,19 @@ function calculateEarnings(referredUsers) {
 
   return totalEarnings;
 }
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = ['https://www.cliplt.com', 'http://localhost:3001'];
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST'],
+  credentials: true,
+};
 
 // Reset Password Route
 router.post('/reset-password', async (req, res) => {
@@ -341,6 +354,52 @@ router.post('/update-plan', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+// POST Endpoint to update loading progress
+router.post('/update-loading-progress', async (req, res) => {
+  try {
+    console.log("auth - updating loading progress");
+    const { email, loadingProgress } = req.body;
+    //console.log("auth - req body:", req.body);
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    user.loadingProgress = loadingProgress;
+    await user.save();
+    const newToken = jwt.sign({ userId: user._id, email: user.email, loadingProgress:user.loadingProgress }, 'your_jwt_secret');
+    await new Log({ action: 'Update loading-progress', userEmail: email, loadingProgress:user.loadingProgress}).save();  
+    console.log("update completed:", user.loadingProgress);
+    res.status(200).send('Loading progress updated successfully');
+  } catch (error) {
+    console.error("Error in update-loading-progress route:", error);
+    res.status(500).send('Error updating loading progress');
+  }
+});
+// GET Endpoint to check loading progress
+router.get('/check-loading-progress', 
+passport.authenticate('jwt', { session: false }),
+cors(corsOptions),
+async (req, res) => {
+  try {
+    console.log("auth - checking loading progress");
+    //console.log('Authenticated user:', req.user); // req.user should now be defined
+    //maybe need to change this to: const userEmail = ;
+    const  email  = req.user.email;
+    console.log("auth - check loading - email:",email);
+    const user = await User.findOne({ email });
+    if (!user) {
+      console.log("auth - user not found");
+      return res.status(404).send('User not found');
+    }
+
+    console.log("auth - user found, checking loading progress");
+    res.json({ loadingProgress: user.loadingProgress });
+  } catch (error) {
+    console.error("Error in check-loading-progress route:", error);
+    res.status(500).send('Error checking loading progress');
+  }
+});
 
 // Get User's Payment Plan
 router.get('/user/payment-plan', async (req, res) => {
@@ -356,19 +415,6 @@ router.get('/user/payment-plan', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
-const corsOptions = {
-  origin: function (origin, callback) {
-    const allowedOrigins = ['https://www.cliplt.com', 'http://localhost:3001'];
-    // Allow requests with no origin (like mobile apps, curl requests)
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET', 'POST'],
-  credentials: true,
-};
 // Route to check upload_complete status
 router.get('/check-upload-status',
 passport.authenticate('jwt', { session: false }),
@@ -376,7 +422,7 @@ passport.authenticate('jwt', { session: false }),
   async (req, res) => {
     //console.log('Authenticated user:', req.user); // req.user should now be defined
     const userEmail = req.user.email;
-    console.log('checking upload status for', userEmail);
+    // console.log('checking upload status for', userEmail);
   if (!userEmail) {
     return res.status(400).json({ error: 'Email is required' });
   }
