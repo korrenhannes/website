@@ -1,7 +1,6 @@
 // updateloadingprocess.js
 const updateLoadingProcess = async (userEmail, loadingProgress) => {
     try {
-        console.log("inside update loading progress function");
         const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/update-loading-progress`, {
             method: "POST",
             headers: {
@@ -13,7 +12,6 @@ const updateLoadingProcess = async (userEmail, loadingProgress) => {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        console.log("update sent to server");
     } catch (error) {
       console.error('Error updating loading process:', error);
     }

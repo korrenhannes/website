@@ -15,6 +15,15 @@ body {
   margin-top: 50px; /* Margin from the top of the page */
   overflow: hidden;
 }
+.etaText {
+  color: black; /* Set the text color to black */
+  position: absolute; /* Position the text absolutely within its relative parent */
+  left: 60px; /* Align to the start, adjust as needed */
+  bottom: 80%; /* Position above the loading bar, adjust based on your layout */
+  font-size: 14px; /* Smaller font size */
+  max-width: 200px; /* Limit the width of the text */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
 
 .videocontainer1 {
   display: flex;
@@ -24,7 +33,7 @@ body {
   width: 50vh; /* Full width */
   margin-left: auto;
   margin-right: auto;
-  margin-top: 5.5%;
+  margin-top: 3.5%;
   background-color: #fff; /* White background */
   border-radius: 36px; /* Rounded corners for the 'phone' */
   box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.15); /* Shadow for depth */
@@ -33,10 +42,10 @@ body {
 }
 .verticalLoaderContainer {
   position: absolute;
-  top: 15%;
+  top: 18%;
   right: 80%;
   width: 100px; /* Adjust the width of the loader */
-  height: 80%; /* Adjust the height of the loader */
+  height: 75%; /* Adjust the height of the loader */
   background: rgba(104, 101, 101, 0.244);
   border-radius: 70px;
   overflow: hidden;
@@ -75,10 +84,10 @@ body {
 
 .initialLoaderContainer {
   position: absolute;
-  top: 15%;
+  top: 18%;
   right: 80%;
   width: 100px; /* Adjust the width of the loader */
-  height: 80%; /* Adjust the height of the loader */
+  height: 75%; /* Adjust the height of the loader */
   background: rgba(104, 101, 101, 0.244);
   border-radius: 70px;
   overflow: hidden;

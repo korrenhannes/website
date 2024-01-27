@@ -29,6 +29,9 @@ function FreeUserPage() {
   const [refreshVideos, setRefreshVideos] = useState(null);
   const [initialLoadingProgress, setInitialLoadingProgress] = useState(0);
   const [showInitialLoader, setShowInitialLoader] = useState(true); // State to control visibility of the initial loader
+  const [initialLoaderETA, setInitialLoaderETA] = useState('ETA until example video: 30 seconds');
+ // const [mainLoaderETA, setMainLoaderETA] = useState('ETA until your video is ready: 60 minutes');
+
 
   useEffect(() => {
     socket.current = io('https://young-beach-38748-bf9fd736b27e.herokuapp.com');
@@ -40,15 +43,52 @@ function FreeUserPage() {
     };
   }, []);
   const [userEmail, setUserEmail] = useState('');
+  const calculateMainLoaderETA = (progress) => {
+    const totalTime = 60; // Total time for main loader in minutes
+    const remainingTime = totalTime - (progress / 100) * totalTime;
+    return `ETA until your video is ready: ${Math.ceil(remainingTime)} minutes`;
+  };
+  const [mainLoaderETA, setMainLoaderETA] = useState(calculateMainLoaderETA(loadingProgress));
+  useEffect(() => {
+    // This will set the initial ETA based on the first received loading progress
+    setMainLoaderETA(calculateMainLoaderETA(loadingProgress));
+  }, [loadingProgress]); // Depend on loadingProgress so it updates when loadingProgress changes
+  
+  // Update ETA for the initial loader
+  useEffect(() => {
+    const updateETA = () => {
+      const totalTime = 30; // Total time for initial loader in seconds
+      const remainingTime = totalTime - (initialLoadingProgress / 100) * totalTime;
+      setInitialLoaderETA(`ETA until example video: ${Math.ceil(remainingTime)} seconds`);
+    };
+
+    const etaInterval = setInterval(updateETA, 1000); // Update every 5 minutes
+    return () => clearInterval(etaInterval);
+  }, [initialLoadingProgress]);
+
+  // Update ETA for the main loader
+  useEffect(() => {
+    const updateETA = () => {
+      setMainLoaderETA(calculateMainLoaderETA(loadingProgress));
+    };
+
+    const etaInterval = setInterval(updateETA, 300000); // Update every 5 minutes
+    return () => clearInterval(etaInterval);
+  }, [loadingProgress]);
   useEffect(() => {
     const initializeLoadingProgress = async () => {
-      console.log("checking loading progress");
+      //console.log("checking loading progress");
       if (userEmail) {
-        console.log("user is logged in");
+       // console.log("user is logged in");
+        const uploadComplete = await checkUploadStatus(userEmail);
         const progress = await checkLoadingProcess(userEmail);
-        console.log("loading progress:", progress);
-        if (progress !== null) {
-          console.log("setting loading process to ", progress);
+        //console.log("upload complete?", uploadComplete, "progress?", progress);
+        if (!uploadComplete&&progress===100){
+          //console.log("upload not complete but loading bar finished");
+          await updateLoadingProcess(userEmail, 50);
+          setLoadingProgress(50);
+        }else if (progress !== null) {
+          //console.log("setting loading process to ", progress);
           setLoadingProgress(progress);
         }
       }
@@ -89,10 +129,10 @@ function FreeUserPage() {
     // Start the upload status check only if on the Free User Page
     if (!showInitialLoader &&userEmail) {
       const intervalId = setInterval(async () => {
-        console.log('checking if upload is completed');
+        //console.log('checking if upload is completed');
         const uploadComplete = await checkUploadStatus(userEmail);
         if (uploadComplete) {
-          console.log('upload is completed, reset the interval', uploadComplete);
+          //console.log('upload is completed, reset the interval', uploadComplete);
           clearInterval(intervalId);
           setUploadCheckInterval(null);
           await updateLoadingProcess(userEmail, 100);
@@ -103,10 +143,10 @@ function FreeUserPage() {
         } else {
           // Update loading progress (for a total duration of 40 minutes)
           const newProgress = Math.min(loadingProgress + (100 / 240), 100);
-          console.log("loading bar new progress: ", newProgress, loadingProgress);
+          //console.log("loading bar new progress: ", newProgress, loadingProgress);
           await updateLoadingProcess(userEmail, newProgress);
-          console.log("updated the loading bar");
-          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 240), 100));
+          //console.log("updated the loading bar");
+          setLoadingProgress(prevProgress => Math.min(prevProgress + (100 / 360), 100));
         }
       }, 10000); // Check every 10 seconds
 
@@ -174,26 +214,39 @@ function FreeUserPage() {
        {showInitialLoader && (
         <>
         {window.innerWidth > 768 ? (
-        <div className={styles.initialLoaderContainer}>
-          <div className={styles.initialLoader} style={{ height: `${initialLoadingProgress}%` }}></div>
-        </div>
+          <>
+          <p className={styles.etaText}>{initialLoaderETA}</p> {/* ETA Text above the loader */}
+          <div className={styles.initialLoaderContainer}>
+            <div className={styles.initialLoader} style={{ height: `${initialLoadingProgress}%` }}></div>
+          </div>
+          </>
         ) : (
-          <div className={styles.horizontalLoaderContainer2}>
-          <div className={styles.horizontalLoader2} style={{ width: `${initialLoadingProgress}%` }}></div>
-        </div>
+          <>
+            <p className={styles.etaText}>{initialLoaderETA}</p> {/* ETA Text above the loader */}
+            <div className={styles.horizontalLoaderContainer2}>
+              <div className={styles.horizontalLoader2} style={{ width: `${initialLoadingProgress}%` }}></div>
+            </div>
+          </>
         )}
         </>
       )}
       {!showInitialLoader && loadingProgress < 100 && (
         <>
+         <p  className="lead text-black">{mainLoaderETA}</p>
           {window.innerWidth < 768 ? (
+             <>
+             <p className={styles.etaText}>{mainLoaderETA}</p> {/* ETA Text above the loader */} 
             <div className={styles.horizontalLoaderContainer}>
               <div className={styles.horizontalLoader} style={{ width: `${loadingProgress}%` }}></div>
             </div>
+            </>
           ) : (
+            <>
+            <p className={styles.etaText}>{mainLoaderETA}</p> {/* ETA Text above the loader */}
             <div className={styles.verticalLoaderContainer}>
               <div className={styles.verticalLoader} style={{ height: `${loadingProgress}%` }}></div>
             </div>
+            </>
           )}
         </>
       )}

@@ -1,10 +1,8 @@
 import { api } from '../api'; // Importing the Axios instance for Flask
 
 const checkUploadStatus = async (userEmail) => {
-    console.log('checking user upload status:', userEmail);
     try {
         const response = await api.get(`/auth/check-upload-status`, {userEmail});    
-      console.log("Inside function:", response.data.uploadComplete) // Added
       if (response.data.uploadComplete===null){
         console.log('response data is null');
       }
