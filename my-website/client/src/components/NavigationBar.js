@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MESSAGES } from '../messages/messages'; // Import the language file
+import checkUploadStatus from './CheckUploadStatus';
+import checkLoadingProcess from './CheckLoading';
 
 const getRandomFutureDate = () => {
   const twoWeeksInMs = 2 * 7 * 24 * 60 * 60 * 1000;
@@ -47,6 +49,37 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
   const navigate = useNavigate();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [mainLoaderETA, setMainLoaderETA] = useState('');
+
+  const calculateMainLoaderETA = (progress) => {
+    const totalTime = 60; // Total time for main loader in minutes
+    const remainingTime = totalTime - (progress / 100) * totalTime;
+    return `ETA to video: ${Math.ceil(remainingTime)} minutes`;
+  };
+  
+  useEffect(() => {
+    let etaInterval;
+
+    const updateETA = async () => {
+      if (isLoggedIn) {
+        const uploadComplete = await checkUploadStatus(/* user's email or ID */);
+        if (!uploadComplete) {
+          const progress = await checkLoadingProcess(/* user's email or ID */);
+          const eta = calculateMainLoaderETA(progress);
+          setMainLoaderETA(eta);
+        } else {
+          setMainLoaderETA(''); // Clear ETA if the upload is complete
+        }
+      }
+    };
+
+    if (isLoggedIn) {
+      updateETA(); // Initial check
+      etaInterval = setInterval(updateETA, 1000); // Update every 5 minutes
+    }
+
+    return () => clearInterval(etaInterval);
+  }, [isLoggedIn]);
 
   const initializeTargetDate = () => {
     const savedDate = localStorage.getItem('targetDate');
@@ -142,6 +175,9 @@ const NavigationBar = ({ isLoggedIn, onLogoutSuccess }) => {
         <Link to="/how-it-works" onClick={handleLinkClick}>{MESSAGES.whyUs}</Link>
         <Link to="/clip-it-shorts" onClick={handleLinkClick}>{MESSAGES.blog}</Link>
         {isLoggedIn&&<Link to="/my-videos" onClick={handleLinkClick}>{MESSAGES.myVideos}</Link>}
+        {isLoggedIn && mainLoaderETA && (
+          <Link to="/free-user" onClick={handleLinkClick}>{mainLoaderETA}</Link>
+      )}
         {isMobile && renderAuthLinks()}
       </div>
       <div className="nav-actions">
