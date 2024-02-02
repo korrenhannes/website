@@ -113,6 +113,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
   }, [isMobilePage]);
 
   const fetchVideosFromGCloud = async () => {
+    console.log("fetching videos");
     setIsLoading(true);
     setError(null);
     let emailToUse = userEmail;
@@ -156,6 +157,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
             }
           });
           signedUrls = response.data.signedUrls;
+          console.log("free user page", signedUrls);
       } else  if (pageContext===PAGE_CONTEXT.MY_VIDEOS) {
         response = await apiFlask.get('/signed-urls', {
             params: {
@@ -166,6 +168,8 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
             }
           });
           signedUrls = response.data.signedUrls;
+          console.log("my videos page", signedUrls);
+
       }  
       // Fallback to undefined directory if no URLs found
       if (!signedUrls || signedUrls.length === 0) {
@@ -360,7 +364,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
 };
 
 const loadRandomVideo = () => {
-  console.log("show random video");
+  console.log("show random video:", videos);
     if (videos.length === 0) {
         console.error('Videos array is empty.');
         return;
