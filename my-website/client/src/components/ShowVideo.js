@@ -276,6 +276,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
   
 
   const loadNextVideo = () => {
+    console.log("load next video");
     setCurrentVideoIndex(prevIndex => {
       // Check if the videos array is empty
       if (videos.length === 0) {
@@ -297,6 +298,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
     });
   };
   const loadPreviousVideo = () => {
+    console.log("load previous video");
     setCurrentVideoIndex(prevIndex => {
       // Check if the videos array is empty
       if (videos.length === 0) {
@@ -328,6 +330,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
     }
   };
   const handleVideoPress = (event) => {
+    console.log("video pressed");
     if (event.target.className.includes('unmuteButton')) {
         return;
     }
@@ -339,6 +342,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
 
     // Determine if the click is on the left or right side
     if (pageContext !== PAGE_CONTEXT.EXPLORE_FURTHER) {
+       console.log("not explore further, load next or prev video");
         // Original behavior for Free User Page
         if (event.clientX < midpoint) {
             loadPreviousVideo();
@@ -356,6 +360,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
 };
 
 const loadRandomVideo = () => {
+  console.log("show random video");
     if (videos.length === 0) {
         console.error('Videos array is empty.');
         return;
