@@ -193,7 +193,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
       }
   
       setVideos(signedUrls);
-
+      console.log("videos after fetch:", videos);
 
       // Handle different video loading strategies based on page context
       if (pageContext !== PAGE_CONTEXT.EXPLORE_FURTHER) {
@@ -280,7 +280,7 @@ function ShowVideo({pageContext, updateVideoUrl, isMobilePage, onRefresh  }){
   
 
   const loadNextVideo = () => {
-    console.log("load next video");
+    console.log("load next video:", videos);
     setCurrentVideoIndex(prevIndex => {
       // Check if the videos array is empty
       if (videos.length === 0) {
